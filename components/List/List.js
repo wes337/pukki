@@ -11,13 +11,9 @@ export default function List({ items, withDivider }) {
         <Fragment key={item.id}>
           <button onClick={item.onClick}>
             {item.icon && (
-              <img
-                className={styles.icon}
-                src={item.icon}
-                height={28}
-                width={28}
-                alt=""
-              />
+              <div className={styles.icon}>
+                <img src={item.icon} height={28} width={28} alt="" />
+              </div>
             )}
             {item.label}
             <div className={styles.open}>

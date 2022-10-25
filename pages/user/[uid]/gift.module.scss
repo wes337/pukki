@@ -69,6 +69,39 @@
         @include borderSmall($colorBlue);
       }
     }
+
+    blockquote {
+      font-size: $font-size-m;
+      font-style: italic;
+      margin: auto;
+      padding: $space-s $space-xxl;
+      line-height: 1.45;
+      position: relative;
+      color: $colorDarkGray;
+
+      &:before {
+        display: block;
+        padding-left: $space-m;
+        content: "\201C";
+        font-size: 80px;
+        position: absolute;
+        left: -20px;
+        top: -20px;
+        color: rgba($colorGray, 0.75);
+      }
+
+      cite {
+        color: rgba($colorGray, 0.75);
+        font-size: $font-size-s;
+        display: block;
+        margin-top: $space-xs;
+        padding-left: $space-m;
+
+        &:before {
+          content: "\2014 \2009";
+        }
+      }
+    }
   }
 
   .footer {

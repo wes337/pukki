@@ -13,11 +13,7 @@ export default function Users() {
   useEffect(() => {
     if (!user) {
       router.push("/");
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (user) {
+    } else {
       getUsers();
     }
   }, [user]);

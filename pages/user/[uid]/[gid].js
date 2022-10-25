@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
+import { isValidUrl } from "../../../utils/string";
 import { Avatar, Button, Loader } from "../../../components";
 import styles from "./gift.module.scss";
 
@@ -109,8 +110,6 @@ export default function Gift() {
     );
   };
 
-  console.log(user);
-
   return (
     <div className={styles.gift}>
       <div className={styles.header}>
@@ -126,10 +125,30 @@ export default function Gift() {
       </div>
       <div className={styles.body}>
         <h5>
-          <span>{isMe ? "You want " : `${user?.name} wants `}</span>
+          <span>{isMe ? "You want..." : `${user?.name} wants...`}</span>
           {gift.name}
         </h5>
-        {gift.description && <p>{gift.description}</p>}
+        {gift.url && (
+          <h5>
+            <span>Where can you buy this?</span>
+            {isValidUrl(gift.url) ? (
+              <Button
+                icon="gift-alt"
+                onClick={() => window.open(gift.url, "_blank")}
+              >
+                Here!
+              </Button>
+            ) : (
+              gift.url
+            )}
+          </h5>
+        )}
+        {gift.description && (
+          <blockquote className={styles.quote}>
+            {gift.description}
+            <cite>{user?.name}</cite>
+          </blockquote>
+        )}
       </div>
       <div className={styles.footer}>
         {isMe ? renderOwnGiftButtons() : renderGiftButtons()}

@@ -50,8 +50,13 @@
     }
 
     .icon {
+      display: flex;
       @include outlineSmall($colorLightGray);
       border-radius: 100%;
+
+      img {
+        border-radius: 100%;
+      }
     }
   }
 }
