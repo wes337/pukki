@@ -29,7 +29,7 @@ export default function Gift() {
     try {
       let { data, error } = await supabase
         .from("gifts")
-        .select("*")
+        .select("id, name, claimed_by, user")
         .eq("id", gid);
 
       if (error) {
@@ -49,7 +49,7 @@ export default function Gift() {
     try {
       let { data, error } = await supabase
         .from("users")
-        .select("*")
+        .select("name")
         .eq("user_id", uid);
 
       if (error) {

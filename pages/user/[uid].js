@@ -29,7 +29,7 @@ export default function User() {
     try {
       const { data, error } = await supabase
         .from("users")
-        .select("*")
+        .select("name, avatar_url")
         .eq("user_id", uid);
 
       if (error) {
@@ -48,7 +48,7 @@ export default function User() {
     try {
       let { data, error } = await supabase
         .from("gifts")
-        .select("*")
+        .select("id, name")
         .eq("user", uid);
 
       if (error) {

@@ -3,9 +3,11 @@ import { getUserName } from "../../utils/user";
 import Logo from "../Logo/Logo";
 import Button from "../Button/Button";
 import styles from "./Header.module.scss";
+import { Router, useRouter } from "next/router";
 
 export default function Header() {
   const user = useUser();
+  const router = useRouter();
   const supabase = useSupabaseClient();
 
   return (
@@ -19,7 +21,11 @@ export default function Header() {
             icon="tag"
             variant="link"
             size="small"
-            onClick={() => supabase.auth.signOut()}
+            onClick={() => {
+              supabase.auth.signOut().then(() => {
+                router.push("/");
+              });
+            }}
           >
             Sign out
           </Button>
