@@ -1,0 +1,66 @@
+@import "../../../styles/colors.scss";
+@import "../../../styles/borders.scss";
+@import "../../../styles/spacings.scss";
+@import "../../../styles/fonts.scss";
+
+.gift {
+  display: flex;
+  flex-direction: column;
+  gap: $space-s;
+
+  .header {
+    display: flex;
+    align-items: center;
+
+    h4 {
+      margin: auto;
+      padding: 0 $space-l;
+      border-bottom: 2px dotted $colorLightRed;
+    }
+  }
+
+  .body {
+    display: flex;
+    flex-direction: column;
+    padding: $space-l 0;
+    gap: $space-l;
+
+    p {
+      color: $colorDarkGray;
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      flex-shrink: 0;
+      gap: $space-xs;
+
+      span {
+        font-size: $font-size-s;
+        color: $colorDarkGray;
+      }
+    }
+
+    textarea,
+    input {
+      font-size: $font-size-m;
+      font-family: $body-font;
+
+      resize: none;
+      padding: $space-s;
+      @include borderSmall($colorLightGray);
+
+      &:focus {
+        outline: 0;
+        @include borderSmall($colorBlue);
+      }
+    }
+  }
+
+  .footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: $space-s;
+  }
+}

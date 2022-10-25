@@ -8,6 +8,7 @@ export default function Button({
   variant = "primary",
   size = "medium",
   block,
+  disabled,
 }) {
   const getIconSize = () => {
     switch (size) {
@@ -29,11 +30,20 @@ export default function Button({
       className += ` ${styles.block}`;
     }
 
+    if (disabled) {
+      className += ` ${styles.disabled}`;
+    }
+
     return className;
   };
 
   return (
-    <button className={getClassName()} onClick={onClick} type="button">
+    <button
+      className={getClassName()}
+      onClick={onClick}
+      type="button"
+      disabled={disabled}
+    >
       {icon && <Icon name={icon} size={getIconSize()} />}
       {children}
     </button>

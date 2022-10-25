@@ -123,7 +123,7 @@ export default function User() {
                 {gift.name}
               </>
             ),
-            onClick: () => router.push(`/gift/${gift.id}`),
+            onClick: () => router.push(`/user/${uid}/${gift.id}`),
           }))}
         />
       )}

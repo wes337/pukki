@@ -1,7 +1,7 @@
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
-import { Avatar, Button, Loader } from "../../components";
+import { Avatar, Button, Loader } from "../../../components";
 import styles from "./gift.module.scss";
 
 export default function Gift() {
@@ -13,15 +13,14 @@ export default function Gift() {
   const [gift, setGift] = useState([]);
   const [isMe, setIsMe] = useState(false);
 
-  const { gid } = router.query;
+  const { uid, gid } = router.query;
 
   useEffect(() => {
-    if (session && gid) {
+    if (session && uid && gid) {
       setLoading(true);
-      getGift().then(() => {
-        getUser().then(() => {
-          setLoading(false);
-        });
+      setIsMe(uid === session.user.id);
+      Promise.all([getUser(), getGift()]).then(() => {
+        setLoading(false);
       });
     }
   }, [session]);
@@ -38,7 +37,7 @@ export default function Gift() {
       }
 
       const gift = data[0];
-      setIsMe(gift.user === session.user.id);
+
       setGift(gift);
       return gift;
     } catch (error) {
@@ -51,7 +50,7 @@ export default function Gift() {
       let { data, error } = await supabase
         .from("users")
         .select("*")
-        .eq("user_id", gift.user);
+        .eq("user_id", uid);
 
       if (error) {
         throw error;
