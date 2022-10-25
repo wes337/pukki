@@ -1,0 +1,34 @@
+@import "../../styles/colors.scss";
+@import "../../styles/borders.scss";
+@import "../../styles/spacings.scss";
+
+.gift {
+  display: flex;
+  flex-direction: column;
+  gap: $space-s;
+
+  .header {
+    display: flex;
+    align-items: center;
+
+    h4 {
+      margin: auto;
+      padding: 0 $space-l;
+      border-bottom: 2px dotted $colorLightRed;
+    }
+  }
+
+  .body {
+    padding: $space-l 0;
+
+    p {
+      color: $colorDarkGray;
+    }
+  }
+
+  .footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: $space-s;
+  }
+}

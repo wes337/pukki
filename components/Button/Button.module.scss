@@ -1,0 +1,77 @@
+@import "../../styles/colors.scss";
+@import "../../styles/spacings.scss";
+@import "../../styles/borders.scss";
+@import "../../styles/fonts.scss";
+
+@mixin default-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-s;
+  background-color: transparent;
+  cursor: pointer;
+  border: none;
+  border-radius: $borderRadiusSmall;
+  padding: $space-s;
+  font-family: $body-font;
+  font-size: $font-size-m;
+
+  &:focus-visible {
+    @include outlineSmall($colorLightRed);
+  }
+}
+
+.primary {
+  @include default-button;
+
+  background-color: $colorGreen;
+  color: $colorWhite;
+
+  &:hover {
+    background-color: $colorLightGreen;
+  }
+}
+
+.secondary {
+  @include default-button;
+
+  background-color: $colorLightRed;
+  color: $colorWhite;
+
+  &:hover {
+    background-color: rgba($colorLightRed, 0.9);
+  }
+}
+
+.link {
+  @include default-button;
+
+  background-color: transparent;
+  color: $colorDarkGray;
+
+  &:hover {
+    background-color: rgba($colorLightGreen, 0.25);
+  }
+}
+
+.outline {
+  @include default-button;
+  @include borderSmall($colorGreen);
+  background-color: transparent;
+
+  color: darken($colorGreen, 0);
+
+  &:hover {
+    background-color: rgba($colorLightGreen, 0.25);
+  }
+}
+
+.small {
+  padding: $space-xs;
+  gap: $space-xs;
+  font-size: $font-size-s;
+}
+
+.block {
+  width: 100%;
+}

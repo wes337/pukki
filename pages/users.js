@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
-import { Divider, IconLogOut, Typography, Menu } from "@supabase/ui";
+import { List, Loader } from "../components";
 
 export default function Users() {
   const supabase = useSupabaseClient();
@@ -45,37 +45,17 @@ export default function Users() {
   }
 
   if (loading) {
-    return <Typography.Text>Loading...</Typography.Text>;
+    return <Loader />;
   }
 
-  const Avatar = ({ imgUrl }) => (
-    <img
-      src={imgUrl}
-      height={24}
-      width={24}
-      alt=""
-      style={{ borderRadius: "100%", outline: "1px solid lightgray" }}
-    />
-  );
-
   return (
-    <Menu>
-      {users.map((user) => (
-        <Menu.Item
-          key={user.user_id}
-          icon={<Avatar imgUrl={user.avatar_url} />}
-          onClick={() => router.push(`/user/${user.user_id}`)}
-        >
-          {user.name}
-        </Menu.Item>
-      ))}
-      <Divider light />
-      <Menu.Item
-        icon={<IconLogOut size={24} />}
-        onClick={() => supabase.auth.signOut()}
-      >
-        Sign out
-      </Menu.Item>
-    </Menu>
+    <List
+      items={users.map((user) => ({
+        id: user.user_id,
+        onClick: () => router.push(`/user/${user.user_id}`),
+        label: user.name,
+        icon: user.avatar_url,
+      }))}
+    />
   );
 }

@@ -1,0 +1,20 @@
+@import "../../styles/colors.scss";
+@import "../../styles/borders.scss";
+@import "../../styles/spacings.scss";
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $space-s;
+
+  h4 {
+    margin: auto;
+    padding: 0 $space-l;
+    border-bottom: 2px dotted $colorLightRed;
+  }
+}
+
+.add {
+  margin-top: $space-s;
+}

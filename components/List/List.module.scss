@@ -1,0 +1,57 @@
+@import "../../styles/colors.scss";
+@import "../../styles/fonts.scss";
+@import "../../styles/spacings.scss";
+@import "../../styles/borders.scss";
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-s;
+
+  .open {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    opacity: 0;
+  }
+
+  hr {
+    width: 100%;
+    border: 0;
+    border-top: 1px solid $colorLightGray;
+    margin: 0;
+    padding: 0;
+  }
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: $space-s;
+    padding: $space-s;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: $font-size-m;
+    font-family: $body-font;
+    color: $colorDarkGray;
+    border-radius: $borderRadiusSmall;
+
+    &:hover,
+    &:active {
+      background-color: rgba($colorOffWhite, 0.5);
+
+      .open {
+        opacity: 1;
+      }
+    }
+
+    &:focus-visible {
+      @include outlineSmall($colorLightRed);
+    }
+
+    .icon {
+      @include outlineSmall($colorLightGray);
+      border-radius: 100%;
+    }
+  }
+}

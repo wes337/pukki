@@ -1,14 +1,9 @@
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
-import {
-  Button,
-  Divider,
-  IconArrowLeft,
-  IconGift,
-  IconTrash,
-  Typography,
-} from "@supabase/ui";
+import { Avatar, Button, List, Loader } from "../../components";
+import variables from "../../styles/variables.module.scss";
+import styles from "./user.module.scss";
 
 export default function User() {
   const session = useSession();
@@ -31,7 +26,6 @@ export default function User() {
       Promise.all([getUser(), getGifts()]).then(() => {
         setLoading(false);
       });
-      getGifts();
     }
   }, [session]);
 
@@ -69,26 +63,12 @@ export default function User() {
     }
   }
 
-  async function removeGift(giftId) {
-    try {
-      const { error } = await supabase.from("gifts").delete().eq("id", giftId);
-
-      if (error) {
-        throw error;
-      }
-
-      setGifts((gifts) => gifts.filter(({ id }) => id !== giftId));
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   async function addGift() {
     try {
       const gift = {
         name: "Test gift",
         url: "http://google.com",
-        user: "f126e7fb-79a9-4377-ade3-be654317f4af",
+        user: uid,
       };
 
       const { data, error } = await supabase
@@ -106,106 +86,55 @@ export default function User() {
     }
   }
 
-  const renderClaimButton = (gift) => {
-    if (isMe) {
-      return null;
-    }
-
-    if (gift.claimed_by) {
-      return <span>Claimed by {gift.claimed_by}</span>;
-    }
-
-    return <Button>Claim!</Button>;
-  };
-
-  const renderViewButton = (gift) => {
-    if (!gift.url) {
-      return;
-    }
-
-    return (
-      <Button
-        type="link"
-        onClick={() => {
-          window.open(gift.url, "_blank");
-        }}
-      >
-        View
-      </Button>
-    );
-  };
-
   if (loading || !user) {
-    return <Typography>Loading...</Typography>;
+    return <Loader />;
   }
+
+  const emptyWishlistMessage = () => {
+    if (isMe) {
+      return "You haven't added any gifts to your wishlist yet. Click the add gift button below to get started!";
+    }
+
+    return `${user.name} hasn't added any gifts to their wishlist yet!`;
+  };
 
   return (
     <>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Button icon={<IconArrowLeft />} onClick={() => router.push("/users")}>
+      <div className={styles.header}>
+        <Button
+          icon="christmas-tree"
+          variant="outline"
+          onClick={() => router.push("/users")}
+        >
           Back
         </Button>
-        <Typography.Title level={4} style={{ margin: "auto" }}>
-          {isMe ? "Your" : `${user.name}'s`} gifts
-        </Typography.Title>
-        <img
-          src={user.avatar_url}
-          height={30}
-          width={30}
-          alt=""
-          style={{ borderRadius: "100%", outline: "1px solid lightgray" }}
+        <h4>{isMe ? "Your" : `${user.name}'s`} wishlist</h4>
+        <Avatar url={user.avatar_url} size={36} />
+      </div>
+      {gifts.length === 0 ? (
+        <>{emptyWishlistMessage()}</>
+      ) : (
+        <List
+          withDivider
+          items={gifts.map((gift, index) => ({
+            id: gift.id,
+            label: (
+              <>
+                <span style={{ fontWeight: 600 }}>{index + 1}</span>
+                {gift.name}
+              </>
+            ),
+            onClick: () => router.push(`/gift/${gift.id}`),
+          }))}
         />
-      </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 8,
-        }}
-      >
-        {gifts.map((gift, i) => (
-          <Fragment key={gift.id}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <div>
-                <Typography.Text type="secondary">{i + 1} - </Typography.Text>
-                <Typography.Text strong>{gift.name}</Typography.Text>
-              </div>
-              <div style={{ display: "flex", gap: 4 }}>
-                {renderViewButton(gift)} {renderClaimButton(gift)}
-                {isMe && (
-                  <Button
-                    type="outline"
-                    icon={<IconTrash />}
-                    danger
-                    onClick={() => removeGift(gift.id)}
-                  ></Button>
-                )}
-              </div>
-            </div>
-            {i < gifts.length - 1 && <Divider />}
-          </Fragment>
-        ))}
-      </div>
-      <Button
-        block
-        icon={<IconGift size={28} />}
-        style={{ fontSize: 16 }}
-        onClick={addGift}
-      >
-        Add Gift
-      </Button>
+      )}
+      {isMe && (
+        <div className={styles.add}>
+          <Button block icon="gift" onClick={addGift}>
+            Add Gift
+          </Button>
+        </div>
+      )}
     </>
   );
 }

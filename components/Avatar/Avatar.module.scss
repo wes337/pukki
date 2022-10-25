@@ -1,0 +1,7 @@
+@import "../../styles/borders.scss";
+@import "../../styles/colors.scss";
+
+.avatar {
+  @include outlineSmall($colorLightGray);
+  border-radius: 100%;
+}

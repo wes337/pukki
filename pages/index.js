@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import Users from "./users";
+import { getUserName } from "../utils/user";
 
 export default function Index() {
   const [ready, setReady] = useState(false);
@@ -14,9 +15,7 @@ export default function Index() {
     } else {
       const user = {
         user_id: session.user.id,
-        name:
-          session.user.user_metadata.nickname ||
-          session.user.user_metadata.full_name,
+        name: getUserName(session.user),
         avatar_url: session.user.user_metadata.avatar_url,
       };
 

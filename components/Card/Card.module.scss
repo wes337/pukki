@@ -1,0 +1,9 @@
+@import "../../styles/colors.scss";
+@import "../../styles/borders.scss";
+@import "../../styles/spacings.scss";
+
+.card {
+  background-color: $colorWhite;
+  padding: $space-l;
+  @include borderSmall($colorLightGray);
+}

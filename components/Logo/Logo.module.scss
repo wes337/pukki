@@ -1,0 +1,11 @@
+@import "../../styles/colors.scss";
+
+.logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  h1 {
+    color: $colorLightRed;
+  }
+}

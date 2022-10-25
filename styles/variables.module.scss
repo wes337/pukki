@@ -1,0 +1,8 @@
+@import "./spacings.scss";
+@import "./colors.scss";
+
+:export {
+  /* prettier-ignore */
+  spaceSmall: $space-s;
+  colorGray: $colorGray;
+}

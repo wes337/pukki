@@ -1,0 +1,11 @@
+$borderRadiusSmall: 4px;
+$borderSizeSmall: 1px;
+
+@mixin borderSmall($color) {
+  border: $borderSizeSmall solid $color;
+  border-radius: $borderRadiusSmall;
+}
+
+@mixin outlineSmall($color) {
+  outline: $borderSizeSmall solid $color;
+}
