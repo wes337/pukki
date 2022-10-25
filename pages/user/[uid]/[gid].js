@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
-import { Button, Loader } from "../../../components";
+import { Avatar, Button, Loader } from "../../../components";
 import styles from "./gift.module.scss";
 
 export default function Gift() {
@@ -29,7 +29,7 @@ export default function Gift() {
     try {
       let { data, error } = await supabase
         .from("gifts")
-        .select("id, name, claimed_by, user")
+        .select("id, name, claimed_by, user, description, url")
         .eq("id", gid);
 
       if (error) {
@@ -49,7 +49,7 @@ export default function Gift() {
     try {
       let { data, error } = await supabase
         .from("users")
-        .select("name")
+        .select("name, avatar_url")
         .eq("user_id", uid);
 
       if (error) {
@@ -109,6 +109,8 @@ export default function Gift() {
     );
   };
 
+  console.log(user);
+
   return (
     <div className={styles.gift}>
       <div className={styles.header}>
@@ -119,15 +121,15 @@ export default function Gift() {
         >
           Back
         </Button>
-        <h4>{gift.name}</h4>
         <h4>{isMe ? "Your" : `${user?.name}'s`} wishlist</h4>
-        {/* <Avatar url={user?.avatar_url} size={36} /> */}
+        <Avatar url={user?.avatar_url} size={36} />
       </div>
       <div className={styles.body}>
-        <p>
-          I want some nice warm socks, in nice neutral colours, like black,
-          white, brown, etc.
-        </p>
+        <h5>
+          <span>{isMe ? "You want " : `${user?.name} wants `}</span>
+          {gift.name}
+        </h5>
+        {gift.description && <p>{gift.description}</p>}
       </div>
       <div className={styles.footer}>
         {isMe ? renderOwnGiftButtons() : renderGiftButtons()}

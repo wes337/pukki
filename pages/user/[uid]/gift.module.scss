@@ -25,8 +25,21 @@
     padding: $space-l 0;
     gap: $space-l;
 
+    h5 {
+      display: flex;
+      flex-direction: column;
+      font-size: $font-size-l;
+      text-align: center;
+
+      span {
+        font-weight: 400;
+        font-size: $font-size-s;
+      }
+    }
+
     p {
       color: $colorDarkGray;
+      text-align: center;
     }
 
     label {
