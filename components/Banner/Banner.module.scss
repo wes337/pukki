@@ -1,0 +1,18 @@
+@import "../../styles/colors.scss";
+@import "../../styles/fonts.scss";
+@import "../../styles/spacings.scss";
+
+.banner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: $space-l;
+  padding: $space-l;
+
+  p {
+    color: $colorGray;
+    text-align: center;
+    font-size: $font-size-m;
+  }
+}

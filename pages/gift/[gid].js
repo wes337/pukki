@@ -16,17 +16,13 @@ export default function Gift() {
   const { gid } = router.query;
 
   useEffect(() => {
-    const loadGiftAndUser = async () => {
+    if (session && gid) {
       setLoading(true);
-      await getGift();
-      // await getUser();
-      setLoading(false);
-    };
-
-    if (!session) {
-      router.push("/");
-    } else {
-      loadGiftAndUser();
+      getGift().then(() => {
+        getUser().then(() => {
+          setLoading(false);
+        });
+      });
     }
   }, [session]);
 
@@ -41,7 +37,10 @@ export default function Gift() {
         throw error;
       }
 
-      setGift(data[0]);
+      const gift = data[0];
+      setIsMe(gift.user === session.user.id);
+      setGift(gift);
+      return gift;
     } catch (error) {
       console.log(error);
     }
@@ -58,7 +57,9 @@ export default function Gift() {
         throw error;
       }
 
-      setUser(data[0]);
+      const user = data[0];
+      setUser(user);
+      return user;
     } catch (error) {
       console.log(error);
     }
@@ -101,7 +102,9 @@ export default function Gift() {
         {gift.claimed_by ? (
           <>Claimed by {gift.claimed_by}</>
         ) : (
-          <Button>Claim</Button>
+          <Button icon="gift-bag" block>
+            I'll buy it!
+          </Button>
         )}
       </>
     );
@@ -118,7 +121,7 @@ export default function Gift() {
           Back
         </Button>
         <h4>{gift.name}</h4>
-        {/* <h4>{isMe ? "Your" : `${user.name}'s`} wishlist</h4> */}
+        <h4>{isMe ? "Your" : `${user.name}'s`} wishlist</h4>
         {/* <Avatar url={user?.avatar_url} size={36} /> */}
       </div>
       <div className={styles.body}>
@@ -128,7 +131,7 @@ export default function Gift() {
         </p>
       </div>
       <div className={styles.footer}>
-        {isMe ? renderGiftButtons() : renderOwnGiftButtons()}
+        {isMe ? renderOwnGiftButtons() : renderGiftButtons()}
       </div>
     </div>
   );

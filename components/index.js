@@ -6,3 +6,4 @@ export { default as Header } from "./Header/Header";
 export { default as Loader } from "./Loader/Loader";
 export { default as List } from "./List/List";
 export { default as Avatar } from "./Avatar/Avatar";
+export { default as Banner } from "./Banner/Banner";

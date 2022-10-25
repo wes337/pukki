@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
-import { Avatar, Button, List, Loader } from "../../components";
-import variables from "../../styles/variables.module.scss";
+import { Avatar, Banner, Button, List, Loader } from "../../components";
 import styles from "./user.module.scss";
 
 export default function User() {
@@ -17,17 +16,14 @@ export default function User() {
   const { uid } = router.query;
 
   useEffect(() => {
-    if (!session) {
-      router.push("/");
-    } else {
+    if (session && uid) {
       setLoading(true);
       setIsMe(uid === session.user.id);
-
       Promise.all([getUser(), getGifts()]).then(() => {
         setLoading(false);
       });
     }
-  }, [session]);
+  }, [session, uid]);
 
   async function getUser() {
     try {
@@ -40,7 +36,9 @@ export default function User() {
         throw error;
       }
 
-      setUser(data[0]);
+      const user = data[0];
+      setUser(user);
+      return user;
     } catch (error) {
       console.log(error);
     }
@@ -58,6 +56,7 @@ export default function User() {
       }
 
       setGifts(data);
+      return data;
     } catch (error) {
       console.log(error);
     }
@@ -112,7 +111,7 @@ export default function User() {
         <Avatar url={user.avatar_url} size={36} />
       </div>
       {gifts.length === 0 ? (
-        <>{emptyWishlistMessage()}</>
+        <Banner icon="fireplace" message={emptyWishlistMessage()} />
       ) : (
         <List
           withDivider
