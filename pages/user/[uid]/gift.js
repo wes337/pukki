@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
-import { Avatar, Button, Loader } from "../../../components";
+import { Button, Loader } from "../../../components";
 import styles from "./gift.module.scss";
 
 export default function Gift() {
@@ -12,13 +12,14 @@ export default function Gift() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [url, setUrl] = useState("");
-  const [isMe, setIsMe] = useState(false);
 
   const { uid } = router.query;
 
   useEffect(() => {
     if (session && uid) {
-      setIsMe(uid === session.user.id);
+      if (uid !== session.user.id) {
+        router.push(`/user/${uid}`);
+      }
     }
   }, [session]);
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
-import { Avatar, Button, Loader } from "../../../components";
+import { Button, Loader } from "../../../components";
 import styles from "./gift.module.scss";
 
 export default function Gift() {

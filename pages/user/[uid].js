@@ -62,29 +62,6 @@ export default function User() {
     }
   }
 
-  async function addGift() {
-    try {
-      const gift = {
-        name: "Test gift",
-        url: "http://google.com",
-        user: uid,
-      };
-
-      const { data, error } = await supabase
-        .from("gifts")
-        .insert(gift)
-        .select();
-
-      if (error) {
-        throw error;
-      }
-
-      setGifts((gifts) => [...gifts, data[0]]);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   if (loading || !user) {
     return <Loader />;
   }
@@ -129,7 +106,11 @@ export default function User() {
       )}
       {isMe && (
         <div className={styles.add}>
-          <Button block icon="gift" onClick={addGift}>
+          <Button
+            block
+            icon="gift"
+            onClick={() => router.push(`/user/${uid}/gift`)}
+          >
             Add Gift
           </Button>
         </div>
