@@ -121,7 +121,7 @@ export default function Gift() {
           Back
         </Button>
         <h4>{gift.name}</h4>
-        <h4>{isMe ? "Your" : `${user.name}'s`} wishlist</h4>
+        <h4>{isMe ? "Your" : `${user?.name}'s`} wishlist</h4>
         {/* <Avatar url={user?.avatar_url} size={36} /> */}
       </div>
       <div className={styles.body}>
