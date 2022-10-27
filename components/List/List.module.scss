@@ -64,5 +64,11 @@
       text-overflow: ellipsis;
       flex-grow: 1;
     }
+
+    .right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 }

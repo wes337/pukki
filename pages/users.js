@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/router";
 import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
 import { getAllUsers } from "../actions/users";
@@ -16,6 +16,30 @@ export default function Users() {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
   const [gifts, setGifts] = useState([]);
+
+  const usersWithGiftPercentages = useMemo(() => {
+    const usersWithPercentages = users
+      .map((user) => {
+        if (user.user_id === session.user.id) {
+          return null;
+        }
+        const userGifts = gifts.filter((gift) => gift.user === user.user_id);
+        const userGiftsClaimed = userGifts.filter((gift) => gift.claimed_by);
+
+        const percentage = Math.floor(
+          (userGiftsClaimed.length / userGifts.length) * 100
+        );
+
+        return { ...user, percentage };
+      })
+      .filter(Boolean)
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .sort((a, b) => b.percentage - a.percentage);
+
+    const me = users.find((user) => user.user_id === session.user.id);
+
+    return [me, ...usersWithPercentages];
+  }, [users, gifts, session]);
 
   useEffect(() => {
     setLoading(true);
@@ -41,13 +65,6 @@ export default function Users() {
   const renderUserListItem = (user) => {
     const isMe = user.user_id === session.user.id;
 
-    const userGifts = gifts.filter((gift) => gift.user === user.user_id);
-    const userGiftsClaimed = userGifts.filter((gift) => gift.claimed_by);
-
-    const percentage = Math.floor(
-      (userGiftsClaimed.length / userGifts.length) * 100
-    );
-
     return (
       <div className={styles.list}>
         <div>
@@ -57,7 +74,7 @@ export default function Users() {
         </div>
         {!isMe && (
           <span>
-            <ProgressBar percent={percentage} />
+            <ProgressBar percent={user.percentage} />
           </span>
         )}
       </div>
@@ -70,11 +87,12 @@ export default function Users() {
 
   return (
     <List
-      items={users.map((user) => ({
+      items={usersWithGiftPercentages.map((user, index) => ({
         id: user.user_id,
         onClick: () => router.push(`/user/${user.user_id}`),
         label: renderUserListItem(user),
         icon: user.avatar_url,
+        divider: index === 0,
       }))}
     />
   );

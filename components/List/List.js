@@ -13,8 +13,12 @@ export default function List({ items, withDivider }) {
               </div>
             )}
             <div className={styles.label}>{item.label}</div>
+            {item.rightIcon && (
+              <div className={styles.right}>{item.rightIcon}</div>
+            )}
           </button>
-          {withDivider && index !== items.length - 1 && <hr />}
+          {(withDivider && index !== items.length - 1) ||
+            (item.divider && <hr />)}
         </Fragment>
       ))}
     </div>
