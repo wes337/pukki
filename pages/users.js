@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import {
   useUser,
@@ -44,16 +45,27 @@ export default function Users() {
   }
 
   return (
-    <List
-      items={users.map((user) => ({
-        id: user.user_id,
-        onClick: () => router.push(`/user/${user.user_id}`),
-        label:
-          user.user_id === session.user.id
-            ? "Your wishlist"
-            : `${formPossessive(user.name)} wishlist`,
-        icon: user.avatar_url,
-      }))}
-    />
+    <>
+      <List
+        items={users.map((user) => ({
+          id: user.user_id,
+          onClick: () => router.push(`/user/${user.user_id}`),
+          label:
+            user.user_id === session.user.id
+              ? "Your wishlist"
+              : `${formPossessive(user.name)} wishlist`,
+          icon: user.avatar_url,
+        }))}
+      />
+      <Image
+        objectFit="contain"
+        src="/images/icons/candycane.png"
+        height={100}
+        width={100}
+        priority
+        loading="eager"
+        alt="Loading"
+      />
+    </>
   );
 }
