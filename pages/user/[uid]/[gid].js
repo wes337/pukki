@@ -79,20 +79,29 @@ export default function Gift() {
   };
 
   const renderGiftButtons = () => {
-    const giftClaimedByMe =
-      gift.claimed_by && gift.claimed_by === session.user.id;
-
-    if (giftClaimedByMe) {
+    if (gift.claimed_by) {
       return (
         <div className={styles.claimed}>
           <div>
-            <Icon name="ornament" size={24} /> You're buying{" "}
-            <span>{gift.name}</span> for <span>{user.name}</span>!{" "}
-            <Icon name="ornament" size={24} />
+            <Icon name="ornament" size={32} />
+            <div>
+              {gift.claimed_by === session.user.id ? "You're" : gift.claimed_by}{" "}
+              buying
+              <br />
+              <span>{gift.name}</span>
+            </div>
+            <br />
+            <div>
+              for
+              <br />
+              <span>{user.name}</span>
+            </div>
+            <Icon name="ornament" size={32} />
           </div>
           <Button
             icon="reindeer"
             variant="secondary"
+            block
             onClick={() => claimAndUpdateGift(undefined)}
           >
             Nevermind, I'm not buying this
@@ -102,19 +111,13 @@ export default function Gift() {
     }
 
     return (
-      <>
-        {gift.claimed_by ? (
-          <>Claimed by {gift.claimed_by}</>
-        ) : (
-          <Button
-            icon="gift-bag"
-            block
-            onClick={() => claimAndUpdateGift(session.user.id)}
-          >
-            I'll buy it!
-          </Button>
-        )}
-      </>
+      <Button
+        icon="gift-bag"
+        block
+        onClick={() => claimAndUpdateGift(session.user.id)}
+      >
+        I'll buy it!
+      </Button>
     );
   };
 
