@@ -8,7 +8,7 @@ export default function MyApp({ Component, pageProps }) {
   const [supabaseClient] = useState(() => createBrowserSupabaseClient());
 
   return (
-    <div style={{ maxWidth: "420px", margin: "96px auto" }}>
+    <div className="main">
       <main>
         <SessionContextProvider
           supabaseClient={supabaseClient}
