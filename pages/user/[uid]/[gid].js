@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
+import { getGift, removeGift, claimGift } from "../../../actions/gifts";
+import { getUser } from "../../../actions/users";
 import { formPossessive, isValidUrl } from "../../../utils/string";
-import { Avatar, Button, Loader } from "../../../components";
+import { Avatar, Button, Icon, Loader } from "../../../components";
 import styles from "./gift.module.scss";
 
 export default function Gift() {
@@ -25,64 +27,25 @@ export default function Gift() {
       }
 
       setIsMe(uid === session.user.id);
-      Promise.all([getUser(), getGift()]).then(() => {
-        setLoading(false);
-      });
+      Promise.all([getUser(supabase, uid), getGift(supabase, gid)]).then(
+        ([user, gift]) => {
+          setUser(user);
+          setGift(gift);
+          setLoading(false);
+        }
+      );
     }
   }, [session, uid, gid]);
 
-  async function getGift() {
-    try {
-      let { data, error } = await supabase
-        .from("gifts")
-        .select("id, name, claimed_by, user, description, url")
-        .eq("id", gid);
-
-      if (error) {
-        throw error;
-      }
-
-      const gift = data[0];
-
-      setGift(gift);
-      return gift;
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  async function getUser() {
-    try {
-      let { data, error } = await supabase
-        .from("users")
-        .select("name, avatar_url")
-        .eq("user_id", uid);
-
-      if (error) {
-        throw error;
-      }
-
-      const user = data[0];
-
-      setUser(user);
-      return user;
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  async function removeGift() {
-    try {
-      const { error } = await supabase.from("gifts").delete().eq("id", gid);
-
-      if (error) {
-        throw error;
-      }
-
-      router.push(`/user/${gift.user}`);
-    } catch (error) {
-      console.log(error);
-    }
+  function claimAndUpdateGift(userId) {
+    setLoading(true);
+    claimGift(supabase, gift.id, userId).then(() => {
+      setGift((gift) => ({
+        ...gift,
+        claimed_by: userId,
+      }));
+      setLoading(false);
+    });
   }
 
   if (loading || !gift || !user) {
@@ -92,10 +55,23 @@ export default function Gift() {
   const renderOwnGiftButtons = () => {
     return (
       <>
-        <Button icon="bauble-alt" block>
+        <Button
+          icon="bauble-alt"
+          onClick={() => router.push(`/user/${gift.user}/${gift.id}/edit`)}
+          block
+        >
           Edit
         </Button>
-        <Button icon="bauble" variant="secondary" onClick={removeGift} block>
+        <Button
+          icon="bauble"
+          variant="secondary"
+          onClick={() =>
+            removeGift(supabase, gid).then(() =>
+              router.push(`/user/${gift.user}`)
+            )
+          }
+          block
+        >
           Delete
         </Button>
       </>
@@ -103,12 +79,38 @@ export default function Gift() {
   };
 
   const renderGiftButtons = () => {
+    const giftClaimedByMe =
+      gift.claimed_by && gift.claimed_by === session.user.id;
+
+    if (giftClaimedByMe) {
+      return (
+        <div className={styles.claimed}>
+          <div>
+            <Icon name="ornament" size={24} /> You're buying{" "}
+            <span>{gift.name}</span> for <span>{user.name}</span>!{" "}
+            <Icon name="ornament" size={24} />
+          </div>
+          <Button
+            icon="reindeer"
+            variant="secondary"
+            onClick={() => claimAndUpdateGift(undefined)}
+          >
+            Nevermind, I'm not buying this
+          </Button>
+        </div>
+      );
+    }
+
     return (
       <>
         {gift.claimed_by ? (
           <>Claimed by {gift.claimed_by}</>
         ) : (
-          <Button icon="gift-bag" block>
+          <Button
+            icon="gift-bag"
+            block
+            onClick={() => claimAndUpdateGift(session.user.id)}
+          >
             I'll buy it!
           </Button>
         )}
@@ -136,7 +138,7 @@ export default function Gift() {
         </h5>
         {gift.url && (
           <h5>
-            <span>Where can you buy this?</span>
+            <span>Where can you buy it?</span>
             {isValidUrl(gift.url) ? (
               <Button
                 icon="gift-alt"

@@ -5,6 +5,7 @@ import {
   useSupabaseClient,
   useSession,
 } from "@supabase/auth-helpers-react";
+import { getUsers } from "../actions/users";
 import { List, Loader } from "../components";
 import { formPossessive } from "../utils/string";
 
@@ -17,32 +18,19 @@ export default function Users() {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
+    setLoading(true);
+
     if (session) {
       if (!session.user) {
         router.push("/");
       } else {
-        getUsers();
+        getUsers(supabase).then((users) => {
+          setUsers(users);
+          setLoading(false);
+        });
       }
     }
   }, [session]);
-
-  async function getUsers() {
-    try {
-      setLoading(true);
-
-      const { data, error, status } = await supabase.from("users").select();
-
-      if (error && status !== 406) {
-        throw error;
-      }
-
-      setUsers(data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  }
 
   if (!user) {
     return null;

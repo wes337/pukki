@@ -106,7 +106,23 @@
 
   .footer {
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
+    justify-content: center;
     gap: $space-s;
+  }
+
+  .claimed {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: $space-s;
+
+    color: $colorDarkGray;
+
+    span {
+      color: $colorRed;
+      font-weight: 700;
+    }
   }
 }

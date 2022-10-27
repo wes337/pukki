@@ -1,9 +1,9 @@
+import { useRouter } from "next/router";
 import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
-import { getUserName } from "../../utils/user";
+import { getUserName } from "../../utils/users";
 import Logo from "../Logo/Logo";
 import Button from "../Button/Button";
 import styles from "./Header.module.scss";
-import { Router, useRouter } from "next/router";
 
 export default function Header() {
   const user = useUser();

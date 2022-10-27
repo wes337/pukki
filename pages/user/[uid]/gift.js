@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
+import { addGift } from "../../../actions/gifts";
 import { Button, Loader } from "../../../components";
 import styles from "./gift.module.scss";
 
-export default function Gift() {
+export default function Gift({ gift }) {
   const session = useSession();
   const supabase = useSupabaseClient();
   const router = useRouter();
@@ -21,36 +22,35 @@ export default function Gift() {
         router.push(`/user/${uid}`);
       }
     }
-  }, [session]);
+  }, [session, uid]);
 
-  async function addGift() {
-    try {
-      if (!name) {
-        return;
-      }
-
-      setLoading(true);
-
-      const gift = {
-        name,
-        url,
-        description,
-        user: uid,
-      };
-
-      const { data, error } = await supabase
-        .from("gifts")
-        .insert(gift)
-        .select();
-
-      if (error) {
-        throw error;
-      }
-
-      router.push(`/user/${uid}`);
-    } catch (error) {
-      console.log(error);
+  useEffect(() => {
+    if (gift) {
+      setName(gift.name);
+      setDescription(gift.description);
+      setUrl(gift.url);
     }
+  }, [gift]);
+
+  function addOrUpdateGift() {
+    if (!name) {
+      return;
+    }
+
+    setLoading(true);
+
+    const newGift = {
+      name,
+      url,
+      description,
+      user: uid,
+    };
+
+    if (gift) {
+      newGift.id = gift.id;
+    }
+
+    addGift(supabase, newGift).then(() => router.push(`/user/${uid}`));
   }
 
   if (loading) {
@@ -67,32 +67,30 @@ export default function Gift() {
         >
           Back
         </Button>
-        <h4>Add a gift to your wishlist</h4>
+        <h4>
+          {gift
+            ? "Change a gift on your wishlist"
+            : "Add a gift to your wishlist"}
+        </h4>
       </div>
       <div className={styles.body}>
         <label htmlFor="name">
-          <span>
-            Name <em>(Required)</em>
-          </span>
+          <span>What do you want?</span>
           <input
             name="name"
             type="text"
             value={name}
             placeholder="Name of the gift"
-            onChange={(event) => {
-              setName(event.target.value);
-            }}
+            onChange={(event) => setName(event.target.value)}
           ></input>
         </label>
         <label htmlFor="description">
-          <span>Description</span>
+          <span>Write a short description</span>
           <textarea
             name="description"
             value={description}
-            placeholder="Write a short description of the gift"
-            onChange={(event) => {
-              setDescription(event.target.value);
-            }}
+            placeholder="Include details such as size, colour, or anything specific about the gift you want"
+            onChange={(event) => setDescription(event.target.value)}
           ></textarea>
         </label>
         <label htmlFor="url">
@@ -102,15 +100,13 @@ export default function Gift() {
             type="text"
             value={url}
             placeholder="Link to the gift online, or name of the shop"
-            onChange={(event) => {
-              setUrl(event.target.value);
-            }}
+            onChange={(event) => setUrl(event.target.value)}
           ></input>
         </label>
       </div>
       <div className={styles.footer}>
-        <Button icon="gift" block onClick={addGift} disabled={!name}>
-          Add to wishlist
+        <Button icon="gift" block onClick={addOrUpdateGift} disabled={!name}>
+          {gift ? "Update your wishlist" : "Add to wishlist"}
         </Button>
       </div>
     </div>
