@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
+import { isAdmin, isTestUser } from "../../../utils/users";
 import { addGift } from "../../../actions/gifts";
 import { Button, Loader } from "../../../components";
 import styles from "./gift.module.scss";
@@ -18,7 +19,11 @@ export default function Gift({ gift }) {
 
   useEffect(() => {
     if (session && uid) {
-      if (uid !== session.user.id) {
+      const canAddGifts =
+        uid === session.user.id ||
+        (isTestUser(uid) && isAdmin(session.user.id));
+
+      if (!canAddGifts) {
         router.push(`/user/${uid}`);
       }
     }
@@ -32,7 +37,7 @@ export default function Gift({ gift }) {
     }
   }, [gift]);
 
-  function addOrUpdateGift() {
+  const addOrUpdateGift = () => {
     if (!name) {
       return;
     }
@@ -51,7 +56,7 @@ export default function Gift({ gift }) {
     }
 
     addGift(supabase, newGift).then(() => router.push(`/user/${uid}`));
-  }
+  };
 
   if (loading) {
     return <Loader />;

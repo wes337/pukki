@@ -2,7 +2,6 @@ import { Fragment } from "react";
 import { IconArrowRight } from "@tabler/icons";
 import variables from "../../styles/variables.module.scss";
 import styles from "./List.module.scss";
-import Image from "next/image";
 
 export default function List({ items, withDivider }) {
   return (
@@ -15,7 +14,7 @@ export default function List({ items, withDivider }) {
                 <img src={item.icon} height={28} width={28} alt="" />
               </div>
             )}
-            {item.label}
+            <div className={styles.label}>{item.label}</div>
             <div className={styles.open}>
               <IconArrowRight
                 size={28}

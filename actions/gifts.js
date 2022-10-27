@@ -59,15 +59,18 @@ export async function addGift(supabase, gift) {
 
 export async function claimGift(supabase, gid, uid) {
   try {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("gifts")
-      .update({ claimed_by: uid })
+      .update({ claimed_by: uid || "" })
       .eq("id", gid)
       .select();
 
     if (error) {
       throw error;
     }
+
+    const gift = data[0];
+    return gift;
   } catch (error) {
     console.log(error);
   }

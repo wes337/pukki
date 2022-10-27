@@ -1,4 +1,4 @@
-export function getUserName(user) {
+export const getUserName = (user) => {
   if (!user) {
     return "";
   }
@@ -12,4 +12,13 @@ export function getUserName(user) {
   }
 
   return user.email || "No name";
-}
+};
+
+export const isAdmin = (userId) => {
+  return userId === "f126e7fb-79a9-4377-ade3-be654317f4af";
+};
+
+export const isTestUser = (userId) => {
+  const LARRY_PICKLECOPTER = "38f362f8-fa5d-450d-a368-1b5d5979785b";
+  return userId === LARRY_PICKLECOPTER;
+};

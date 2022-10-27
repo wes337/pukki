@@ -58,5 +58,11 @@
         border-radius: 100%;
       }
     }
+
+    .label {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 }

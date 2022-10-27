@@ -35,6 +35,7 @@
       flex-direction: column;
       font-size: $font-size-l;
       text-align: center;
+      gap: $space-s;
 
       span {
         font-weight: 400;
@@ -83,6 +84,7 @@
       line-height: 1.45;
       position: relative;
       color: $colorDarkGray;
+      text-align: justify;
 
       &:before {
         display: block;
@@ -100,7 +102,7 @@
         font-size: $font-size-s;
         display: block;
         margin-top: $space-xs;
-        padding-left: $space-m;
+        text-align: right;
 
         &:before {
           content: "\2014 \2009";

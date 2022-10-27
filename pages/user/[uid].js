@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
+import { isAdmin, isTestUser } from "../../utils/users";
+import { formPossessive } from "../../utils/string";
 import { getUser } from "../../actions/users";
 import { getGifts } from "../../actions/gifts";
-import { formPossessive } from "../../utils/string";
 import { Avatar, Banner, Button, List, Loader } from "../../components";
 import styles from "./user.module.scss";
 
@@ -17,6 +18,8 @@ export default function User() {
   const [isMe, setIsMe] = useState(false);
 
   const { uid } = router.query;
+
+  const canAddGifts = isMe || (isTestUser(uid) && isAdmin(session.user.id));
 
   useEffect(() => {
     setLoading(true);
@@ -69,7 +72,7 @@ export default function User() {
             id: gift.id,
             label: (
               <>
-                <span style={{ fontWeight: 600 }}>{index + 1}</span>
+                <span style={{ fontWeight: 600 }}>{index + 1} — </span>{" "}
                 {gift.name}
               </>
             ),
@@ -77,7 +80,7 @@ export default function User() {
           }))}
         />
       )}
-      {isMe && (
+      {canAddGifts && (
         <div className={styles.add}>
           <Button
             block

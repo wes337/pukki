@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
 import { getGift, removeGift, claimGift } from "../../../actions/gifts";
 import { getUser } from "../../../actions/users";
+import { isAdmin, isTestUser } from "../../../utils/users";
 import { formPossessive, isValidUrl } from "../../../utils/string";
 import { Avatar, Button, Icon, Loader } from "../../../components";
 import styles from "./gift.module.scss";
@@ -14,6 +15,7 @@ export default function Gift() {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState();
   const [gift, setGift] = useState([]);
+  const [giftClaimedBy, setGiftClaimedBy] = useState("");
   const [isMe, setIsMe] = useState(false);
 
   const { uid, gid } = router.query;
@@ -31,26 +33,27 @@ export default function Gift() {
         ([user, gift]) => {
           setUser(user);
           setGift(gift);
-          setLoading(false);
+
+          if (gift.claimed_by && gift.claimed_by !== session.user.id) {
+            getUser(supabase, gift.claimed_by).then(({ name }) => {
+              setGiftClaimedBy(name);
+              setLoading(false);
+            });
+          } else {
+            setLoading(false);
+          }
         }
       );
     }
   }, [session, uid, gid]);
 
-  function claimAndUpdateGift(userId) {
+  const claimAndUpdateGift = (userId) => {
     setLoading(true);
-    claimGift(supabase, gift.id, userId).then(() => {
-      setGift((gift) => ({
-        ...gift,
-        claimed_by: userId,
-      }));
+    claimGift(supabase, gift.id, userId).then((gift) => {
+      setGift(gift);
       setLoading(false);
     });
-  }
-
-  if (loading || !gift || !user) {
-    return <Loader />;
-  }
+  };
 
   const renderOwnGiftButtons = () => {
     return (
@@ -80,12 +83,14 @@ export default function Gift() {
 
   const renderGiftButtons = () => {
     if (gift.claimed_by) {
+      const claimedByMe = gift.claimed_by === session.user.id;
+
       return (
         <div className={styles.claimed}>
           <div>
             <Icon name="ornament" size={32} />
             <div>
-              {gift.claimed_by === session.user.id ? "You're" : gift.claimed_by}{" "}
+              {claimedByMe ? "You are " : `${giftClaimedBy} is `}
               buying
               <br />
               <span>{gift.name}</span>
@@ -98,14 +103,16 @@ export default function Gift() {
             </div>
             <Icon name="ornament" size={32} />
           </div>
-          <Button
-            icon="reindeer"
-            variant="secondary"
-            block
-            onClick={() => claimAndUpdateGift(undefined)}
-          >
-            Nevermind, I'm not buying this
-          </Button>
+          {claimedByMe && (
+            <Button
+              icon="reindeer"
+              variant="secondary"
+              block
+              onClick={() => claimAndUpdateGift(null)}
+            >
+              Nevermind, I'm not buying this
+            </Button>
+          )}
         </div>
       );
     }
@@ -120,6 +127,27 @@ export default function Gift() {
       </Button>
     );
   };
+
+  const renderFooterButtons = () => {
+    if (isTestUser(uid) && isAdmin(session.user.id)) {
+      return (
+        <div>
+          {renderGiftButtons()}
+          {renderOwnGiftButtons()}
+        </div>
+      );
+    }
+
+    if (isMe) {
+      return renderOwnGiftButtons();
+    }
+
+    return renderGiftButtons();
+  };
+
+  if (loading || !gift || !user) {
+    return <Loader />;
+  }
 
   return (
     <div className={styles.gift}>
@@ -149,7 +177,7 @@ export default function Gift() {
                 icon="gift-alt"
                 onClick={() => window.open(gift.url, "_blank")}
               >
-                Here!
+                Click here!
               </Button>
             ) : (
               gift.url
@@ -163,9 +191,7 @@ export default function Gift() {
           </blockquote>
         )}
       </div>
-      <div className={styles.footer}>
-        {isMe ? renderOwnGiftButtons() : renderGiftButtons()}
-      </div>
+      <div className={styles.footer}>{renderFooterButtons()}</div>
     </div>
   );
 }
