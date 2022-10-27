@@ -14,6 +14,13 @@ export const getUserName = (user) => {
   return user.email || "No name";
 };
 
+export const getFirstName = (userName) => {
+  if (userName === "Del Monte") {
+    return userName;
+  }
+  return userName.split(" ")[0];
+};
+
 export const isAdmin = (userId) => {
   return userId === "f126e7fb-79a9-4377-ade3-be654317f4af";
 };

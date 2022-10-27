@@ -35,14 +35,12 @@
     font-family: $body-font;
     color: $colorDarkGray;
     border-radius: $borderRadiusSmall;
+    font-weight: 500;
 
     &:hover,
     &:active {
       background-color: rgba($colorOffWhite, 0.5);
-
-      .open {
-        opacity: 1;
-      }
+      color: $colorBlue;
     }
 
     &:focus-visible {
@@ -60,9 +58,11 @@
     }
 
     .label {
+      text-align: left;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      flex-grow: 1;
     }
   }
 }

@@ -1,0 +1,53 @@
+@import "../../styles/colors.scss";
+@import "../../styles/fonts.scss";
+@import "../../styles/spacings.scss";
+@import "../../styles/borders.scss";
+
+@mixin gradient-striped($color, $angle: 45deg) {
+  background-image: linear-gradient(
+    $angle,
+    $color 25%,
+    transparent 25%,
+    transparent 50%,
+    $color 50%,
+    $color 75%,
+    transparent 75%,
+    transparent
+  );
+}
+
+.progress {
+  @include borderSmall($colorOffWhite);
+  background-color: rgba($colorLightGray, 0.25);
+  border-radius: $borderRadiusSmall;
+  box-shadow: none;
+  font-family: $body-font;
+}
+
+.bar {
+  @include gradient-striped(rgba($colorRed, 1));
+  background-color: $colorLightRed;
+  border-top-left-radius: $borderRadiusSmall;
+  border-bottom-left-radius: $borderRadiusSmall;
+  color: $colorWhite;
+  font-weight: 700;
+
+  letter-spacing: 1.5px;
+  background-size: 40px 40px;
+  animation: progress-bar-stripes 2s linear infinite;
+  box-shadow: none;
+
+  &.completed {
+    @include gradient-striped(rgba($colorGreen, 1));
+    background-color: $colorLightGreen;
+  }
+}
+
+@keyframes progress-bar-stripes {
+  from {
+    background-position: 40px 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}

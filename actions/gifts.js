@@ -2,8 +2,24 @@ export async function getGifts(supabase, uid) {
   try {
     let { data, error } = await supabase
       .from("gifts")
-      .select("id, name")
+      .select("id, name, claimed_by")
       .eq("user", uid);
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getAllGifts(supabase) {
+  try {
+    let { data, error } = await supabase
+      .from("gifts")
+      .select("id, name, user, claimed_by");
 
     if (error) {
       throw error;

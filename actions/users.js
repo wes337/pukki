@@ -1,6 +1,6 @@
 import { getUserName } from "../utils/users";
 
-export async function getUsers(supabase) {
+export async function getAllUsers(supabase) {
   try {
     const { data, error, status } = await supabase.from("users").select();
 

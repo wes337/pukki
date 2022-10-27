@@ -1,0 +1,25 @@
+@import "../../styles/colors.scss";
+@import "../../styles/borders.scss";
+@import "../../styles/spacings.scss";
+@import "../../styles/fonts.scss";
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: $header-font;
+  font-weight: 400;
+  color: $colorGray;
+  gap: $space-s;
+  margin-top: $space-s;
+
+  span:first-of-type {
+    text-decoration: underline;
+    text-decoration-color: $colorLightGreen;
+    text-decoration-thickness: 2px;
+    text-transform: underline;
+    transform: scale(1.5) translateY(-3px);
+    font-size: $font-size-m;
+    margin-right: $space-xs;
+  }
+}

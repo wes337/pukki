@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
-import { isAdmin, isTestUser } from "../../utils/users";
+import { IconCheck } from "@tabler/icons";
+import variables from "../../styles/variables.module.scss";
+import { isAdmin, isTestUser, getFirstName } from "../../utils/users";
 import { formPossessive } from "../../utils/string";
 import { getUser } from "../../actions/users";
 import { getGifts } from "../../actions/gifts";
@@ -19,7 +21,8 @@ export default function User() {
 
   const { uid } = router.query;
 
-  const canAddGifts = isMe || (isTestUser(uid) && isAdmin(session.user.id));
+  const canAddGifts =
+    isMe || (isTestUser(uid) && session && isAdmin(session.user.id));
 
   useEffect(() => {
     setLoading(true);
@@ -59,7 +62,8 @@ export default function User() {
           Back
         </Button>
         <h4>
-          <span>{isMe ? "Your" : formPossessive(user?.name)}</span>wishlist
+          <span>{isMe ? "My" : formPossessive(getFirstName(user?.name))}</span>
+          wishlist
         </h4>
         <Avatar url={user.avatar_url} size={36} />
       </div>
@@ -72,7 +76,15 @@ export default function User() {
             id: gift.id,
             label: (
               <>
-                <span style={{ fontWeight: 600 }}>{index + 1} — </span>{" "}
+                <span
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 400,
+                    fontFamily: variables.headerFont,
+                  }}
+                >
+                  {index + 1} —{" "}
+                </span>
                 {gift.name}
               </>
             ),

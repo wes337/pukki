@@ -1,0 +1,9 @@
+.list {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 1fr 1fr;
+
+  span {
+    text-align: center;
+  }
+}

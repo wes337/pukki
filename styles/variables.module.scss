@@ -1,8 +1,11 @@
 @import "./spacings.scss";
 @import "./colors.scss";
+@import "./fonts.scss";
 
 :export {
   /* prettier-ignore */
+  headerFont: $header-font;
   spaceSmall: $space-s;
   colorGray: $colorGray;
+  colorRed: $colorRed;
 }

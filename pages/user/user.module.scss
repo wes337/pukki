@@ -1,6 +1,7 @@
 @import "../../styles/colors.scss";
 @import "../../styles/borders.scss";
 @import "../../styles/spacings.scss";
+@import "../../styles/fonts.scss";
 
 .header {
   display: flex;
@@ -16,7 +17,6 @@
     flex-wrap: wrap;
     gap: $space-xs;
     justify-content: center;
-    max-width: 230px;
   }
 }
 

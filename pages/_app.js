@@ -4,6 +4,7 @@ import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { SessionContextProvider } from "@supabase/auth-helpers-react";
 import { Header, Card } from "../components";
 import "../styles/index.scss";
+import Footer from "../components/Footer/Footer";
 
 export default function MyApp({ Component, pageProps }) {
   const [supabaseClient] = useState(() => createBrowserSupabaseClient());
@@ -23,6 +24,7 @@ export default function MyApp({ Component, pageProps }) {
             <Card>
               <Component {...pageProps} />
             </Card>
+            <Footer />
           </SessionContextProvider>
         </main>
       </div>

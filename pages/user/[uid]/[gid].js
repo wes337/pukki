@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
 import { getGift, removeGift, claimGift } from "../../../actions/gifts";
 import { getUser } from "../../../actions/users";
-import { isAdmin, isTestUser } from "../../../utils/users";
+import { isAdmin, isTestUser, getFirstName } from "../../../utils/users";
 import { formPossessive, isValidUrl } from "../../../utils/string";
 import { Avatar, Button, Icon, Loader } from "../../../components";
 import styles from "./gift.module.scss";
@@ -160,13 +160,16 @@ export default function Gift() {
           Back
         </Button>
         <h4>
-          <span>{isMe ? "Your" : formPossessive(user?.name)}</span>wishlist
+          <span>{isMe ? "My" : formPossessive(getFirstName(user?.name))}</span>
+          wishlist
         </h4>
         <Avatar url={user?.avatar_url} size={36} />
       </div>
       <div className={styles.body}>
         <h5>
-          <span>{isMe ? "You want..." : `${user?.name} wants...`}</span>
+          <span>
+            {isMe ? "You want..." : `${getFirstName(user?.name)} wants...`}
+          </span>
           {gift.name}
         </h5>
         {gift.url && (

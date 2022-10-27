@@ -20,7 +20,6 @@
       flex-wrap: wrap;
       gap: $space-xs;
       justify-content: center;
-      max-width: 230px;
     }
   }
 
@@ -33,13 +32,23 @@
     h5 {
       display: flex;
       flex-direction: column;
-      font-size: $font-size-l;
       text-align: center;
       gap: $space-s;
 
+      margin-bottom: $space-l;
+
+      font-weight: 400;
+      font-family: $header-font;
+      letter-spacing: 1.5px;
+      font-size: $font-size-xl;
+      color: $colorLightRed;
+
       span {
-        font-weight: 400;
-        font-size: $font-size-s;
+        color: $colorBlack;
+        letter-spacing: normal;
+        font-weight: 300;
+        font-size: $font-size-m;
+        font-family: $body-font;
       }
     }
 

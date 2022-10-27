@@ -1,6 +1,4 @@
 import { Fragment } from "react";
-import { IconArrowRight } from "@tabler/icons";
-import variables from "../../styles/variables.module.scss";
 import styles from "./List.module.scss";
 
 export default function List({ items, withDivider }) {
@@ -15,13 +13,6 @@ export default function List({ items, withDivider }) {
               </div>
             )}
             <div className={styles.label}>{item.label}</div>
-            <div className={styles.open}>
-              <IconArrowRight
-                size={28}
-                stroke={1}
-                color={variables.colorGray}
-              />
-            </div>
           </button>
           {withDivider && index !== items.length - 1 && <hr />}
         </Fragment>
