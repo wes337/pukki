@@ -16,7 +16,11 @@
       margin: auto;
       padding: 0 $space-m;
       border-bottom: 2px dotted $colorLightRed;
-      white-space: nowrap;
+      display: flex;
+      flex-wrap: wrap;
+      gap: $space-xs;
+      justify-content: center;
+      max-width: 215px;
     }
   }
 

@@ -55,7 +55,9 @@ export default function User() {
         >
           Back
         </Button>
-        <h4>{isMe ? "Your" : formPossessive(user?.name)} wishlist</h4>
+        <h4>
+          <span>{isMe ? "Your" : formPossessive(user?.name)}</span>wishlist
+        </h4>
         <Avatar url={user.avatar_url} size={36} />
       </div>
       {gifts.length === 0 ? (
