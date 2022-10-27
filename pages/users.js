@@ -1,17 +1,12 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import {
-  useUser,
-  useSupabaseClient,
-  useSession,
-} from "@supabase/auth-helpers-react";
+import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
 import { getUsers } from "../actions/users";
 import { List, Loader } from "../components";
 import { formPossessive } from "../utils/string";
 
 export default function Users() {
   const supabase = useSupabaseClient();
-  const user = useUser();
   const session = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -34,10 +29,6 @@ export default function Users() {
       }
     }
   }, [session]);
-
-  if (!user) {
-    return null;
-  }
 
   if (loading) {
     return <Loader />;
