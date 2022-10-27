@@ -9,6 +9,8 @@ export default function Loader() {
         src="/images/icons/candycane.png"
         height={100}
         width={100}
+        priority
+        quality={100}
         alt="Loading"
       />
       <div>Loading...</div>
