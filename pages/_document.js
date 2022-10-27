@@ -12,6 +12,11 @@ export default function Document() {
           href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@300;400;500;700&display=swap"
           rel="stylesheet"
         />
+        <link
+          rel="preload"
+          as="image"
+          href="/images/icons/candycane.png"
+        ></link>
       </Head>
       <body>
         <Main />

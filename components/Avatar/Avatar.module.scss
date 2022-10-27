@@ -3,7 +3,7 @@
 
 .avatar {
   display: flex;
-  @include outlineSmall($colorLightGray);
+  @include borderSmall($colorLightGray);
   border-radius: 100%;
 
   img {
