@@ -25,7 +25,10 @@ export default function Users() {
         router.push("/");
       } else {
         getUsers(supabase).then((users) => {
-          setUsers(users);
+          const usersWithMeFirst = users.sort(
+            (user) => user.user_id !== session.user.id
+          );
+          setUsers(usersWithMeFirst);
           setLoading(false);
         });
       }
