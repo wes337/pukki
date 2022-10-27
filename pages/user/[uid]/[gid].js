@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
-import { isValidUrl } from "../../../utils/string";
+import { formPossessive, isValidUrl } from "../../../utils/string";
 import { Avatar, Button, Loader } from "../../../components";
 import styles from "./gift.module.scss";
 
@@ -19,12 +19,17 @@ export default function Gift() {
   useEffect(() => {
     if (session && uid && gid) {
       setLoading(true);
+
+      if (!session.user) {
+        router.push("/");
+      }
+
       setIsMe(uid === session.user.id);
       Promise.all([getUser(), getGift()]).then(() => {
         setLoading(false);
       });
     }
-  }, [session]);
+  }, [session, uid, gid]);
 
   async function getGift() {
     try {
@@ -58,6 +63,7 @@ export default function Gift() {
       }
 
       const user = data[0];
+
       setUser(user);
       return user;
     } catch (error) {
@@ -79,7 +85,7 @@ export default function Gift() {
     }
   }
 
-  if (loading || !gift) {
+  if (loading || !gift || !user) {
     return <Loader />;
   }
 
@@ -120,7 +126,7 @@ export default function Gift() {
         >
           Back
         </Button>
-        <h4>{isMe ? "Your" : `${user?.name}'s`} wishlist</h4>
+        <h4>{isMe ? "Your" : formPossessive(user?.name)} wishlist</h4>
         <Avatar url={user?.avatar_url} size={36} />
       </div>
       <div className={styles.body}>

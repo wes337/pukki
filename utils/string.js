@@ -6,3 +6,7 @@ export const isValidUrl = (string) => {
     return false;
   }
 };
+
+export const formPossessive = (name) => {
+  return `${name}'${name.endsWith("s") ? "" : "s"}`;
+};

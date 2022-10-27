@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
+import { formPossessive } from "../../utils/string";
 import { Avatar, Banner, Button, List, Loader } from "../../components";
 import styles from "./user.module.scss";
 
@@ -18,6 +19,11 @@ export default function User() {
   useEffect(() => {
     if (session && uid) {
       setLoading(true);
+
+      if (!session.user) {
+        router.push("/");
+      }
+
       setIsMe(uid === session.user.id);
       Promise.all([getUser(), getGifts()]).then(() => {
         setLoading(false);
@@ -84,7 +90,7 @@ export default function User() {
         >
           Back
         </Button>
-        <h4>{isMe ? "Your" : `${user.name}'s`} wishlist</h4>
+        <h4>{isMe ? "Your" : formPossessive(user?.name)} wishlist</h4>
         <Avatar url={user.avatar_url} size={36} />
       </div>
       {gifts.length === 0 ? (

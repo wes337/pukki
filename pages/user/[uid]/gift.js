@@ -70,7 +70,7 @@ export default function Gift() {
         <h4>Add a gift to your wishlist</h4>
       </div>
       <div className={styles.body}>
-        <label for="name">
+        <label htmlFor="name">
           <span>
             Name <em>(Required)</em>
           </span>
@@ -84,7 +84,7 @@ export default function Gift() {
             }}
           ></input>
         </label>
-        <label for="description">
+        <label htmlFor="description">
           <span>Description</span>
           <textarea
             name="description"
@@ -95,7 +95,7 @@ export default function Gift() {
             }}
           ></textarea>
         </label>
-        <label for="url">
+        <label htmlFor="url">
           <span>Where can you buy it?</span>
           <input
             name="url"
