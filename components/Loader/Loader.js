@@ -10,7 +10,7 @@ export default function Loader() {
         height={100}
         width={100}
         priority
-        quality={100}
+        loading="eager"
         alt="Loading"
       />
       <div>Loading...</div>
