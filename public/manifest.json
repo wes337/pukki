@@ -1,0 +1,23 @@
+{
+  "name": "Pukki",
+  "short_name": "Pukki",
+  "icons": [
+    {
+      "src": "/images/logo192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+
+    {
+      "src": "/images/logo512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#f3f0f3",
+  "background_color": "#f3f0f3",
+  "start_url": "/",
+  "orientation": "portrait",
+  "splash_pages": null,
+  "display": "fullscreen"
+}

@@ -14,7 +14,7 @@ export default function Footer() {
       <span>{daysUntilChristmas}</span> days until Christmas{" "}
       <Image
         objectFit="contain"
-        src={`/images/icons/flat/wreath.png`}
+        src={`/images/icons/wreath.png`}
         height={24}
         width={24}
         quality={100}

@@ -6,15 +6,15 @@
     "start": "next start"
   },
   "dependencies": {
-    "@supabase/auth-helpers-nextjs": "^0.4.1",
-    "@supabase/auth-helpers-react": "^0.3.0",
+    "@supabase/auth-helpers-nextjs": "^0.4.2",
+    "@supabase/auth-helpers-react": "^0.3.1",
     "@supabase/auth-ui-react": "^0.2.2",
     "@supabase/supabase-js": "^2.0.4",
-    "@tabler/icons": "^1.107.0",
+    "@tabler/icons": "^1.108.0",
     "next": "latest",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "swr": "1.1.2"
+    "next-pwa": "^5.6.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "sass": "^1.55.0"
