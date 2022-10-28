@@ -15,9 +15,9 @@ export default function EditGift() {
   const { uid, gid } = router.query;
 
   useEffect(() => {
-    if (session && gid && uid) {
-      setLoading(true);
+    setLoading(true);
 
+    if (session && gid && uid) {
       if (!session.user || uid !== session.user.id) {
         router.push("/");
       }

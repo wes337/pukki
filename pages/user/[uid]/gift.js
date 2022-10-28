@@ -23,6 +23,8 @@ export default function Gift({ gift }) {
   const { uid } = router.query;
 
   useEffect(() => {
+    setLoading(true);
+
     if (session && uid) {
       const canAddGifts =
         uid === session.user.id ||
@@ -31,6 +33,8 @@ export default function Gift({ gift }) {
       if (!canAddGifts) {
         router.push(`/user/${uid}`);
       }
+
+      setLoading(false);
     }
   }, [session, uid]);
 
@@ -67,8 +71,6 @@ export default function Gift({ gift }) {
     return <Loader />;
   }
 
-  console.log(user);
-
   return (
     <div className={styles.gift}>
       <Header
@@ -77,7 +79,7 @@ export default function Gift({ gift }) {
             ? "Change a gift on your wishlist"
             : "Add a gift to your wishlist"
         }
-        avatar={user.user_metadata.avatar_url}
+        avatar={user?.user_metadata?.avatar_url}
       />
       <div className={styles.body}>
         <label htmlFor="name">

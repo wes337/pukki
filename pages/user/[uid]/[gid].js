@@ -21,9 +21,9 @@ export default function Gift() {
   const { uid, gid } = router.query;
 
   useEffect(() => {
-    if (session && uid && gid) {
-      setLoading(true);
+    setLoading(true);
 
+    if (session && uid && gid) {
       if (!session.user) {
         router.push("/");
       }
