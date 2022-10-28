@@ -1,13 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/router";
 import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
-import { getAllUsers } from "../actions/users";
-import { getAllGifts } from "../actions/gifts";
-import { List, Loader } from "../components";
 import { getFirstName } from "../utils/users";
 import { formPossessive } from "../utils/string";
+import { getAllUsers } from "../actions/users";
+import { getAllGifts } from "../actions/gifts";
+import { Button, List, Loader, ProgressBar } from "../components";
 import styles from "./users.module.scss";
-import ProgressBar from "../components/ProgressBar/ProgressBar";
 
 export default function Users() {
   const supabase = useSupabaseClient();
@@ -36,9 +35,7 @@ export default function Users() {
       .sort((a, b) => a.name.localeCompare(b.name))
       .sort((a, b) => b.percentage - a.percentage);
 
-    const me = users.find((user) => user.user_id === session.user.id);
-
-    return [me, ...usersWithPercentages];
+    return usersWithPercentages;
   }, [users, gifts, session]);
 
   useEffect(() => {
@@ -50,10 +47,7 @@ export default function Users() {
       } else {
         Promise.all([getAllUsers(supabase), getAllGifts(supabase)]).then(
           ([users, gifts]) => {
-            const usersWithMeFirst = users.sort(
-              (user) => user.user_id !== session.user.id
-            );
-            setUsers(usersWithMeFirst);
+            setUsers(users);
             setGifts(gifts);
             setLoading(false);
           }
@@ -63,20 +57,12 @@ export default function Users() {
   }, [session]);
 
   const renderUserListItem = (user) => {
-    const isMe = user.user_id === session.user.id;
-
     return (
-      <div className={styles.list}>
-        <div>
-          {isMe
-            ? "My wishlist"
-            : `${formPossessive(getFirstName(user.name))} wishlist`}
-        </div>
-        {!isMe && (
-          <span>
-            <ProgressBar percent={user.percentage} />
-          </span>
-        )}
+      <div className={styles.item}>
+        <div>{formPossessive(getFirstName(user.name))} wishlist</div>
+        <span>
+          <ProgressBar percent={user.percentage} />
+        </span>
       </div>
     );
   };
@@ -86,14 +72,33 @@ export default function Users() {
   }
 
   return (
-    <List
-      items={usersWithGiftPercentages.map((user, index) => ({
-        id: user.user_id,
-        onClick: () => router.push(`/user/${user.user_id}`),
-        label: renderUserListItem(user),
-        icon: user.avatar_url,
-        divider: index === 0,
-      }))}
-    />
+    <div className={styles.users}>
+      <div className={styles.header}>
+        <Button
+          icon="greeting-card"
+          block
+          onClick={() => router.push(`/user/${session.user.id}`)}
+        >
+          My wishlist
+        </Button>
+        <Button
+          icon="sock"
+          variant="outline"
+          block
+          onClick={() => router.push("/gifts")}
+        >
+          Gifts I'm buying
+        </Button>
+      </div>
+      <hr />
+      <List
+        items={usersWithGiftPercentages.map((user) => ({
+          id: user.user_id,
+          onClick: () => router.push(`/user/${user.user_id}`),
+          label: renderUserListItem(user),
+          icon: user.avatar_url,
+        }))}
+      />
+    </div>
   );
 }

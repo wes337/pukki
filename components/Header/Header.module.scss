@@ -1,5 +1,4 @@
 @import "../../styles/spacings.scss";
-@import "../../styles/fonts.scss";
 @import "../../styles/colors.scss";
 
 .header {
@@ -8,30 +7,14 @@
   align-items: center;
   margin-bottom: $space-s;
 
-  h1 {
-    font-family: $header-font;
-    font-weight: 400;
-    margin: 0;
-  }
-}
-
-.user {
-  color: $colorDarkGray;
-  font-size: $font-size-m;
-
-  hr {
-    margin: 0;
-    border: 0;
-    border-top: 2px dotted $colorGreen;
-  }
-
-  span {
-    font-weight: bold;
-    color: $colorBlack;
-  }
-
-  button {
-    margin-top: $space-xs;
-    margin-left: auto;
+  h4 {
+    margin: auto;
+    padding: 0 $space-m;
+    border-bottom: 2px dotted $colorLightRed;
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-xs;
+    justify-content: center;
+    text-align: center;
   }
 }

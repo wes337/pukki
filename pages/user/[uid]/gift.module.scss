@@ -8,21 +8,6 @@
   flex-direction: column;
   gap: $space-s;
 
-  .header {
-    display: flex;
-    align-items: center;
-
-    h4 {
-      margin: auto;
-      padding: 0 $space-m;
-      border-bottom: 2px dotted $colorLightRed;
-      display: flex;
-      flex-wrap: wrap;
-      gap: $space-xs;
-      justify-content: center;
-    }
-  }
-
   .body {
     display: flex;
     flex-direction: column;

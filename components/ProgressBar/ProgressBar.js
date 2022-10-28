@@ -14,7 +14,7 @@ export default function ProgressBar({ percent }) {
           <span>{percent}&#37;</span>
         </div>
       ) : (
-        <span>0&#37;</span>
+        <span className={styles.empty}>0&#37;</span>
       )}
     </div>
   );

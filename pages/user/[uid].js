@@ -5,9 +5,9 @@ import { IconCheck } from "@tabler/icons";
 import variables from "../../styles/variables.module.scss";
 import { isAdmin, isTestUser, getFirstName } from "../../utils/users";
 import { formPossessive } from "../../utils/string";
-import { getAllUsers, getUser } from "../../actions/users";
+import { getUser } from "../../actions/users";
 import { getGifts } from "../../actions/gifts";
-import { Avatar, Banner, Button, List, Loader } from "../../components";
+import { Header, Avatar, Banner, Button, List, Loader } from "../../components";
 import styles from "./user.module.scss";
 
 export default function User() {
@@ -16,7 +16,6 @@ export default function User() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState();
-  const [allUsers, setAllUsers] = useState([]);
   const [gifts, setGifts] = useState([]);
   const [isMe, setIsMe] = useState(false);
 
@@ -34,23 +33,15 @@ export default function User() {
       }
 
       setIsMe(uid === session.user.id);
-      Promise.all([
-        getUser(supabase, uid),
-        getGifts(supabase, uid),
-        getAllUsers(supabase),
-      ]).then(([user, gifts, allUsers]) => {
-        setUser(user);
-        setGifts(gifts);
-        setAllUsers(allUsers);
-        setLoading(false);
-      });
+      Promise.all([getUser(supabase, uid), getGifts(supabase, uid)]).then(
+        ([user, gifts]) => {
+          setUser(user);
+          setGifts(gifts);
+          setLoading(false);
+        }
+      );
     }
   }, [session, uid]);
-
-  const getUserAvatar = (userId) => {
-    const user = allUsers.find((user) => user.user_id === userId);
-    return user.avatar_url;
-  };
 
   if (loading || !user) {
     return <Loader />;
@@ -62,20 +53,12 @@ export default function User() {
 
   return (
     <>
-      <div className={styles.header}>
-        <Button
-          icon="christmas-tree"
-          variant="outline"
-          onClick={() => router.push("/users")}
-        >
-          Back
-        </Button>
-        <h4>
-          <span>{isMe ? "My" : formPossessive(getFirstName(user?.name))}</span>
-          wishlist
-        </h4>
-        <Avatar url={user.avatar_url} size={36} />
-      </div>
+      <Header
+        title={`${
+          isMe ? "My" : formPossessive(getFirstName(user?.name))
+        } wishlist`}
+        avatar={user.avatar_url}
+      />
       {gifts.length === 0 ? (
         <Banner icon="fireplace" message={emptyWishlistMessage} />
       ) : (
@@ -97,10 +80,10 @@ export default function User() {
                 {gift.name}
               </>
             ),
-            rightIcon: !isMe && gift.claimed_by && (
+            rightIcon: !isMe && gift.claimed_by?.user_id && (
               <>
                 <IconCheck color={variables.colorGreen} stroke={2} />
-                <Avatar url={getUserAvatar(gift.claimed_by)} size={24} />
+                <Avatar url={gift.claimed_by.avatar_url} size={24} />
               </>
             ),
             onClick: () => router.push(`/user/${uid}/${gift.id}`),

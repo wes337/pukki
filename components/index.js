@@ -7,3 +7,6 @@ export { default as Loader } from "./Loader/Loader";
 export { default as List } from "./List/List";
 export { default as Avatar } from "./Avatar/Avatar";
 export { default as Banner } from "./Banner/Banner";
+export { default as Footer } from "./Footer/Footer";
+export { default as SignOut } from "./SignOut/SignOut";
+export { default as ProgressBar } from "./ProgressBar/ProgressBar";

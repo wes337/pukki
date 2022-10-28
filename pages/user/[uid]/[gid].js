@@ -5,7 +5,7 @@ import { getGift, removeGift, claimGift } from "../../../actions/gifts";
 import { getUser } from "../../../actions/users";
 import { isAdmin, isTestUser, getFirstName } from "../../../utils/users";
 import { formPossessive, isValidUrl } from "../../../utils/string";
-import { Avatar, Button, Icon, Loader } from "../../../components";
+import { Avatar, Button, Header, Icon, Loader } from "../../../components";
 import styles from "./gift.module.scss";
 
 export default function Gift() {
@@ -151,20 +151,12 @@ export default function Gift() {
 
   return (
     <div className={styles.gift}>
-      <div className={styles.header}>
-        <Button
-          icon="christmas-tree"
-          variant="outline"
-          onClick={() => router.push(`/user/${gift.user}`)}
-        >
-          Back
-        </Button>
-        <h4>
-          <span>{isMe ? "My" : formPossessive(getFirstName(user?.name))}</span>
-          wishlist
-        </h4>
-        <Avatar url={user?.avatar_url} size={36} />
-      </div>
+      <Header
+        title={`${
+          isMe ? "My" : formPossessive(getFirstName(user?.name))
+        } wishlist`}
+        avatar={user.avatar_url}
+      />
       <div className={styles.body}>
         <h5>
           <span>

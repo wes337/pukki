@@ -1,0 +1,37 @@
+@import "../../styles/spacings.scss";
+@import "../../styles/fonts.scss";
+@import "../../styles/colors.scss";
+
+.sign-out {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $space-s;
+
+  h1 {
+    font-family: $header-font;
+    font-weight: 400;
+    margin: 0;
+  }
+}
+
+.user {
+  color: $colorDarkGray;
+  font-size: $font-size-m;
+
+  hr {
+    margin: 0;
+    border: 0;
+    border-top: 2px dotted $colorGreen;
+  }
+
+  span {
+    font-weight: bold;
+    color: $colorBlack;
+  }
+
+  button {
+    margin-top: $space-xs;
+    margin-left: auto;
+  }
+}

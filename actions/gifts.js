@@ -2,7 +2,7 @@ export async function getGifts(supabase, uid) {
   try {
     let { data, error } = await supabase
       .from("gifts")
-      .select("id, name, claimed_by")
+      .select("id, name, claimed_by ( user_id, avatar_url )")
       .eq("user", uid);
 
     if (error) {
@@ -20,6 +20,32 @@ export async function getAllGifts(supabase) {
     let { data, error } = await supabase
       .from("gifts")
       .select("id, name, user, claimed_by");
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getGiftsClaimedBy(supabase, uid) {
+  try {
+    let { data, error } = await supabase
+      .from("gifts")
+      .select(
+        `
+        id,
+        name,
+        user (
+          user_id,
+          avatar_url
+        ),
+        claimed_by`
+      )
+      .eq("claimed_by", uid);
 
     if (error) {
       throw error;
@@ -77,7 +103,7 @@ export async function claimGift(supabase, gid, uid) {
   try {
     const { data, error } = await supabase
       .from("gifts")
-      .update({ claimed_by: uid || "" })
+      .update({ claimed_by: uid || null })
       .eq("id", gid)
       .select();
 

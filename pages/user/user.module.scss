@@ -3,23 +3,6 @@
 @import "../../styles/spacings.scss";
 @import "../../styles/fonts.scss";
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: $space-s;
-
-  h4 {
-    margin: auto;
-    padding: 0 $space-m;
-    border-bottom: 2px dotted $colorLightRed;
-    display: flex;
-    flex-wrap: wrap;
-    gap: $space-xs;
-    justify-content: center;
-  }
-}
-
 .add {
   margin-top: $space-s;
 }

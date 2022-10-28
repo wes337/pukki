@@ -1,13 +1,18 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
+import {
+  useSupabaseClient,
+  useSession,
+  useUser,
+} from "@supabase/auth-helpers-react";
 import { isAdmin, isTestUser } from "../../../utils/users";
 import { addGift } from "../../../actions/gifts";
-import { Button, Loader } from "../../../components";
+import { Header, Button, Loader } from "../../../components";
 import styles from "./gift.module.scss";
 
 export default function Gift({ gift }) {
   const session = useSession();
+  const user = useUser();
   const supabase = useSupabaseClient();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -62,22 +67,18 @@ export default function Gift({ gift }) {
     return <Loader />;
   }
 
+  console.log(user);
+
   return (
     <div className={styles.gift}>
-      <div className={styles.header}>
-        <Button
-          icon="christmas-tree"
-          variant="outline"
-          onClick={() => router.push(`/user/${uid}`)}
-        >
-          Back
-        </Button>
-        <h4>
-          {gift
+      <Header
+        title={
+          gift
             ? "Change a gift on your wishlist"
-            : "Add a gift to your wishlist"}
-        </h4>
-      </div>
+            : "Add a gift to your wishlist"
+        }
+        avatar={user.user_metadata.avatar_url}
+      />
       <div className={styles.body}>
         <label htmlFor="name">
           <span>What do you want?</span>

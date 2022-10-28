@@ -2,9 +2,8 @@ import { useState } from "react";
 import Head from "next/head";
 import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { SessionContextProvider } from "@supabase/auth-helpers-react";
-import { Header, Card } from "../components";
+import { SignOut, Card, Footer } from "../components";
 import "../styles/index.scss";
-import Footer from "../components/Footer/Footer";
 
 export default function MyApp({ Component, pageProps }) {
   const [supabaseClient] = useState(() => createBrowserSupabaseClient());
@@ -20,7 +19,7 @@ export default function MyApp({ Component, pageProps }) {
             supabaseClient={supabaseClient}
             initialSession={pageProps.initialSession}
           >
-            <Header />
+            <SignOut />
             <Card>
               <Component {...pageProps} />
             </Card>
