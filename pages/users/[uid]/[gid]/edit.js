@@ -1,36 +1,22 @@
-import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
-import { useSession } from "@supabase/auth-helpers-react";
-import { getGift } from "../../../../actions/gifts";
-import { Loader } from "../../../../components";
+import { withPageAuth } from "@supabase/auth-helpers-nextjs";
 import Gift from "../gift";
 
-export default function EditGift() {
-  const session = useSession();
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [gift, setGift] = useState();
-
-  const { uid, gid } = router.query;
-
-  useEffect(() => {
-    setLoading(true);
-
-    if (session && gid && uid) {
-      if (!session.user || uid !== session.user.id) {
-        router.push("/");
-      }
-
-      getGift(gid).then((gift) => {
-        setGift(gift);
-        setLoading(false);
-      });
-    }
-  }, [session, uid, gid]);
-
-  if (loading) {
-    return <Loader />;
-  }
-
+export default function EditGift({ gift }) {
   return <Gift gift={gift} />;
 }
+
+export const getServerSideProps = withPageAuth({
+  redirectTo: "/login",
+  async getServerSideProps(ctx, supabase) {
+    const { gid } = ctx.params;
+
+    const {
+      data: [gift],
+    } = await supabase
+      .from("gifts")
+      .select("id, name, claimed_by ( user_id, name ), user, description, url")
+      .eq("id", gid);
+
+    return { props: { gift: gift || null } };
+  },
+});

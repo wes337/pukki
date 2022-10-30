@@ -8,5 +8,9 @@ export const isValidUrl = (string) => {
 };
 
 export const formPossessive = (name) => {
-  return `${name}'${name.endsWith("s") ? "" : "s"}`;
+  try {
+    return `${name}'${name.endsWith("s") ? "" : "s"}`;
+  } catch {
+    return name;
+  }
 };

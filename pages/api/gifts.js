@@ -2,7 +2,7 @@ import { withApiAuth } from "@supabase/auth-helpers-nextjs";
 
 export async function getGifts(req, res, supabase) {
   try {
-    let { data, error } = await supabase
+    const { data, error } = await supabase
       .from("gifts")
       .select("id, name, user, claimed_by");
 

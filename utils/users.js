@@ -18,7 +18,7 @@ export const getFirstName = (userName) => {
   if (userName === "Del Monte") {
     return userName;
   }
-  return userName.split(" ")[0];
+  return userName?.split?.(" ")[0];
 };
 
 export const isAdmin = (userId) => {

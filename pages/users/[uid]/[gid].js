@@ -1,53 +1,28 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
+import { withPageAuth } from "@supabase/auth-helpers-nextjs";
 import { useSession } from "@supabase/auth-helpers-react";
-import { getGift, removeGift, claimGift } from "../../../actions/gifts";
-import { getUser } from "../../../actions/users";
+import { removeGift, claimGift } from "../../../actions/gifts";
 import { isAdmin, isTestUser, getFirstName } from "../../../utils/users";
 import { formPossessive, isValidUrl } from "../../../utils/string";
-import { Button, Header, Icon, Loader } from "../../../components";
+import { Banner, Button, Header, Icon, Loader } from "../../../components";
 import styles from "./gift.module.scss";
 
-export default function Gift() {
+export default function Gift({ user, gift: initialGift }) {
   const session = useSession();
   const router = useRouter();
+  const [gift, setGift] = useState(initialGift);
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState();
-  const [gift, setGift] = useState([]);
-  const [giftClaimedBy, setGiftClaimedBy] = useState("");
-  const [isMe, setIsMe] = useState(false);
-
   const { uid, gid } = router.query;
-
-  useEffect(() => {
-    setLoading(true);
-
-    if (session && uid && gid) {
-      if (!session.user) {
-        router.push("/");
-      }
-
-      setIsMe(uid === session.user.id);
-      Promise.all([getUser(uid), getGift(gid)]).then(([user, gift]) => {
-        setUser(user);
-        setGift(gift);
-
-        if (gift.claimed_by && gift.claimed_by !== session.user.id) {
-          getUser(gift.claimed_by).then(({ name }) => {
-            setGiftClaimedBy(name);
-            setLoading(false);
-          });
-        } else {
-          setLoading(false);
-        }
-      });
-    }
-  }, [session, uid, gid]);
+  const isMe = uid === session.user.id;
 
   const claimAndUpdateGift = (userId) => {
     setLoading(true);
-    claimGift(gift.id, userId).then((gift) => {
-      setGift(gift);
+    claimGift(gift.id, userId).then((claimedGift) => {
+      setGift((gift) => ({
+        ...gift,
+        ...claimedGift,
+      }));
       setLoading(false);
     });
   };
@@ -65,9 +40,10 @@ export default function Gift() {
         <Button
           icon="bauble"
           variant="secondary"
-          onClick={() =>
-            removeGift(gid).then(() => router.push(`/users/${gift.user}`))
-          }
+          onClick={() => {
+            setLoading(true);
+            removeGift(gid).then(() => router.push(`/users/${gift.user}`));
+          }}
           block
         >
           Delete
@@ -78,14 +54,18 @@ export default function Gift() {
 
   const renderGiftButtons = () => {
     if (gift.claimed_by) {
-      const claimedByMe = gift.claimed_by === session.user.id;
+      const claimedByMe =
+        gift.claimed_by.user_id === session.user.id ||
+        gift.claimed_by === session.user.id;
 
       return (
         <div className={styles.claimed}>
           <div>
             <Icon name="ornament" size={32} />
             <div>
-              {claimedByMe ? "You are " : `${giftClaimedBy} is `}
+              {claimedByMe
+                ? "You are "
+                : `${getFirstName(gift.claimed_by.name)} is `}
               buying
               <br />
               <span>{gift.name}</span>
@@ -140,7 +120,21 @@ export default function Gift() {
     return renderGiftButtons();
   };
 
-  if (loading || !gift || !user) {
+  if (!gift) {
+    return (
+      <Banner
+        icon="globe"
+        title="404"
+        message="Gift not found."
+        action={{
+          label: "Go back",
+          callback: () => router.push(`/users/${uid}`),
+        }}
+      />
+    );
+  }
+
+  if (loading) {
     return <Loader />;
   }
 
@@ -185,3 +179,26 @@ export default function Gift() {
     </div>
   );
 }
+
+export const getServerSideProps = withPageAuth({
+  redirectTo: "/login",
+  async getServerSideProps(ctx, supabase) {
+    const { uid, gid } = ctx.params;
+
+    const {
+      data: [user],
+    } = await supabase
+      .from("users")
+      .select("user_id, name, avatar_url")
+      .eq("user_id", uid);
+
+    const {
+      data: [gift],
+    } = await supabase
+      .from("gifts")
+      .select("id, name, claimed_by ( user_id, name ), user, description, url")
+      .eq("id", gid);
+
+    return { props: { user, gift: gift || null } };
+  },
+});

@@ -1,50 +1,21 @@
-import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "@supabase/auth-helpers-react";
+import { withPageAuth } from "@supabase/auth-helpers-nextjs";
 import { IconCheck } from "@tabler/icons";
 import variables from "../../styles/variables.module.scss";
 import { isAdmin, isTestUser, getFirstName } from "../../utils/users";
 import { formPossessive } from "../../utils/string";
-import { getUser } from "../../actions/users";
-import { getGiftsForUser } from "../../actions/gifts";
-import { Header, Avatar, Banner, Button, List, Loader } from "../../components";
+import { Header, Avatar, Banner, Button, List } from "../../components";
 import styles from "./users.module.scss";
 
-export default function User() {
+export default function User({ user, gifts }) {
   const session = useSession();
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState();
-  const [gifts, setGifts] = useState([]);
-  const [isMe, setIsMe] = useState(false);
-
   const { uid } = router.query;
+  const isMe = uid === session.user.id;
 
   const canAddGifts =
-    isMe || (isTestUser(uid) && session && isAdmin(session.user.id));
-
-  useEffect(() => {
-    setLoading(true);
-
-    if (session && uid) {
-      if (!session.user) {
-        router.push("/");
-      }
-
-      setIsMe(uid === session.user.id);
-      Promise.all([getUser(uid), getGiftsForUser(uid)]).then(
-        ([user, gifts]) => {
-          setUser(user);
-          setGifts(gifts);
-          setLoading(false);
-        }
-      );
-    }
-  }, [session, uid]);
-
-  if (loading || !user) {
-    return <Loader />;
-  }
+    isMe || (isTestUser(user.user_id) && session && isAdmin(session.user.id));
 
   const emptyWishlistMessage = isMe
     ? "You haven't added any gifts to your wishlist yet. Click the add gift button below to get started!"
@@ -103,3 +74,24 @@ export default function User() {
     </>
   );
 }
+
+export const getServerSideProps = withPageAuth({
+  redirectTo: "/login",
+  async getServerSideProps(ctx, supabase) {
+    const { uid } = ctx.params;
+
+    const {
+      data: [user],
+    } = await supabase
+      .from("users")
+      .select("user_id, name, avatar_url")
+      .eq("user_id", uid);
+
+    const { data: gifts } = await supabase
+      .from("gifts")
+      .select("id, name, claimed_by ( user_id, avatar_url )")
+      .eq("user", uid);
+
+    return { props: { user, gifts } };
+  },
+});

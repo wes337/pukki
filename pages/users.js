@@ -1,19 +1,15 @@
-import { useState, useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useRouter } from "next/router";
+import { withPageAuth } from "@supabase/auth-helpers-nextjs";
 import { useSession } from "@supabase/auth-helpers-react";
 import { getFirstName } from "../utils/users";
 import { formPossessive } from "../utils/string";
-import { getAllUsers } from "../actions/users";
-import { getAllGifts } from "../actions/gifts";
-import { Button, List, Loader, ProgressBar } from "../components";
+import { Button, List, ProgressBar } from "../components";
 import styles from "./users.module.scss";
 
-export default function Users() {
+export default function Users({ users, gifts }) {
   const session = useSession();
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [users, setUsers] = useState([]);
-  const [gifts, setGifts] = useState([]);
 
   const usersWithGiftPercentages = useMemo(() => {
     if (!session || !users || !gifts) {
@@ -41,22 +37,6 @@ export default function Users() {
     return usersWithPercentages;
   }, [users, gifts, session]);
 
-  useEffect(() => {
-    setLoading(true);
-
-    if (session) {
-      if (!session.user) {
-        router.push("/");
-      } else {
-        Promise.all([getAllUsers(), getAllGifts()]).then(([users, gifts]) => {
-          setUsers(users);
-          setGifts(gifts);
-          setLoading(false);
-        });
-      }
-    }
-  }, [session]);
-
   const renderUserListItem = (user) => {
     return (
       <div className={styles.item}>
@@ -67,10 +47,6 @@ export default function Users() {
       </div>
     );
   };
-
-  if (loading) {
-    return <Loader />;
-  }
 
   return (
     <div className={styles.users}>
@@ -103,3 +79,13 @@ export default function Users() {
     </div>
   );
 }
+
+export const getServerSideProps = withPageAuth({
+  redirectTo: "/",
+  async getServerSideProps(ctx, supabase) {
+    const { data: users } = await supabase.from("users").select();
+    const { data: gifts } = await supabase.from("gifts").select();
+
+    return { props: { users, gifts } };
+  },
+});

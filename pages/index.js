@@ -1,41 +1,39 @@
-import { useState, useEffect } from "react";
-import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
-import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
-import { updateUser } from "../actions/users";
-import Users from "./users";
+import { useEffect } from "react";
+import { withPageAuth } from "@supabase/auth-helpers-nextjs";
+import { getUserName } from "../utils/users";
 import { Loader } from "../components";
+import { useRouter } from "next/router";
 
-export default function Index() {
-  const [loading, setLoading] = useState(false);
-  const [ready, setReady] = useState(false);
-  const supabaseClient = useSupabaseClient();
-  const session = useSession();
+export default function Index({ user }) {
+  const router = useRouter();
 
   useEffect(() => {
-    setLoading(true);
-    if (!session) {
-      setLoading(false);
-      setReady(false);
-    } else {
-      updateUser(session.user).then(() => {
-        setReady(true);
-        setLoading(false);
-      });
+    if (user) {
+      router.push("/users");
     }
-  }, [session]);
+  }, [user]);
 
-  if (loading) {
-    return <Loader />;
-  }
-
-  return ready ? (
-    <Users />
-  ) : (
-    <Auth
-      supabaseClient={supabaseClient}
-      providers={["facebook"]}
-      appearance={{ theme: ThemeSupa }}
-      onlyThirdPartyProviders
-    />
-  );
+  return <Loader />;
 }
+
+export const getServerSideProps = withPageAuth({
+  redirectTo: "/login",
+  async getServerSideProps(ctx, supabase) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const updatedUser = {
+      user_id: uid,
+      name: getUserName(user),
+      avatar_url: user.user_metadata.avatar_url,
+    };
+
+    const { data } = await supabase
+      .from("users")
+      .upsert(updatedUser, { onConflict: "user_id" })
+      .select();
+
+    return { props: { user: data[0] } };
+  },
+});

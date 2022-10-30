@@ -1,35 +1,11 @@
-import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { useSession } from "@supabase/auth-helpers-react";
-import { getGiftsClaimedByUser } from "../actions/gifts";
-import { Header, Avatar, List, Loader } from "../components";
+import { withPageAuth } from "@supabase/auth-helpers-nextjs";
+import { Header, Avatar, List } from "../components";
 import variables from "../styles/variables.module.scss";
 import styles from "./users.module.scss";
 
-export default function Gifts() {
-  const session = useSession();
+export default function Gifts({ gifts }) {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [gifts, setGifts] = useState([]);
-
-  useEffect(() => {
-    setLoading(true);
-
-    if (session) {
-      if (!session.user) {
-        router.push("/");
-      } else {
-        getGiftsClaimedByUser(session.user.id).then((gifts) => {
-          setGifts(gifts);
-          setLoading(false);
-        });
-      }
-    }
-  }, [session]);
-
-  if (loading) {
-    return <Loader />;
-  }
 
   return (
     <div className={styles.gifts}>
@@ -59,3 +35,28 @@ export default function Gifts() {
     </div>
   );
 }
+
+export const getServerSideProps = withPageAuth({
+  redirectTo: "/login",
+  async getServerSideProps(ctx, supabase) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const { data: gifts } = await supabase
+      .from("gifts")
+      .select(
+        `
+        id,
+        name,
+        user (
+          user_id,
+          avatar_url
+        ),
+        claimed_by`
+      )
+      .eq("claimed_by", user.id);
+
+    return { props: { gifts } };
+  },
+});

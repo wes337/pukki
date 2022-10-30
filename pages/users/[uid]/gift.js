@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import { withPageAuth } from "@supabase/auth-helpers-nextjs";
 import { useSession, useUser } from "@supabase/auth-helpers-react";
 import { isAdmin, isTestUser } from "../../../utils/users";
 import { addGift } from "../../../actions/gifts";
@@ -115,3 +116,5 @@ export default function Gift({ gift }) {
     </div>
   );
 }
+
+export const getServerSideProps = withPageAuth({ redirectTo: "/login" });
