@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "@supabase/auth-helpers-react";
-import supabase from "../../../lib/supabaseClient";
 import { getGift, removeGift, claimGift } from "../../../actions/gifts";
 import { getUser } from "../../../actions/users";
 import { isAdmin, isTestUser, getFirstName } from "../../../utils/users";
 import { formPossessive, isValidUrl } from "../../../utils/string";
-import { Avatar, Button, Header, Icon, Loader } from "../../../components";
+import { Button, Header, Icon, Loader } from "../../../components";
 import styles from "./gift.module.scss";
 
 export default function Gift() {
@@ -29,27 +28,25 @@ export default function Gift() {
       }
 
       setIsMe(uid === session.user.id);
-      Promise.all([getUser(supabase, uid), getGift(supabase, gid)]).then(
-        ([user, gift]) => {
-          setUser(user);
-          setGift(gift);
+      Promise.all([getUser(uid), getGift(gid)]).then(([user, gift]) => {
+        setUser(user);
+        setGift(gift);
 
-          if (gift.claimed_by && gift.claimed_by !== session.user.id) {
-            getUser(supabase, gift.claimed_by).then(({ name }) => {
-              setGiftClaimedBy(name);
-              setLoading(false);
-            });
-          } else {
+        if (gift.claimed_by && gift.claimed_by !== session.user.id) {
+          getUser(gift.claimed_by).then(({ name }) => {
+            setGiftClaimedBy(name);
             setLoading(false);
-          }
+          });
+        } else {
+          setLoading(false);
         }
-      );
+      });
     }
   }, [session, uid, gid]);
 
   const claimAndUpdateGift = (userId) => {
     setLoading(true);
-    claimGift(supabase, gift.id, userId).then((gift) => {
+    claimGift(gift.id, userId).then((gift) => {
       setGift(gift);
       setLoading(false);
     });
@@ -60,7 +57,7 @@ export default function Gift() {
       <>
         <Button
           icon="bauble-alt"
-          onClick={() => router.push(`/user/${gift.user}/${gift.id}/edit`)}
+          onClick={() => router.push(`/users/${gift.user}/${gift.id}/edit`)}
           block
         >
           Edit
@@ -69,9 +66,7 @@ export default function Gift() {
           icon="bauble"
           variant="secondary"
           onClick={() =>
-            removeGift(supabase, gid).then(() =>
-              router.push(`/user/${gift.user}`)
-            )
+            removeGift(gid).then(() => router.push(`/users/${gift.user}`))
           }
           block
         >

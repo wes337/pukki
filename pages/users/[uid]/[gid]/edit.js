@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "@supabase/auth-helpers-react";
-import supabase from "../../../../lib/supabaseClient";
 import { getGift } from "../../../../actions/gifts";
 import { Loader } from "../../../../components";
 import Gift from "../gift";
@@ -22,7 +21,7 @@ export default function EditGift() {
         router.push("/");
       }
 
-      getGift(supabase, gid).then((gift) => {
+      getGift(gid).then((gift) => {
         setGift(gift);
         setLoading(false);
       });

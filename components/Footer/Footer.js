@@ -13,7 +13,6 @@ export default function Footer() {
     <footer className={styles.footer}>
       <span>{daysUntilChristmas}</span> days until Christmas{" "}
       <Image
-        objectFit="contain"
         src={`/images/icons/wreath.png`}
         height={24}
         width={24}

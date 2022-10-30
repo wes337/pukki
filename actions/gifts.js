@@ -1,118 +1,81 @@
-export async function getGifts(supabase, uid) {
+export async function getGiftsForUser(uid) {
   try {
-    let { data, error } = await supabase
-      .from("gifts")
-      .select("id, name, claimed_by ( user_id, avatar_url )")
-      .eq("user", uid);
-
-    if (error) {
-      throw error;
-    }
-
-    return data;
+    const url = `/api/users/${uid}/gifts`;
+    const response = await fetch(url);
+    return response.json();
   } catch (error) {
     console.log(error);
   }
 }
 
-export async function getAllGifts(supabase) {
+export async function getAllGifts() {
   try {
-    let { data, error } = await supabase
-      .from("gifts")
-      .select("id, name, user, claimed_by");
-
-    if (error) {
-      throw error;
-    }
-
-    return data;
+    const url = "/api/gifts";
+    const response = await fetch(url);
+    return response.json();
   } catch (error) {
     console.log(error);
   }
 }
 
-export async function getGiftsClaimedBy(supabase, uid) {
+export async function getGiftsClaimedByUser(uid) {
   try {
-    let { data, error } = await supabase
-      .from("gifts")
-      .select(
-        `
-        id,
-        name,
-        user (
-          user_id,
-          avatar_url
-        ),
-        claimed_by`
-      )
-      .eq("claimed_by", uid);
-
-    if (error) {
-      throw error;
-    }
-
-    return data;
+    const url = `/api/users/${uid}/claimed`;
+    const response = await fetch(url);
+    return response.json();
   } catch (error) {
     console.log(error);
   }
 }
 
-export async function getGift(supabase, gid) {
+export async function getGift(gid) {
   try {
-    let { data, error } = await supabase
-      .from("gifts")
-      .select("id, name, claimed_by, user, description, url")
-      .eq("id", gid);
-
-    if (error) {
-      throw error;
-    }
-
-    const gift = data[0];
-    return gift;
+    const url = `/api/gifts/${gid}`;
+    const response = await fetch(url);
+    return response.json();
   } catch (error) {
     console.log(error);
   }
 }
 
-export async function removeGift(supabase, gid) {
+export async function removeGift(gid) {
   try {
-    const { error } = await supabase.from("gifts").delete().eq("id", gid);
-
-    if (error) {
-      throw error;
-    }
+    const url = `/api/gifts/${gid}`;
+    await fetch(url, { method: "DELETE" });
   } catch (error) {
     console.log(error);
   }
 }
 
-export async function addGift(supabase, gift) {
+export async function addGift(gift) {
   try {
-    const { error } = await supabase.from("gifts").upsert(gift).select();
-
-    if (error) {
-      throw error;
-    }
+    const url = "/api/gifts";
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(gift),
+    });
+    return response.json();
   } catch (error) {
     console.log(error);
   }
 }
 
-export async function claimGift(supabase, gid, uid) {
+export async function claimGift(gid, claimedBy) {
   try {
-    const { data, error } = await supabase
-      .from("gifts")
-      .update({ claimed_by: uid || null })
-      .eq("id", gid)
-      .select();
-
-    if (error) {
-      throw error;
-    }
-
-    const gift = data[0];
-    return gift;
+    const url = `/api/gifts/${gid}`;
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(claimedBy),
+    });
+    return response.json();
   } catch (error) {
     console.log(error);
   }

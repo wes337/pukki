@@ -2,14 +2,13 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "@supabase/auth-helpers-react";
 import { IconCheck } from "@tabler/icons";
-import supabase from "../../lib/supabaseClient";
 import variables from "../../styles/variables.module.scss";
 import { isAdmin, isTestUser, getFirstName } from "../../utils/users";
 import { formPossessive } from "../../utils/string";
 import { getUser } from "../../actions/users";
-import { getGifts } from "../../actions/gifts";
+import { getGiftsForUser } from "../../actions/gifts";
 import { Header, Avatar, Banner, Button, List, Loader } from "../../components";
-import styles from "./user.module.scss";
+import styles from "./users.module.scss";
 
 export default function User() {
   const session = useSession();
@@ -33,7 +32,7 @@ export default function User() {
       }
 
       setIsMe(uid === session.user.id);
-      Promise.all([getUser(supabase, uid), getGifts(supabase, uid)]).then(
+      Promise.all([getUser(uid), getGiftsForUser(uid)]).then(
         ([user, gifts]) => {
           setUser(user);
           setGifts(gifts);
@@ -86,7 +85,7 @@ export default function User() {
                 <Avatar url={gift.claimed_by.avatar_url} size={24} />
               </>
             ),
-            onClick: () => router.push(`/user/${uid}/${gift.id}`),
+            onClick: () => router.push(`/users/${uid}/${gift.id}`),
           }))}
         />
       )}
@@ -95,7 +94,7 @@ export default function User() {
           <Button
             block
             icon="gift"
-            onClick={() => router.push(`/user/${uid}/gift`)}
+            onClick={() => router.push(`/users/${uid}/gift`)}
           >
             Add Gift
           </Button>

@@ -1,19 +1,19 @@
 import { useState, useEffect } from "react";
 import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
-import { useSession } from "@supabase/auth-helpers-react";
-import supabase from "../lib/supabaseClient";
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { updateUser } from "../actions/users";
 import Users from "./users";
 
 export default function Index() {
   const [ready, setReady] = useState(false);
+  const supabaseClient = useSupabaseClient();
   const session = useSession();
 
   useEffect(() => {
     if (!session) {
       setReady(false);
     } else {
-      updateUser(supabase, session.user).then(() => setReady(true));
+      updateUser(session.user).then(() => setReady(true));
     }
   }, [session]);
 
@@ -21,7 +21,7 @@ export default function Index() {
     <Users />
   ) : (
     <Auth
-      supabaseClient={supabase}
+      supabaseClient={supabaseClient}
       providers={["facebook"]}
       appearance={{ theme: ThemeSupa }}
       onlyThirdPartyProviders

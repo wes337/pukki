@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "@supabase/auth-helpers-react";
-import supabase from "../lib/supabaseClient";
-import { getGiftsClaimedBy } from "../actions/gifts";
+import { getGiftsClaimedByUser } from "../actions/gifts";
 import { Header, Avatar, List, Loader } from "../components";
 import variables from "../styles/variables.module.scss";
 import styles from "./users.module.scss";
@@ -20,7 +19,7 @@ export default function Gifts() {
       if (!session.user) {
         router.push("/");
       } else {
-        getGiftsClaimedBy(supabase, session.user.id).then((gifts) => {
+        getGiftsClaimedByUser(session.user.id).then((gifts) => {
           setGifts(gifts);
           setLoading(false);
         });
@@ -54,7 +53,7 @@ export default function Gifts() {
             </>
           ),
           rightIcon: <Avatar url={gift.user.avatar_url} size={24} />,
-          onClick: () => router.push(`/user/${gift.user.user_id}/${gift.id}`),
+          onClick: () => router.push(`/users/${gift.user.user_id}/${gift.id}`),
         }))}
       />
     </div>

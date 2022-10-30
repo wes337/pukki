@@ -5,7 +5,6 @@ export default function Logo({ centered }) {
   return (
     <div className={styles.logo} style={{ margin: centered ? "auto" : 0 }}>
       <Image
-        objectFit="contain"
         src="/images/icons/santa-claus.png"
         height={50}
         width={50}

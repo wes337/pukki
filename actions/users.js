@@ -1,46 +1,46 @@
-import { getUserName } from "../utils/users";
-
-export async function getAllUsers(supabase) {
+export async function getAllUsers() {
   try {
-    const { data, error, status } = await supabase.from("users").select();
-
-    if (error && status !== 406) {
-      throw error;
-    }
-
-    return data;
+    const url = "/api/users";
+    const response = await fetch(url);
+    return response.json();
   } catch (error) {
     console.log(error);
   }
 }
 
-export async function getUser(supabase, uid) {
+export async function getUser(uid) {
   try {
-    let { data, error } = await supabase
-      .from("users")
-      .select("name, avatar_url")
-      .eq("user_id", uid);
-
-    if (error) {
-      throw error;
-    }
-
-    const user = data[0];
-    return user;
+    const url = `/api/users/${uid}`;
+    const response = await fetch(url);
+    return response.json();
   } catch (error) {
     console.log(error);
   }
 }
 
-export async function updateUser(supabase, user) {
-  const updatedUser = {
-    user_id: user.id,
-    name: getUserName(user),
-    avatar_url: user.user_metadata.avatar_url,
-  };
+export async function updateUser(user) {
+  try {
+    const url = `/api/users/${user.id}`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(user),
+    });
+    return response.json();
+  } catch (error) {
+    console.log(error);
+  }
+}
 
-  await supabase
-    .from("users")
-    .upsert(updatedUser, { onConflict: "user_id" })
-    .select();
+export async function signOut() {
+  try {
+    const url = "/api/sign-out";
+    const response = await fetch(url, { method: "POST" });
+    return response.json();
+  } catch (error) {
+    console.log(error);
+  }
 }

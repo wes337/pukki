@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "@supabase/auth-helpers-react";
-import supabase from "../lib/supabaseClient";
 import { getFirstName } from "../utils/users";
 import { formPossessive } from "../utils/string";
 import { getAllUsers } from "../actions/users";
@@ -17,6 +16,10 @@ export default function Users() {
   const [gifts, setGifts] = useState([]);
 
   const usersWithGiftPercentages = useMemo(() => {
+    if (!session || !users || !gifts) {
+      return [];
+    }
+
     const usersWithPercentages = users
       .map((user) => {
         if (user.user_id === session.user.id) {
@@ -45,13 +48,11 @@ export default function Users() {
       if (!session.user) {
         router.push("/");
       } else {
-        Promise.all([getAllUsers(supabase), getAllGifts(supabase)]).then(
-          ([users, gifts]) => {
-            setUsers(users);
-            setGifts(gifts);
-            setLoading(false);
-          }
-        );
+        Promise.all([getAllUsers(), getAllGifts()]).then(([users, gifts]) => {
+          setUsers(users);
+          setGifts(gifts);
+          setLoading(false);
+        });
       }
     }
   }, [session]);
@@ -77,7 +78,7 @@ export default function Users() {
         <Button
           icon="greeting-card"
           block
-          onClick={() => router.push(`/user/${session.user.id}`)}
+          onClick={() => router.push(`/users/${session.user.id}`)}
         >
           My wishlist
         </Button>
@@ -94,7 +95,7 @@ export default function Users() {
       <List
         items={usersWithGiftPercentages.map((user) => ({
           id: user.user_id,
-          onClick: () => router.push(`/user/${user.user_id}`),
+          onClick: () => router.push(`/users/${user.user_id}`),
           label: renderUserListItem(user),
           icon: user.avatar_url,
         }))}
