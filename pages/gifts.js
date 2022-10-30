@@ -39,6 +39,13 @@ export default function Gifts({ gifts }) {
 export const getServerSideProps = withPageAuth({
   redirectTo: "/login",
   async getServerSideProps(ctx, supabase) {
+    const { res } = ctx;
+
+    res.setHeader(
+      "Cache-Control",
+      "public, s-maxage=10, stale-while-revalidate=59"
+    );
+
     const {
       data: { user },
     } = await supabase.auth.getUser();

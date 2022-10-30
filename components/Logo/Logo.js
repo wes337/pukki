@@ -1,9 +1,14 @@
 import Image from "next/image";
+import Link from "next/link";
 import styles from "./Logo.module.scss";
 
 export default function Logo({ centered }) {
   return (
-    <div className={styles.logo} style={{ margin: centered ? "auto" : 0 }}>
+    <Link
+      className={styles.logo}
+      style={{ margin: centered ? "auto" : 0 }}
+      href="/"
+    >
       <Image
         src="/images/icons/santa-claus.png"
         height={50}
@@ -11,6 +16,6 @@ export default function Logo({ centered }) {
         alt=""
       />
       <h1>Pukki</h1>
-    </div>
+    </Link>
   );
 }
