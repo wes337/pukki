@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/router";
-import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
+import { useSession } from "@supabase/auth-helpers-react";
+import supabase from "../lib/supabaseClient";
 import { getFirstName } from "../utils/users";
 import { formPossessive } from "../utils/string";
 import { getAllUsers } from "../actions/users";
@@ -9,7 +10,6 @@ import { Button, List, Loader, ProgressBar } from "../components";
 import styles from "./users.module.scss";
 
 export default function Users() {
-  const supabase = useSupabaseClient();
   const session = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(true);

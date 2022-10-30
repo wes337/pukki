@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
+import { useSession } from "@supabase/auth-helpers-react";
 import { IconCheck } from "@tabler/icons";
+import supabase from "../../lib/supabaseClient";
 import variables from "../../styles/variables.module.scss";
 import { isAdmin, isTestUser, getFirstName } from "../../utils/users";
 import { formPossessive } from "../../utils/string";
@@ -12,7 +13,6 @@ import styles from "./user.module.scss";
 
 export default function User() {
   const session = useSession();
-  const supabase = useSupabaseClient();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState();

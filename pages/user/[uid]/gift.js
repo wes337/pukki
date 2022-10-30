@@ -1,10 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import {
-  useSupabaseClient,
-  useSession,
-  useUser,
-} from "@supabase/auth-helpers-react";
+import { useSession, useUser } from "@supabase/auth-helpers-react";
+import supabase from "../../../lib/supabaseClient";
 import { isAdmin, isTestUser } from "../../../utils/users";
 import { addGift } from "../../../actions/gifts";
 import { Header, Button, Loader } from "../../../components";
@@ -13,7 +10,6 @@ import styles from "./gift.module.scss";
 export default function Gift({ gift }) {
   const session = useSession();
   const user = useUser();
-  const supabase = useSupabaseClient();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");

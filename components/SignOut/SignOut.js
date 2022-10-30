@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
-import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useUser } from "@supabase/auth-helpers-react";
+import supabase from "../../lib/supabaseClient";
 import { getUserName } from "../../utils/users";
 import Logo from "../Logo/Logo";
 import Button from "../Button/Button";
@@ -8,7 +9,6 @@ import styles from "./SignOut.module.scss";
 export default function SignOut() {
   const user = useUser();
   const router = useRouter();
-  const supabase = useSupabaseClient();
 
   return (
     <header className={styles["sign-out"]}>

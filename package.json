@@ -8,13 +8,14 @@
   "dependencies": {
     "@supabase/auth-helpers-nextjs": "^0.4.2",
     "@supabase/auth-helpers-react": "^0.3.1",
-    "@supabase/auth-ui-react": "^0.2.2",
+    "@supabase/auth-ui-react": "^0.2.3",
     "@supabase/supabase-js": "^2.0.4",
     "@tabler/icons": "^1.108.0",
-    "next": "latest",
+    "next": "13.0.0",
     "next-pwa": "^5.6.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "sharp": "^0.31.1"
   },
   "devDependencies": {
     "sass": "^1.55.0"
