@@ -83,6 +83,13 @@ export default function Users({ users, gifts }) {
 export const getServerSideProps = withPageAuth({
   redirectTo: "/",
   async getServerSideProps(ctx, supabase) {
+    const { res } = ctx;
+
+    res.setHeader(
+      "Cache-Control",
+      "public, s-maxage=10, stale-while-revalidate=59"
+    );
+
     const { data: users } = await supabase.from("users").select();
     const { data: gifts } = await supabase.from("gifts").select();
 
