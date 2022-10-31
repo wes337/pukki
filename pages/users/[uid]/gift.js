@@ -32,7 +32,7 @@ export default function Gift({ gift }) {
 
       setLoading(false);
     }
-  }, [session, uid]);
+  }, [session, uid, router]);
 
   useEffect(() => {
     if (gift) {

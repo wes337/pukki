@@ -3,5 +3,16 @@ const withPWA = require("next-pwa")({
 });
 
 module.exports = withPWA({
-  // config
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "platform-lookaside.fbsbx.com",
+      },
+      {
+        protocol: "https",
+        hostname: "www.w3schools.com",
+      },
+    ],
+  },
 });

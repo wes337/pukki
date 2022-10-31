@@ -1,4 +1,5 @@
 import { Fragment } from "react";
+import Image from "next/image";
 import styles from "./List.module.scss";
 
 export default function List({ items, withDivider }) {
@@ -9,7 +10,7 @@ export default function List({ items, withDivider }) {
           <button onClick={item.onClick}>
             {item.icon && (
               <div className={styles.icon}>
-                <img src={item.icon} height={28} width={28} alt="" />
+                <Image src={item.icon} height={28} width={28} alt="" />
               </div>
             )}
             <div className={styles.label}>{item.label}</div>

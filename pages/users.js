@@ -64,7 +64,7 @@ export default function Users({ users, gifts }) {
           block
           onClick={() => router.push("/gifts")}
         >
-          Gifts I'm buying
+          Gifts I&#39;m buying
         </Button>
       </div>
       <hr />

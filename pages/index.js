@@ -11,7 +11,7 @@ export default function Index({ user }) {
     if (user) {
       router.push("/users");
     }
-  }, [user]);
+  }, [user, router]);
 
   return <Loader />;
 }

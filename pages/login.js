@@ -12,7 +12,7 @@ export default function Login() {
     if (user) {
       router.push("/users");
     }
-  }, [user]);
+  }, [user, router]);
 
   return (
     <Auth

@@ -3,7 +3,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
     "@supabase/auth-helpers-nextjs": "^0.4.2",
@@ -19,6 +20,8 @@
     "sharp": "^0.31.1"
   },
   "devDependencies": {
+    "eslint": "8.26.0",
+    "eslint-config-next": "13.0.0",
     "sass": "^1.55.0"
   }
 }

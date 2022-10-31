@@ -85,7 +85,7 @@ export default function Gift({ user, gift: initialGift }) {
               block
               onClick={() => claimAndUpdateGift(null)}
             >
-              Nevermind, I'm not buying this
+              Nevermind, I&#39;m not buying this
             </Button>
           )}
         </div>
@@ -98,7 +98,7 @@ export default function Gift({ user, gift: initialGift }) {
         block
         onClick={() => claimAndUpdateGift(session.user.id)}
       >
-        I'll buy it!
+        I&#39;ll buy it!
       </Button>
     );
   };
