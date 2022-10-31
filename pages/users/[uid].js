@@ -30,7 +30,11 @@ export default function User({ user, gifts }) {
         avatar={user.avatar_url}
       />
       {gifts.length === 0 ? (
-        <Banner icon="fireplace" message={emptyWishlistMessage} />
+        <Banner
+          icon="fireplace"
+          title="No gifts!"
+          message={emptyWishlistMessage}
+        />
       ) : (
         <List
           withDivider
