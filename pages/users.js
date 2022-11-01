@@ -81,7 +81,7 @@ export default function Users({ users, gifts }) {
 }
 
 export const getServerSideProps = withPageAuth({
-  redirectTo: "/",
+  redirectTo: "/login",
   async getServerSideProps(ctx, supabase) {
     const { res } = ctx;
 
