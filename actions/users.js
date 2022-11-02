@@ -20,7 +20,7 @@ export async function getUser(uid) {
 
 export async function updateUser(user) {
   try {
-    const url = `/api/users/${user.id}`;
+    const url = `/api/users/${user.user_id || user.id}`;
     const response = await fetch(url, {
       method: "POST",
       headers: {

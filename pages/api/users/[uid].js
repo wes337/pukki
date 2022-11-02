@@ -1,5 +1,4 @@
 import { withApiAuth } from "@supabase/auth-helpers-nextjs";
-import { getUserName } from "../../../utils/users";
 
 async function getUser(req, res, supabase) {
   try {
@@ -28,18 +27,12 @@ async function getUser(req, res, supabase) {
 async function updateUser(req, res, supabase) {
   try {
     const { uid } = req.query;
-    const supabaseUser = await supabase.auth.getUser();
-    const requestingUser = supabaseUser?.data?.user;
     const user = req.body;
-
-    if (requestingUser.id !== uid) {
-      return res.status(401).send();
-    }
 
     const updatedUser = {
       user_id: uid,
-      name: getUserName(user),
-      avatar_url: user.user_metadata.avatar_url,
+      name: user.name,
+      avatar_url: user.avatar_url,
     };
 
     const { data, error } = await supabase

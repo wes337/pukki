@@ -19,14 +19,15 @@ export default function Index({ user }) {
 export const getServerSideProps = withPageAuth({
   redirectTo: "/login",
   async getServerSideProps(ctx, supabase) {
+    console.log("HERE!");
     const {
-      data: { user },
-    } = await supabase.auth.getUser();
+      data: { session },
+    } = await supabase.auth.getSession();
 
     const updatedUser = {
-      user_id: uid,
-      name: getUserName(user),
-      avatar_url: user.user_metadata.avatar_url,
+      user_id: session.user.id,
+      name: getUserName(session.user),
+      avatar_url: session.user.user_metadata?.avatar_url,
     };
 
     const { data } = await supabase
