@@ -20,3 +20,4 @@ Joulupukki = Santa Claus in Finnish. It translates directly to _"Christmas Goat"
 
 - Remove SSR. It doesn't feel like a very nice experience with this type of app.
 - Allow multiple people to claim a gift for a person (i.e. they split it).
+- Translate to Finnish

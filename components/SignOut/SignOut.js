@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
-import { getUserName } from "../../utils/users";
+import { getFirstName, getUserName } from "../../utils/users";
 import Logo from "../Logo/Logo";
 import Button from "../Button/Button";
 import styles from "./SignOut.module.scss";
@@ -15,7 +15,7 @@ export default function SignOut() {
       <Logo centered={!user} />
       {user && (
         <div className={styles.user}>
-          Welcome, <span>{getUserName(user)}</span>
+          Welcome, <span>{getFirstName(getUserName(user))}</span>
           <hr />
           <Button
             icon="tag"
