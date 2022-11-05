@@ -1,23 +1,38 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { withPageAuth } from "@supabase/auth-helpers-nextjs";
 import { useSession } from "@supabase/auth-helpers-react";
-import { removeGift, claimGift } from "../../../actions/gifts";
+import { getUser } from "../../../actions/users";
+import { removeGift, claimGift, getGift } from "../../../actions/gifts";
 import useTranslate from "../../../hooks/useTranslate";
 import { isAdmin, isTestUser, getFirstName } from "../../../utils/users";
 import { isValidUrl } from "../../../utils/string";
 import { Banner, Button, Header, Icon, Loader } from "../../../components";
 import styles from "./gift.module.scss";
 
-export default function Gift({ user, gift: initialGift, fromMyGifts }) {
+export default function Gift({ fromMyGifts }) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [gift, setGift] = useState();
+  const [user, setUser] = useState();
   const session = useSession();
   const router = useRouter();
   const translate = useTranslate();
-  const [gift, setGift] = useState(initialGift);
-  const [loading, setLoading] = useState(false);
   const { locale, query } = router;
   const { uid, gid } = query;
   const isMe = uid === session.user.id;
+
+  useEffect(() => {
+    setLoading(true);
+    Promise.all([getUser(uid), getGift(gid)]).then(([user, gift]) => {
+      setUser(user);
+      setGift(gift);
+      if (!gift) {
+        setError(true);
+      }
+      setLoading(false);
+    });
+  }, [gid, uid]);
 
   const claimAndUpdateGift = (userId) => {
     setLoading(true);
@@ -130,7 +145,7 @@ export default function Gift({ user, gift: initialGift, fromMyGifts }) {
     return renderGiftButtons();
   };
 
-  if (!gift) {
+  if (error) {
     return (
       <Banner
         icon="globe"
@@ -144,7 +159,7 @@ export default function Gift({ user, gift: initialGift, fromMyGifts }) {
     );
   }
 
-  if (loading) {
+  if (loading || !user) {
     return <Loader />;
   }
 
@@ -199,25 +214,8 @@ export default function Gift({ user, gift: initialGift, fromMyGifts }) {
 
 export const getServerSideProps = withPageAuth({
   redirectTo: "/login",
-  async getServerSideProps(ctx, supabase) {
-    const { uid, gid } = ctx.params;
-
-    const {
-      data: [user],
-    } = await supabase
-      .from("users")
-      .select("user_id, name, avatar_url")
-      .eq("user_id", uid);
-
-    const {
-      data: [gift],
-    } = await supabase
-      .from("gifts")
-      .select("id, name, claimed_by ( user_id, name ), user, description, url")
-      .eq("id", gid);
-
+  async getServerSideProps(ctx) {
     const fromMyGifts = ctx.req.headers.referer.includes("/gifts");
-
-    return { props: { user, gift: gift || null, fromMyGifts } };
+    return { props: { fromMyGifts } };
   },
 });

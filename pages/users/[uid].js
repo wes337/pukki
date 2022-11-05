@@ -1,22 +1,43 @@
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "@supabase/auth-helpers-react";
 import { withPageAuth } from "@supabase/auth-helpers-nextjs";
 import { IconCheck } from "@tabler/icons";
 import variables from "../../styles/variables.module.scss";
-import { isAdmin, isTestUser, getFirstName } from "../../utils/users";
+import { getUser } from "../../actions/users";
+import { getGiftsForUser } from "../../actions/gifts";
+import { isAdmin, getFirstName } from "../../utils/users";
 import useTranslate from "../../hooks/useTranslate";
-import { Header, Avatar, Banner, Button, List } from "../../components";
+import { Header, Avatar, Banner, Button, List, Loader } from "../../components";
 import styles from "./users.module.scss";
 
-export default function User({ user, gifts }) {
+export default function User() {
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState();
+  const [gifts, setGifts] = useState([]);
   const session = useSession();
   const router = useRouter();
   const translate = useTranslate();
   const { uid } = router.query;
-  const isMe = uid === session.user.id;
+  const isMe = uid === session?.user?.id;
 
-  const canAddGifts =
-    isMe || (isTestUser(user.user_id) && session && isAdmin(session.user.id));
+  const canAddGifts = useMemo(
+    () => isMe || isAdmin(session?.user?.id),
+    [isMe, session]
+  );
+
+  useEffect(() => {
+    setLoading(true);
+    Promise.all([getUser(uid), getGiftsForUser(uid)]).then(([user, gifts]) => {
+      setUser(user);
+      setGifts(gifts);
+      setLoading(false);
+    });
+  }, [uid]);
+
+  if (loading || !user) {
+    return <Loader />;
+  }
 
   return (
     <>
@@ -25,7 +46,7 @@ export default function User({ user, gifts }) {
           isMe
             ? translate("my-wishlist")
             : translate("user's-wishlist", {
-                name: getFirstName(user?.name),
+                name: getFirstName(user.name),
               })
         }
         avatar={user.avatar_url}
@@ -88,21 +109,4 @@ export default function User({ user, gifts }) {
 
 export const getServerSideProps = withPageAuth({
   redirectTo: "/login",
-  async getServerSideProps(ctx, supabase) {
-    const { uid } = ctx.params;
-
-    const {
-      data: [user],
-    } = await supabase
-      .from("users")
-      .select("user_id, name, avatar_url")
-      .eq("user_id", uid);
-
-    const { data: gifts } = await supabase
-      .from("gifts")
-      .select("id, name, claimed_by ( user_id, avatar_url )")
-      .eq("user", uid);
-
-    return { props: { user, gifts } };
-  },
 });

@@ -41,6 +41,10 @@ const i18n = {
     en: "No gifts!",
     fi: "Ei lahjoja!",
   },
+  ["you-haven't-claimed-any-gifts-yet"]: {
+    en: "You haven't claimed any gifts yet",
+    fi: "Et ole vielä lunastanut lahjoja",
+  },
   ["my-wishlist"]: {
     en: "My wishlist",
     fi: "Toivelistani",

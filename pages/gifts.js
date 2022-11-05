@@ -1,13 +1,31 @@
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { withPageAuth } from "@supabase/auth-helpers-nextjs";
+import { useUser } from "@supabase/auth-helpers-react";
 import useTranslate from "../hooks/useTranslate";
-import { Header, Avatar, List, Banner } from "../components";
+import { getGiftsClaimedByUser } from "../actions/gifts";
+import { Header, Avatar, List, Banner, Loader } from "../components";
 import variables from "../styles/variables.module.scss";
 import styles from "./users.module.scss";
 
-export default function Gifts({ gifts }) {
+export default function Gifts() {
+  const [loading, setLoading] = useState(false);
+  const [gifts, setGifts] = useState([]);
   const router = useRouter();
   const translate = useTranslate();
+  const user = useUser();
+
+  useEffect(() => {
+    setLoading(true);
+    getGiftsClaimedByUser(user.id).then((gifts) => {
+      setGifts(gifts);
+      setLoading(false);
+    });
+  }, [user]);
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <div className={styles.gifts}>
@@ -15,8 +33,8 @@ export default function Gifts({ gifts }) {
       {gifts.length === 0 ? (
         <Banner
           icon="globe"
-          title="No gifts!"
-          message="You haven't claimed any gifts yet."
+          title={translate("no-gifts")}
+          message={translate("you-haven't-claimed-any-gifts-yet")}
         />
       ) : (
         <List
@@ -39,9 +57,7 @@ export default function Gifts({ gifts }) {
             ),
             rightIcon: <Avatar url={gift.user.avatar_url} size={24} />,
             onClick: () =>
-              router.push(`/users/${gift.user.user_id}/${gift.id}`, undefined, {
-                query: "k",
-              }),
+              router.push(`/users/${gift.user.user_id}/${gift.id}`),
           }))}
         />
       )}
@@ -51,32 +67,4 @@ export default function Gifts({ gifts }) {
 
 export const getServerSideProps = withPageAuth({
   redirectTo: "/login",
-  async getServerSideProps(ctx, supabase) {
-    const { res } = ctx;
-
-    res.setHeader(
-      "Cache-Control",
-      "public, s-maxage=10, stale-while-revalidate=59"
-    );
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    const { data: gifts } = await supabase
-      .from("gifts")
-      .select(
-        `
-        id,
-        name,
-        user (
-          user_id,
-          avatar_url
-        ),
-        claimed_by`
-      )
-      .eq("claimed_by", user.id);
-
-    return { props: { gifts } };
-  },
 });

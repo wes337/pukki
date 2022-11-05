@@ -1,16 +1,30 @@
-import { useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/router";
 import { withPageAuth } from "@supabase/auth-helpers-nextjs";
 import { useSession } from "@supabase/auth-helpers-react";
+import { getAllUsers } from "../actions/users";
+import { getAllGifts } from "../actions/gifts";
 import { getFirstName } from "../utils/users";
 import useTranslate from "../hooks/useTranslate";
-import { Button, List, ProgressBar } from "../components";
+import { Button, List, Loader, ProgressBar } from "../components";
 import styles from "./users.module.scss";
 
-export default function Users({ users, gifts }) {
+export default function Users() {
+  const [loading, setLoading] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [gifts, setGifts] = useState([]);
   const session = useSession();
   const router = useRouter();
   const translate = useTranslate();
+
+  useEffect(() => {
+    setLoading(true);
+    Promise.all([getAllUsers(), getAllGifts()]).then(([users, gifts]) => {
+      setUsers(users);
+      setGifts(gifts);
+      setLoading(false);
+    });
+  }, []);
 
   const usersWithGiftPercentages = useMemo(() => {
     if (!session || !users || !gifts) {
@@ -50,6 +64,10 @@ export default function Users({ users, gifts }) {
     );
   };
 
+  if (loading) {
+    return <Loader />;
+  }
+
   return (
     <div className={styles.users}>
       <div className={styles.header}>
@@ -84,17 +102,4 @@ export default function Users({ users, gifts }) {
 
 export const getServerSideProps = withPageAuth({
   redirectTo: "/login",
-  async getServerSideProps(ctx, supabase) {
-    const { res } = ctx;
-
-    res.setHeader(
-      "Cache-Control",
-      "public, s-maxage=10, stale-while-revalidate=59"
-    );
-
-    const { data: users } = await supabase.from("users").select();
-    const { data: gifts } = await supabase.from("gifts").select();
-
-    return { props: { users, gifts } };
-  },
 });
