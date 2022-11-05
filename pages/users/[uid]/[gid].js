@@ -151,9 +151,13 @@ export default function Gift({ user, gift: initialGift, fromMyGifts }) {
   return (
     <div className={styles.gift}>
       <Header
-        title={translate("user's-wishlist", {
-          name: isMe ? "My" : getFirstName(user?.name),
-        })}
+        title={
+          isMe
+            ? translate("my-wishlist")
+            : translate("user's-wishlist", {
+                name: getFirstName(user?.name),
+              })
+        }
         avatar={user.avatar_url}
         back={fromMyGifts && "/gifts"}
       />

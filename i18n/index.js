@@ -3,7 +3,7 @@ import { formAllativeCase, formGenitiveCase } from "../utils/string";
 const i18n = {
   ["add-gift"]: {
     en: "Add gift",
-    fi: "Lisää lahja",
+    fi: "Lisää lahjatoive",
   },
   ["add-a-gift-to-your-wishlist"]: {
     en: "Add a gift to your wishlist",
@@ -47,7 +47,7 @@ const i18n = {
   },
   ["gifts-i'm-buying"]: {
     en: "Gifts I'm buying",
-    fi: "Lahjat ostan",
+    fi: "Lahjat, jotka ostan",
   },
   ["sign-in-with"]: {
     en: "Sign in with",
@@ -79,7 +79,7 @@ const i18n = {
   },
   ["delete"]: {
     en: "Delete",
-    fi: "Poistaa",
+    fi: "Poista",
   },
   ["you-are-buying"]: {
     en: "You are buying",
@@ -99,7 +99,7 @@ const i18n = {
   },
   ["i'll-buy-it"]: {
     en: "I'll buy it!",
-    fi: "Ostan sen!",
+    fi: "Ostan tämän!",
   },
   ["back"]: {
     en: "Back",
@@ -115,7 +115,7 @@ const i18n = {
   },
   ["user-wants"]: {
     en: ({ name }) => `${name} wants...`,
-    fi: ({ name }) => `${name} haluaa...`,
+    fi: ({ name }) => `${name} toivoo...`,
   },
   ["where-can-you-buy-it"]: {
     en: "Where can you buy it?",

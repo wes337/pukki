@@ -21,9 +21,13 @@ export default function User({ user, gifts }) {
   return (
     <>
       <Header
-        title={translate("user's-wishlist", {
-          name: isMe ? "My" : getFirstName(user?.name),
-        })}
+        title={
+          isMe
+            ? translate("my-wishlist")
+            : translate("user's-wishlist", {
+                name: getFirstName(user?.name),
+              })
+        }
         avatar={user.avatar_url}
       />
       {gifts.length === 0 ? (
