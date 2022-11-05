@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { withPageAuth } from "@supabase/auth-helpers-nextjs";
 import { useSession, useUser } from "@supabase/auth-helpers-react";
+import useTranslate from "../../../hooks/useTranslate";
 import { isAdmin, isTestUser } from "../../../utils/users";
 import { addGift } from "../../../actions/gifts";
 import { Header, Button, Loader } from "../../../components";
@@ -11,6 +12,7 @@ export default function Gift({ gift }) {
   const session = useSession();
   const user = useUser();
   const router = useRouter();
+  const translate = useTranslate();
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -70,47 +72,47 @@ export default function Gift({ gift }) {
   return (
     <div className={styles.gift}>
       <Header
-        title={
+        title={translate(
           gift
-            ? "Change a gift on your wishlist"
-            : "Add a gift to your wishlist"
-        }
+            ? "add-a-gift-to-your-wishlist"
+            : "change-a-gift-on-your-wishlist"
+        )}
         avatar={user?.user_metadata?.avatar_url}
       />
       <div className={styles.body}>
         <label htmlFor="name">
-          <span>What do you want?</span>
+          <span>{translate("what-do-you-want")}</span>
           <input
             name="name"
             type="text"
             value={name}
-            placeholder="Name of the gift"
+            placeholder={translate("name-of-the-gift")}
             onChange={(event) => setName(event.target.value)}
           ></input>
         </label>
         <label htmlFor="description">
-          <span>Write a short description</span>
+          <span>{translate("write-a-short-description")}</span>
           <textarea
             name="description"
             value={description}
-            placeholder="Include details such as size, colour, or anything specific about the gift you want"
+            placeholder={translate("include-details")}
             onChange={(event) => setDescription(event.target.value)}
           ></textarea>
         </label>
         <label htmlFor="url">
-          <span>Where can you buy it?</span>
+          <span>{translate("where-can-you-buy-it")}</span>
           <input
             name="url"
             type="text"
             value={url}
-            placeholder="Link to the gift online, or name of the shop"
+            placeholder={translate("link-to-gift-or-name-of-shop")}
             onChange={(event) => setUrl(event.target.value)}
           ></input>
         </label>
       </div>
       <div className={styles.footer}>
         <Button icon="gift" block onClick={addOrUpdateGift} disabled={!name}>
-          {gift ? "Update your wishlist" : "Add to wishlist"}
+          {translate(gift ? "update-your-wishlist" : "add-to-your-wishlist")}
         </Button>
       </div>
     </div>

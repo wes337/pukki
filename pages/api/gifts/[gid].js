@@ -1,4 +1,5 @@
 import { withApiAuth } from "@supabase/auth-helpers-nextjs";
+import { isAdmin } from "../../../utils/users";
 
 async function removeGift(req, res, supabase) {
   try {
@@ -11,7 +12,8 @@ async function removeGift(req, res, supabase) {
     const supabaseUser = await supabase.auth.getUser();
     const requestingUser = supabaseUser?.data?.user;
 
-    const cannotDelete = gift.user !== requestingUser.id;
+    const cannotDelete =
+      gift.user !== requestingUser.id && !isAdmin(requestingUser.id);
 
     if (cannotDelete) {
       return res.status(401).send();

@@ -1,7 +1,10 @@
 import Image from "next/image";
+import useTranslate from "../../hooks/useTranslate";
 import styles from "./Loader.module.scss";
 
 export default function Loader() {
+  const translate = useTranslate();
+
   return (
     <div className={styles.loader}>
       <Image
@@ -10,9 +13,9 @@ export default function Loader() {
         width={100}
         priority
         loading="eager"
-        alt="Loading"
+        alt=""
       />
-      <div>Loading...</div>
+      <div>{translate("loading")}</div>
     </div>
   );
 }

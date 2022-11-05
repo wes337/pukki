@@ -3,17 +3,20 @@ import { useRouter } from "next/router";
 import { withPageAuth } from "@supabase/auth-helpers-nextjs";
 import { useSession } from "@supabase/auth-helpers-react";
 import { removeGift, claimGift } from "../../../actions/gifts";
+import useTranslate from "../../../hooks/useTranslate";
 import { isAdmin, isTestUser, getFirstName } from "../../../utils/users";
-import { formPossessive, isValidUrl } from "../../../utils/string";
+import { isValidUrl } from "../../../utils/string";
 import { Banner, Button, Header, Icon, Loader } from "../../../components";
 import styles from "./gift.module.scss";
 
-export default function Gift({ user, gift: initialGift }) {
+export default function Gift({ user, gift: initialGift, fromMyGifts }) {
   const session = useSession();
   const router = useRouter();
+  const translate = useTranslate();
   const [gift, setGift] = useState(initialGift);
   const [loading, setLoading] = useState(false);
-  const { uid, gid } = router.query;
+  const { locale, query } = router;
+  const { uid, gid } = query;
   const isMe = uid === session.user.id;
 
   const claimAndUpdateGift = (userId) => {
@@ -35,7 +38,7 @@ export default function Gift({ user, gift: initialGift }) {
           onClick={() => router.push(`/users/${gift.user}/${gift.id}/edit`)}
           block
         >
-          Edit
+          {translate("edit")}
         </Button>
         <Button
           icon="bauble"
@@ -46,7 +49,7 @@ export default function Gift({ user, gift: initialGift }) {
           }}
           block
         >
-          Delete
+          {translate("delete")}
         </Button>
       </>
     );
@@ -64,17 +67,24 @@ export default function Gift({ user, gift: initialGift }) {
             <Icon name="ornament" size={32} />
             <div>
               {claimedByMe
-                ? "You are "
-                : `${getFirstName(gift.claimed_by.name)} is `}
-              buying
+                ? translate("you-are-buying")
+                : translate("user-is-buying", {
+                    name: getFirstName(gift.claimed_by.name),
+                  })}
               <br />
               <span>{gift.name}</span>
             </div>
             <br />
             <div>
-              for
-              <br />
-              <span>{user.name}</span>
+              {locale === "en" && (
+                <>
+                  {translate("for")}
+                  <br />
+                </>
+              )}
+              <span>
+                {translate("for-user", { name: getFirstName(user.name) })}
+              </span>
             </div>
             <Icon name="ornament" size={32} />
           </div>
@@ -85,7 +95,7 @@ export default function Gift({ user, gift: initialGift }) {
               block
               onClick={() => claimAndUpdateGift(null)}
             >
-              Nevermind, I&#39;m not buying this
+              {translate("nevermind-im-not-buying-this")}
             </Button>
           )}
         </div>
@@ -98,7 +108,7 @@ export default function Gift({ user, gift: initialGift }) {
         block
         onClick={() => claimAndUpdateGift(session.user.id)}
       >
-        I&#39;ll buy it!
+        {translate("i'll-buy-it")}
       </Button>
     );
   };
@@ -125,9 +135,9 @@ export default function Gift({ user, gift: initialGift }) {
       <Banner
         icon="globe"
         title="404"
-        message="Gift not found."
+        message={translate("gift-not-found")}
         action={{
-          label: "Go back",
+          label: translate("back"),
           callback: () => router.push(`/users/${uid}`),
         }}
       />
@@ -141,27 +151,30 @@ export default function Gift({ user, gift: initialGift }) {
   return (
     <div className={styles.gift}>
       <Header
-        title={`${
-          isMe ? "My" : formPossessive(getFirstName(user?.name))
-        } wishlist`}
+        title={translate("user's-wishlist", {
+          name: isMe ? "My" : getFirstName(user?.name),
+        })}
         avatar={user.avatar_url}
+        back={fromMyGifts && "/gifts"}
       />
       <div className={styles.body}>
         <h5>
           <span>
-            {isMe ? "You want..." : `${getFirstName(user?.name)} wants...`}
+            {isMe
+              ? translate("you-want")
+              : translate("user-wants", { name: getFirstName(user?.name) })}
           </span>
           {gift.name}
         </h5>
         {gift.url && (
           <h5>
-            <span>Where can you buy it?</span>
+            <span>{translate("where-can-you-buy-it")}</span>
             {isValidUrl(gift.url) ? (
               <Button
                 icon="gift-alt"
                 onClick={() => window.open(gift.url, "_blank")}
               >
-                Click here!
+                {translate("click-here")}
               </Button>
             ) : (
               gift.url
@@ -199,6 +212,8 @@ export const getServerSideProps = withPageAuth({
       .select("id, name, claimed_by ( user_id, name ), user, description, url")
       .eq("id", gid);
 
-    return { props: { user, gift: gift || null } };
+    const fromMyGifts = ctx.req.headers.referer.includes("/gifts");
+
+    return { props: { user, gift: gift || null, fromMyGifts } };
   },
 });

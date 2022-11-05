@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { getFirstName, getUserName } from "../../utils/users";
+import useTranslate from "../../hooks/useTranslate";
 import Logo from "../Logo/Logo";
 import Button from "../Button/Button";
 import styles from "./SignOut.module.scss";
@@ -9,13 +10,16 @@ export default function SignOut() {
   const user = useUser();
   const supabase = useSupabaseClient();
   const router = useRouter();
+  const translate = useTranslate();
 
   return (
     <header className={styles["sign-out"]}>
       <Logo centered={!user} />
       {user && (
         <div className={styles.user}>
-          Welcome, <span>{getFirstName(getUserName(user))}</span>
+          {translate("welcome", {
+            name: <span>{getFirstName(getUserName(user))}</span>,
+          })}
           <hr />
           <Button
             icon="tag"
@@ -23,7 +27,7 @@ export default function SignOut() {
             size="small"
             onClick={() => supabase.auth.signOut().then(() => router.push("/"))}
           >
-            Sign out
+            {translate("sign-out")}
           </Button>
         </div>
       )}

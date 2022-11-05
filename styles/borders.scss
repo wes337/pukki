@@ -8,4 +8,5 @@ $borderSizeSmall: 1px;
 
 @mixin outlineSmall($color) {
   outline: $borderSizeSmall solid $color;
+  outline-offset: $space-xs;
 }

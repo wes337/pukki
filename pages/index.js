@@ -19,7 +19,6 @@ export default function Index({ user }) {
 export const getServerSideProps = withPageAuth({
   redirectTo: "/login",
   async getServerSideProps(ctx, supabase) {
-    console.log("HERE!");
     const {
       data: { session },
     } = await supabase.auth.getSession();

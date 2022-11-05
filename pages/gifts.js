@@ -1,15 +1,17 @@
 import { useRouter } from "next/router";
 import { withPageAuth } from "@supabase/auth-helpers-nextjs";
+import useTranslate from "../hooks/useTranslate";
 import { Header, Avatar, List, Banner } from "../components";
 import variables from "../styles/variables.module.scss";
 import styles from "./users.module.scss";
 
 export default function Gifts({ gifts }) {
   const router = useRouter();
+  const translate = useTranslate();
 
   return (
     <div className={styles.gifts}>
-      <Header title="Gifts I'm buying" />
+      <Header title={translate("gifts-i'm-buying")} />
       {gifts.length === 0 ? (
         <Banner
           icon="globe"
@@ -37,7 +39,9 @@ export default function Gifts({ gifts }) {
             ),
             rightIcon: <Avatar url={gift.user.avatar_url} size={24} />,
             onClick: () =>
-              router.push(`/users/${gift.user.user_id}/${gift.id}`),
+              router.push(`/users/${gift.user.user_id}/${gift.id}`, undefined, {
+                query: "k",
+              }),
           }))}
         />
       )}

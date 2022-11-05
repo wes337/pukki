@@ -3,13 +3,14 @@ import { useRouter } from "next/router";
 import { withPageAuth } from "@supabase/auth-helpers-nextjs";
 import { useSession } from "@supabase/auth-helpers-react";
 import { getFirstName } from "../utils/users";
-import { formPossessive } from "../utils/string";
+import useTranslate from "../hooks/useTranslate";
 import { Button, List, ProgressBar } from "../components";
 import styles from "./users.module.scss";
 
 export default function Users({ users, gifts }) {
   const session = useSession();
   const router = useRouter();
+  const translate = useTranslate();
 
   const usersWithGiftPercentages = useMemo(() => {
     if (!session || !users || !gifts) {
@@ -24,9 +25,8 @@ export default function Users({ users, gifts }) {
         const userGifts = gifts.filter((gift) => gift.user === user.user_id);
         const userGiftsClaimed = userGifts.filter((gift) => gift.claimed_by);
 
-        const percentage = Math.floor(
-          (userGiftsClaimed.length / userGifts.length) * 100
-        );
+        const percentage =
+          Math.floor((userGiftsClaimed.length / userGifts.length) * 100) || 0;
 
         return { ...user, percentage };
       })
@@ -40,7 +40,9 @@ export default function Users({ users, gifts }) {
   const renderUserListItem = (user) => {
     return (
       <div className={styles.item}>
-        <div>{formPossessive(getFirstName(user.name))} wishlist</div>
+        <div>
+          {translate("user's-wishlist", { name: getFirstName(user.name) })}
+        </div>
         <span>
           <ProgressBar percent={user.percentage} />
         </span>
@@ -56,7 +58,7 @@ export default function Users({ users, gifts }) {
           block
           onClick={() => router.push(`/users/${session.user.id}`)}
         >
-          My wishlist
+          {translate("my-wishlist")}
         </Button>
         <Button
           icon="sock"
@@ -64,7 +66,7 @@ export default function Users({ users, gifts }) {
           block
           onClick={() => router.push("/gifts")}
         >
-          Gifts I&#39;m buying
+          {translate("gifts-i'm-buying")}
         </Button>
       </div>
       <hr />

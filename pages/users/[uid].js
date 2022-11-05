@@ -4,36 +4,39 @@ import { withPageAuth } from "@supabase/auth-helpers-nextjs";
 import { IconCheck } from "@tabler/icons";
 import variables from "../../styles/variables.module.scss";
 import { isAdmin, isTestUser, getFirstName } from "../../utils/users";
-import { formPossessive } from "../../utils/string";
+import useTranslate from "../../hooks/useTranslate";
 import { Header, Avatar, Banner, Button, List } from "../../components";
 import styles from "./users.module.scss";
 
 export default function User({ user, gifts }) {
   const session = useSession();
   const router = useRouter();
+  const translate = useTranslate();
   const { uid } = router.query;
   const isMe = uid === session.user.id;
 
   const canAddGifts =
     isMe || (isTestUser(user.user_id) && session && isAdmin(session.user.id));
 
-  const emptyWishlistMessage = isMe
-    ? "You haven't added any gifts to your wishlist yet. Click the add gift button below to get started!"
-    : `${user.name} hasn't added any gifts to their wishlist yet!`;
-
   return (
     <>
       <Header
-        title={`${
-          isMe ? "My" : formPossessive(getFirstName(user?.name))
-        } wishlist`}
+        title={translate("user's-wishlist", {
+          name: isMe ? "My" : getFirstName(user?.name),
+        })}
         avatar={user.avatar_url}
       />
       {gifts.length === 0 ? (
         <Banner
           icon="fireplace"
-          title="No gifts!"
-          message={emptyWishlistMessage}
+          title={translate("no-gifts")}
+          message={
+            isMe
+              ? translate("you-haven't-added-any-gifts-yet")
+              : translate("user-hasn't-added-any-gifts-yet", {
+                  name: user.name,
+                })
+          }
         />
       ) : (
         <List
@@ -71,7 +74,7 @@ export default function User({ user, gifts }) {
             icon="gift"
             onClick={() => router.push(`/users/${uid}/gift`)}
           >
-            Add Gift
+            {translate("add-gift")}
           </Button>
         </div>
       )}

@@ -4,6 +4,7 @@
 @import "../../styles/fonts.scss";
 
 .footer {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -21,5 +22,17 @@
     transform: scale(1.5) translateY(-3px);
     font-size: $font-size-m;
     margin-right: $space-xs;
+  }
+
+  div {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: $space-s;
+    right: 0;
+  }
+
+  button {
+    padding: $space-xxs;
   }
 }
