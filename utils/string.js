@@ -14,7 +14,7 @@ export const formGenitiveCase = (name, locale = "en") => {
     }
 
     if (locale === "fi") {
-      if (name.endsWith("us") || name.endsWith("as") || name.endsWith("es")) {
+      if (name.endsWith("us") || name.endsWith("as")) {
         return `${name.slice(0, -1)}ksen`;
       }
 
