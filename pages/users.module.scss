@@ -32,3 +32,9 @@
     justify-content: space-between;
   }
 }
+
+@media only screen and (max-width: 400px) {
+  .users .item {
+    grid-template-columns: 60% 40%;
+  }
+}
