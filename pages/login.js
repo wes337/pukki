@@ -1,20 +1,20 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
-import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import useTranslate from "../hooks/useTranslate";
 
 export default function Login() {
   const router = useRouter();
-  const session = useSession();
+  const user = useUser();
   const supabaseClient = useSupabaseClient();
   const translate = useTranslate();
 
   useEffect(() => {
-    if (session) {
-      router.push("/");
+    if (user) {
+      router.push("/users");
     }
-  }, [session, router]);
+  }, [user, router]);
 
   return (
     <Auth

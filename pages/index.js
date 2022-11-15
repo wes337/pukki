@@ -34,6 +34,12 @@ export const getServerSideProps = withPageAuth({
       .upsert(updatedUser, { onConflict: "user_id" })
       .select();
 
-    return { props: { user: data[0] } };
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/users",
+      },
+      props: { user: data[0] },
+    };
   },
 });

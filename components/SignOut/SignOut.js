@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { getFirstName, getUserName } from "../../utils/users";
+import { deleteCookie } from "../../utils/cookie";
 import useTranslate from "../../hooks/useTranslate";
 import Logo from "../Logo/Logo";
 import Button from "../Button/Button";
@@ -14,28 +15,19 @@ export default function SignOut() {
 
   const signOut = () => {
     sessionStorage.clear();
-
     localStorage.clear();
 
-    caches.keys().then((keys) => {
-      keys.forEach((key) => caches.delete(key));
+    caches?.keys?.().then((keys) => {
+      keys?.forEach?.((key) => caches?.delete?.(key));
     });
 
-    indexedDB.databases().then((dbs) => {
-      dbs.forEach((db) => indexedDB.deleteDatabase(db.name));
+    indexedDB?.databases?.().then((dbs) => {
+      dbs?.forEach?.((db) => indexedDB?.deleteDatabase?.(db.name));
     });
 
-    document.cookie = document.cookie.split(";").reduce((cookie, keyVal) => {
-      var pair = keyVal.trim().split("=");
-      if (pair[0]) {
-        if (pair[0] !== "path" && pair[0] !== "expires") {
-          cookie += pair[0] + "=;";
-        }
-      }
-      return cookie;
-    }, "expires=Thu, 01 Jan 1970 00:00:00 UTC; path:/;");
+    deleteCookie("supabase-auth-token");
 
-    supabase.auth.signOut().then(() => router.push("/"));
+    supabase.auth.signOut().then(() => router.push("/login"));
   };
 
   return (
