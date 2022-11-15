@@ -2,11 +2,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { createClient } from "@supabase/supabase-js";
 import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
-import {
-  useSession,
-  useSupabaseClient,
-  useUser,
-} from "@supabase/auth-helpers-react";
+import { useSession, useUser } from "@supabase/auth-helpers-react";
 import useTranslate from "../hooks/useTranslate";
 
 export default function Login() {
