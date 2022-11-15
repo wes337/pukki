@@ -26,6 +26,10 @@
       font-size: $font-size-xl;
       color: $colorLightRed;
 
+      button {
+        margin-top: $space-s;
+      }
+
       span {
         color: $colorBlack;
         letter-spacing: normal;
