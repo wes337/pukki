@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
+import { createClient } from "@supabase/supabase-js";
 import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
 import {
   useSession,
@@ -12,7 +13,10 @@ export default function Login() {
   const router = useRouter();
   const user = useUser();
   const session = useSession();
-  const supabaseClient = useSupabaseClient();
+  const supabaseClient = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  );
   const translate = useTranslate();
 
   useEffect(() => {
