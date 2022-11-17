@@ -1,0 +1,21 @@
+@import "../../styles/colors.scss";
+
+.snowy-hills {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+
+  svg {
+    position: relative;
+    display: block;
+    width: 300%;
+    transform: rotateY(180deg);
+  }
+
+  .shape-fill {
+    fill: $colorWhite;
+  }
+}

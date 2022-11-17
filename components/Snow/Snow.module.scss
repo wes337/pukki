@@ -1,0 +1,47 @@
+@import "../../styles/colors.scss";
+
+.snow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+
+  div {
+    --size: 1vw;
+    width: var(--size);
+    height: var(--size);
+    background: $colorWhite;
+    border-radius: 50%;
+    position: absolute;
+    top: -5vh;
+    box-shadow: rgba($colorBlack, 0.05) 0px 0px 24px;
+  }
+
+  @for $i from 1 through 50 {
+    div:nth-child(#{$i}) {
+      --size: #{random(5) * 0.2}vw;
+      --left-ini: #{random(20) - 10}vw;
+      --left-end: #{random(20) - 10}vw;
+      left: #{random(100)}vw;
+      animation: snowfall #{5 + random(10)}s linear infinite;
+      animation-delay: -#{random(10)}s;
+    }
+  }
+
+  div:nth-child(6n) {
+    filter: blur(1px);
+  }
+}
+
+@keyframes snowfall {
+  0% {
+    transform: translate3d(var(--left-ini), 0, 0);
+  }
+  100% {
+    transform: translate3d(var(--left-end), 110vh, 0);
+  }
+}

@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import Head from "next/head";
 import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { SessionContextProvider } from "@supabase/auth-helpers-react";
-import { SignOut, Card, Footer } from "../components";
+import { SignOut, Card, Footer, Snow } from "../components";
 import "../styles/index.scss";
+import SnowyHills from "../components/SnowyHills/SnowyHills";
 
 export default function MyApp({ Component, pageProps }) {
   const [supabaseClient] = useState(() => createBrowserSupabaseClient());
@@ -37,6 +38,8 @@ export default function MyApp({ Component, pageProps }) {
           </SessionContextProvider>
         </main>
       </div>
+      <Snow />
+      <SnowyHills />
     </>
   );
 }

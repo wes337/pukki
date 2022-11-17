@@ -10,3 +10,4 @@ export { default as Banner } from "./Banner/Banner";
 export { default as Footer } from "./Footer/Footer";
 export { default as SignOut } from "./SignOut/SignOut";
 export { default as ProgressBar } from "./ProgressBar/ProgressBar";
+export { default as Snow } from "./Snow/Snow";

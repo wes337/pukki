@@ -1,24 +1,32 @@
-export const getUserName = (user) => {
-  if (!user) {
-    return "";
-  }
+export const getUserName = (user, defaultUserName = "Secret Santa") => {
+  try {
+    if (!user) {
+      return defaultUserName;
+    }
 
-  if (user.user_metadata) {
-    return (
-      user.user_metadata.nickname ||
-      user.user_metadata.name ||
-      user.user_metadata.full_name
-    );
-  }
+    if (user.user_metadata) {
+      return (
+        user.user_metadata.nickname ||
+        user.user_metadata.name ||
+        user.user_metadata.full_name
+      );
+    }
 
-  return user.email || "No name";
+    return user.email || defaultUserName;
+  } catch {
+    return defaultUserName;
+  }
 };
 
 export const getFirstName = (userName) => {
-  if (userName === "Del Monte") {
+  try {
+    if (userName === "Del Monte") {
+      return userName;
+    }
+    return userName?.split?.(" ")[0];
+  } catch {
     return userName;
   }
-  return userName?.split?.(" ")[0];
 };
 
 export const isAdmin = (userId) => {
