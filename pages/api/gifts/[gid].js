@@ -38,7 +38,7 @@ async function getGift(req, res, supabase) {
 
     let { data, error } = await supabase
       .from("gifts")
-      .select("id, name, claimed_by, user, description, url")
+      .select("id, name, claimed_by ( user_id, name ), user, description, url")
       .eq("id", gid);
 
     if (error) {
