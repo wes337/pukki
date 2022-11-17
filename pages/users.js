@@ -1,16 +1,17 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/router";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { useSession } from "@supabase/auth-helpers-react";
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { getAllUsers } from "../actions/users";
 import { getAllGifts } from "../actions/gifts";
-import { getFirstName } from "../utils/users";
+import { getUserName, getFirstName } from "../utils/users";
 import useTranslate from "../hooks/useTranslate";
 import { Button, List, Loader, ProgressBar } from "../components";
 import styles from "./users.module.scss";
 
 export default function Users() {
   const [loading, setLoading] = useState(false);
+  const supabase = useSupabaseClient();
   const [users, setUsers] = useState([]);
   const [gifts, setGifts] = useState([]);
   const session = useSession();
@@ -19,12 +20,28 @@ export default function Users() {
 
   useEffect(() => {
     setLoading(true);
-    Promise.all([getAllUsers(), getAllGifts()]).then(([users, gifts]) => {
-      setUsers(users);
-      setGifts(gifts);
-      setLoading(false);
-    });
-  }, []);
+
+    const updateUser = async () => {
+      const updatedUser = {
+        user_id: session.user.id,
+        name: getUserName(session.user),
+        avatar_url: session.user.user_metadata?.avatar_url,
+      };
+
+      await supabase
+        .from("users")
+        .upsert(updatedUser, { onConflict: "user_id" })
+        .select();
+    };
+
+    Promise.all([updateUser(), getAllUsers(), getAllGifts()]).then(
+      ([_, users, gifts]) => {
+        setUsers(users);
+        setGifts(gifts);
+        setLoading(false);
+      }
+    );
+  }, [session, supabase]);
 
   const usersWithGiftPercentages = useMemo(() => {
     if (!session || !users || !gifts) {
@@ -115,21 +132,10 @@ export const getServerSideProps = async (ctx) => {
       },
     };
 
-  const updatedUser = {
-    user_id: session.user.id,
-    name: getUserName(session.user),
-    avatar_url: session.user.user_metadata?.avatar_url,
-  };
-
-  const { data } = await supabase
-    .from("users")
-    .upsert(updatedUser, { onConflict: "user_id" })
-    .select();
-
   return {
     props: {
       initialSession: session,
-      user: data[0],
+      user: session.user,
     },
   };
 };

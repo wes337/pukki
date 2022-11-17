@@ -33,7 +33,7 @@ export default function Header({ title, avatar, back }) {
           break;
         }
         case "/gifts": {
-          router.push("/users");
+          router.push("/");
           break;
         }
         default: {
