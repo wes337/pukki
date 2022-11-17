@@ -1,8 +1,9 @@
-const withPWA = require("next-pwa")({
-  dest: "public",
-});
+const withPWA = require("next-pwa");
 
 module.exports = withPWA({
+  pwa: {
+    dest: "public",
+  },
   images: {
     remotePatterns: [
       {
