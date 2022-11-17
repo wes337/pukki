@@ -4,7 +4,7 @@ export async function getGifts(req, res, supabase) {
   try {
     const { data, error } = await supabase
       .from("gifts")
-      .select("id, name, user, claimed_by");
+      .select("id, name, claimed_by ( user_id, avatar_url )");
 
     if (error) {
       throw error;
