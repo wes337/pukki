@@ -1,5 +1,7 @@
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import Image from "next/image";
 import useTranslate from "../hooks/useTranslate";
+import styles from "./login.module.scss";
 
 export default function Login() {
   const supabase = useSupabaseClient();
@@ -12,19 +14,9 @@ export default function Login() {
   };
 
   return (
-    <button onClick={signInWithFacebook}>{translate("sign-in-with")}</button>
-    // <Auth
-    //   supabaseClient={supabaseClient}
-    //   providers={["facebook"]}
-    //   appearance={{ theme: ThemeSupa }}
-    //   onlyThirdPartyProviders
-    //   localization={{
-    //     variables: {
-    //       sign_in: {
-    //         social_provider_text: translate("sign-in-with"),
-    //       },
-    //     },
-    //   }}
-    // />
+    <button className={styles.login} onClick={signInWithFacebook}>
+      <Image src="/images/icons/facebook.svg" width={24} height={24} alt="" />
+      {translate("sign-in-with")} Facebook
+    </button>
   );
 }
