@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/router";
-import { withPageAuth } from "@supabase/auth-helpers-nextjs";
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { useSession } from "@supabase/auth-helpers-react";
 import { getAllUsers } from "../actions/users";
 import { getAllGifts } from "../actions/gifts";
@@ -100,6 +100,36 @@ export default function Users() {
   );
 }
 
-export const getServerSideProps = withPageAuth({
-  redirectTo: "/login",
-});
+export const getServerSideProps = async (ctx) => {
+  const supabase = createServerSupabaseClient(ctx);
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session)
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+
+  const updatedUser = {
+    user_id: session.user.id,
+    name: getUserName(session.user),
+    avatar_url: session.user.user_metadata?.avatar_url,
+  };
+
+  const { data } = await supabase
+    .from("users")
+    .upsert(updatedUser, { onConflict: "user_id" })
+    .select();
+
+  return {
+    props: {
+      initialSession: session,
+      user: data[0],
+    },
+  };
+};

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { withPageAuth } from "@supabase/auth-helpers-nextjs";
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { useUser } from "@supabase/auth-helpers-react";
 import useTranslate from "../hooks/useTranslate";
 import { getGiftsClaimedByUser } from "../actions/gifts";
@@ -65,6 +65,25 @@ export default function Gifts() {
   );
 }
 
-export const getServerSideProps = withPageAuth({
-  redirectTo: "/login",
-});
+export const getServerSideProps = async (ctx) => {
+  const supabase = createServerSupabaseClient(ctx);
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session)
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+
+  return {
+    props: {
+      initialSession: session,
+      user: session.user,
+    },
+  };
+};
