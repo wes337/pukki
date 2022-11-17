@@ -227,7 +227,7 @@ export const getServerSideProps = async (ctx) => {
       },
     };
 
-  const fromMyGifts = ctx.req.headers.referer.includes("/gifts");
+  const fromMyGifts = ctx?.req?.headers?.referer?.includes?.("/gifts") || false;
 
   return {
     props: {
