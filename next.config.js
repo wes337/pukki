@@ -14,6 +14,10 @@ module.exports = withPWA({
         protocol: "https",
         hostname: "www.w3schools.com",
       },
+      {
+        protocol: "https",
+        hostname: "**.fbcdn.net",
+      },
     ],
   },
   i18n: {
