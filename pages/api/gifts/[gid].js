@@ -1,5 +1,5 @@
 import { withApiAuth } from "@supabase/auth-helpers-nextjs";
-import { isAdmin } from "../../../utils/users";
+import { isAdmin, WHITELIST } from "../../../utils/users";
 
 async function removeGift(req, res, supabase) {
   try {
@@ -66,6 +66,13 @@ export async function claimGift(req, res, supabase) {
     const gift = existingGift[0];
     const supabaseUser = await supabase.auth.getUser();
     const requestingUser = supabaseUser?.data?.user;
+
+    const isWhitelistedUser = WHITELIST.includes(user_id);
+
+    if (!isWhitelistedUser) {
+      return res.status(401).send();
+    }
+
     const giftClaimedBySomebodyElse =
       gift.claimed_by && gift.claimed_by !== requestingUser.id;
 

@@ -1,4 +1,5 @@
 import { withApiAuth } from "@supabase/auth-helpers-nextjs";
+import { WHITELIST } from "../../utils/users";
 
 async function getUsers(req, res, supabase) {
   try {
@@ -8,7 +9,8 @@ async function getUsers(req, res, supabase) {
       throw error;
     }
 
-    return res.status(200).json(data);
+    const users = data.filter(({ user_id }) => WHITELIST.includes(user_id));
+    return res.status(200).json(users);
   } catch (error) {
     console.log(error);
     return res.status(500).send();
