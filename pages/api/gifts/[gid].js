@@ -67,7 +67,7 @@ export async function claimGift(req, res, supabase) {
     const supabaseUser = await supabase.auth.getUser();
     const requestingUser = supabaseUser?.data?.user;
 
-    const isWhitelistedUser = WHITELIST.includes(user_id);
+    const isWhitelistedUser = WHITELIST.includes(requestingUser.id);
 
     if (!isWhitelistedUser) {
       return res.status(401).send();
