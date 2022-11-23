@@ -56,8 +56,10 @@ export default function Gifts() {
               </>
             ),
             rightIcon: <Avatar url={gift.user.avatar_url} size={24} />,
-            onClick: () =>
-              router.push(`/users/${gift.user.user_id}/${gift.id}`),
+            onClick: () => {
+              setLoading(true);
+              router.push(`/users/${gift.user.user_id}/${gift.id}`);
+            },
           }))}
         />
       )}

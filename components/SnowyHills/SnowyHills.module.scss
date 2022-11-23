@@ -1,7 +1,7 @@
 @import "../../styles/colors.scss";
 
 .snowy-hills {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
@@ -34,7 +34,7 @@
 }
 
 .snowy-hills-back {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;

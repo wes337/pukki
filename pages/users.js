@@ -91,7 +91,10 @@ export default function Users() {
         <Button
           icon="greeting-card"
           block
-          onClick={() => router.push(`/users/${session.user.id}`)}
+          onClick={() => {
+            setLoading(true);
+            router.push(`/users/${session.user.id}`);
+          }}
         >
           {translate("my-wishlist")}
         </Button>
@@ -99,7 +102,10 @@ export default function Users() {
           icon="sock"
           variant="outline"
           block
-          onClick={() => router.push("/gifts")}
+          onClick={() => {
+            setLoading(true);
+            router.push("/gifts");
+          }}
         >
           {translate("gifts-i'm-buying")}
         </Button>
@@ -108,7 +114,10 @@ export default function Users() {
       <List
         items={usersWithGiftPercentages.map((user) => ({
           id: user.user_id,
-          onClick: () => router.push(`/users/${user.user_id}`),
+          onClick: () => {
+            setLoading(true);
+            router.push(`/users/${user.user_id}`);
+          },
           label: renderUserListItem(user),
           icon: user.avatar_url,
         }))}

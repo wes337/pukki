@@ -11,3 +11,5 @@ export { default as Footer } from "./Footer/Footer";
 export { default as SignOut } from "./SignOut/SignOut";
 export { default as ProgressBar } from "./ProgressBar/ProgressBar";
 export { default as Snow } from "./Snow/Snow";
+export { default as SnowyHills } from "./SnowyHills/SnowyHills";
+export { default as ChristmasTree } from "./ChristmasTree/ChristmasTree";

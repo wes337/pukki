@@ -88,7 +88,10 @@ export default function User() {
                 <Avatar url={gift.claimed_by.avatar_url} size={24} />
               </>
             ),
-            onClick: () => router.push(`/users/${uid}/${gift.id}`),
+            onClick: () => {
+              setLoading(true);
+              router.push(`/users/${uid}/${gift.id}`);
+            },
           }))}
         />
       )}
@@ -97,7 +100,10 @@ export default function User() {
           <Button
             block
             icon="gift"
-            onClick={() => router.push(`/users/${uid}/gift`)}
+            onClick={() => {
+              setLoading(true);
+              router.push(`/users/${uid}/gift`);
+            }}
           >
             {translate("add-gift")}
           </Button>

@@ -50,7 +50,10 @@ export default function Gift({ fromMyGifts }) {
       <>
         <Button
           icon="bauble-alt"
-          onClick={() => router.push(`/users/${gift.user}/${gift.id}/edit`)}
+          onClick={() => {
+            setLoading(true);
+            router.push(`/users/${gift.user}/${gift.id}/edit`);
+          }}
           block
         >
           {translate("edit")}
@@ -153,7 +156,10 @@ export default function Gift({ fromMyGifts }) {
         message={translate("gift-not-found")}
         action={{
           label: translate("back"),
-          callback: () => router.push(`/users/${uid}`),
+          callback: () => {
+            setLoading(true);
+            router.push(`/users/${uid}`);
+          },
         }}
       />
     );
