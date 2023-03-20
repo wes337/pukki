@@ -77,7 +77,7 @@ export default function Gift({ gift }) {
             ? "add-a-gift-to-your-wishlist"
             : "change-a-gift-on-your-wishlist"
         )}
-        avatar={user?.user_metadata?.avatar_url}
+        avatar={user?.user_metadata?.avatar_url || user?.avatar_url}
       />
       <div className={styles.body}>
         <label htmlFor="name">

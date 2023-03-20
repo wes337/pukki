@@ -10,6 +10,7 @@ module.exports = withPWA({
         protocol: "https",
         hostname: "platform-lookaside.fbsbx.com",
       },
+      { protocol: "https", hostname: "www.fbsbx.com" },
       {
         protocol: "https",
         hostname: "www.w3schools.com",
