@@ -6,7 +6,7 @@ import { getAllUsers } from "../actions/users";
 import { getAllGifts } from "../actions/gifts";
 import { getUserName, getFirstName } from "../utils/users";
 import useTranslate from "../hooks/useTranslate";
-import { Button, List, Loader, ProgressBar } from "../components";
+import { Button, List, Loader, ProgressBar, Avatar } from "../components";
 import styles from "./users.module.scss";
 
 export default function Users() {
@@ -119,7 +119,7 @@ export default function Users() {
             router.push(`/users/${user.user_id}`);
           },
           label: renderUserListItem(user),
-          icon: user.avatar_url,
+          icon: <Avatar url={user.avatar_url} size={24} />,
         }))}
       />
     </div>

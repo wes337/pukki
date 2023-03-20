@@ -10,7 +10,11 @@ export default function List({ items, withDivider }) {
           <button onClick={item.onClick}>
             {item.icon && (
               <div className={styles.icon}>
-                <Image src={item.icon} height={28} width={28} alt="" />
+                {typeof item.icon === "string" ? (
+                  <Image src={item.icon} height={28} width={28} alt="" />
+                ) : (
+                  item.icon
+                )}
               </div>
             )}
             <div className={styles.label}>{item.label}</div>

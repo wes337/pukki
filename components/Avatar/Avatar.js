@@ -12,7 +12,7 @@ export default function Avatar({ url, size = 30 }) {
         height={size}
         width={size}
         alt=""
-        onError={() => setSrc("/images/avatar-placeholder-1.png")}
+        onError={() => setSrc("/images/avatar-placeholder.png")}
       />
     </div>
   );
