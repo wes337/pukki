@@ -1,10 +1,11 @@
 import { withApiAuth } from "@supabase/auth-helpers-nextjs";
+import supabaseAdmin from "../../../utils/supabase-admin";
 
 async function getUser(req, res, supabase) {
   try {
     const { uid } = req.query;
 
-    let { data, error } = await supabase
+    let { data, error } = await supabaseAdmin
       .from("users")
       .select("user_id, name, avatar_url")
       .eq("user_id", uid);
@@ -35,7 +36,7 @@ async function updateUser(req, res, supabase) {
       avatar_url: user.avatar_url,
     };
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("users")
       .upsert(updatedUser, { onConflict: "user_id" })
       .select();

@@ -1,10 +1,11 @@
 import { withApiAuth } from "@supabase/auth-helpers-nextjs";
 import { isAdmin, WHITELIST } from "../../../utils/users";
+import supabaseAdmin from "../../../utils/supabase-admin";
 
 async function removeGift(req, res, supabase) {
   try {
     const { gid } = req.query;
-    const { data: existingGift } = await supabase
+    const { data: existingGift } = await supabaseAdmin
       .from("gifts")
       .select("user")
       .eq("id", gid);
@@ -19,7 +20,7 @@ async function removeGift(req, res, supabase) {
       return res.status(401).send();
     }
 
-    const { error } = await supabase.from("gifts").delete().eq("id", gid);
+    const { error } = await supabaseAdmin.from("gifts").delete().eq("id", gid);
 
     if (error) {
       throw error;
@@ -36,7 +37,7 @@ async function getGift(req, res, supabase) {
   try {
     const { gid } = req.query;
 
-    let { data, error } = await supabase
+    let { data, error } = await supabaseAdmin
       .from("gifts")
       .select("id, name, claimed_by ( user_id, name ), user, description, url")
       .eq("id", gid);
@@ -59,7 +60,7 @@ async function getGift(req, res, supabase) {
 export async function claimGift(req, res, supabase) {
   try {
     const { gid } = req.query;
-    const { data: existingGift } = await supabase
+    const { data: existingGift } = await supabaseAdmin
       .from("gifts")
       .select("claimed_by")
       .eq("id", gid);
@@ -82,7 +83,7 @@ export async function claimGift(req, res, supabase) {
 
     const claimedBy = req.body;
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("gifts")
       .update({ claimed_by: claimedBy || null })
       .eq("id", gid)

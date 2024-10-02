@@ -1,9 +1,10 @@
 import { withApiAuth } from "@supabase/auth-helpers-nextjs";
+import supabaseAdmin from "../../../../utils/supabase-admin";
 
 export default withApiAuth(async function ProtectedRoute(req, res, supabase) {
   try {
     const { uid } = req.query;
-    let { data, error } = await supabase
+    let { data, error } = await supabaseAdmin
       .from("gifts")
       .select("id, name, claimed_by ( user_id, avatar_url )")
       .eq("user", uid);

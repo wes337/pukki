@@ -1,9 +1,11 @@
+import { createClient } from "@supabase/supabase-js";
 import { withApiAuth } from "@supabase/auth-helpers-nextjs";
 import { WHITELIST } from "../../utils/users";
+import supabaseAdmin from "../../utils/supabase-admin";
 
 async function getUsers(req, res, supabase) {
   try {
-    const { data, error } = await supabase.from("users").select();
+    const { data, error } = await supabaseAdmin.from("users").select();
 
     if (error) {
       throw error;

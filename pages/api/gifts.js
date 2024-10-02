@@ -1,8 +1,9 @@
 import { withApiAuth } from "@supabase/auth-helpers-nextjs";
+import supabaseAdmin from "../../utils/supabase-admin";
 
 export async function getGifts(req, res, supabase) {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("gifts")
       .select("id, name, claimed_by ( user_id, avatar_url ), user");
 
@@ -27,7 +28,10 @@ export async function addGift(req, res, supabase) {
       return res.status(401).send();
     }
 
-    const { data, error } = await supabase.from("gifts").upsert(gift).select();
+    const { data, error } = await supabaseAdmin
+      .from("gifts")
+      .upsert(gift)
+      .select();
 
     if (error) {
       throw error;
