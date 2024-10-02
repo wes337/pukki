@@ -6,7 +6,7 @@ import useTranslate from "../hooks/useTranslate";
 import { getGiftsClaimedByUser } from "../actions/gifts";
 import { Header, Avatar, List, Banner, Loader } from "../components";
 import variables from "../styles/variables.module.scss";
-import styles from "./users.module.scss";
+import styles from "./page.module.scss";
 
 export default function Gifts() {
   const [loading, setLoading] = useState(false);
@@ -28,7 +28,7 @@ export default function Gifts() {
   }
 
   return (
-    <div className={styles.gifts}>
+    <div className={styles.page}>
       <Header title={translate("gifts-i'm-buying")} />
       {gifts.length === 0 ? (
         <Banner

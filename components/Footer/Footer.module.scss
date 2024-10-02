@@ -36,3 +36,18 @@
     padding: $space-xxs;
   }
 }
+
+.privacy {
+  position: fixed;
+  bottom: 16px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 14px;
+  text-decoration: none;
+  color: $colorGray;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

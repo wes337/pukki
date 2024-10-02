@@ -7,7 +7,7 @@ import { getAllGifts } from "../actions/gifts";
 import { getUserName, getFirstName } from "../utils/users";
 import useTranslate from "../hooks/useTranslate";
 import { Button, List, Loader, ProgressBar, Avatar } from "../components";
-import styles from "./users.module.scss";
+import styles from "./page.module.scss";
 
 export default function Users() {
   const [loading, setLoading] = useState(false);
@@ -78,7 +78,7 @@ export default function Users() {
   }
 
   return (
-    <div className={styles.users}>
+    <div className={styles.page}>
       <div className={styles.header}>
         <Button
           icon="greeting-card"

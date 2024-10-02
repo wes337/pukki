@@ -3,7 +3,7 @@
 @import "../styles/spacings.scss";
 @import "../styles/fonts.scss";
 
-.users {
+.page {
   display: flex;
   flex-direction: column;
   gap: $space-s;
@@ -34,7 +34,7 @@
 }
 
 @media only screen and (max-width: 400px) {
-  .users .item {
+  .page .item {
     grid-template-columns: 60% 40%;
   }
 }

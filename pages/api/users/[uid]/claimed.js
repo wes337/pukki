@@ -10,7 +10,7 @@ export default withApiAuth(async function ProtectedRoute(req, res, supabase) {
         `
         id,
         name,
-        user (
+        users (
           user_id,
           avatar_url
         ),
