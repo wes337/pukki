@@ -13,6 +13,7 @@
   color: $colorGray;
   gap: $space-s;
   margin-top: $space-s;
+  margin-bottom: 48px;
 
   span:first-of-type {
     text-decoration: underline;
@@ -46,6 +47,7 @@
   font-size: 14px;
   text-decoration: none;
   color: $colorGray;
+  z-index: -1;
 
   &:hover {
     text-decoration: underline;

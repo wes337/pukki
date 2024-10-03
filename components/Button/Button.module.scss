@@ -15,6 +15,7 @@
   padding: $space-s;
   font-family: $body-font;
   font-size: $font-size-m;
+  letter-spacing: -0.5px;
 
   &:focus-visible {
     @include outlineSmall($colorLightRed);
