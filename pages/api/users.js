@@ -11,8 +11,8 @@ async function getUsers(req, res, supabase) {
       throw error;
     }
 
-    const users = data.filter(({ user_id }) => WHITELIST.includes(user_id));
-    return res.status(200).json(users);
+    //  const users = data.filter(({ user_id }) => WHITELIST.includes(user_id));
+    return res.status(200).json(data);
   } catch (error) {
     console.log(error);
     return res.status(500).send();
