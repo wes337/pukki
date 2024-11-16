@@ -6,7 +6,7 @@ export default withApiAuth(async function ProtectedRoute(req, res, supabase) {
     const { uid } = req.query;
     let { data, error } = await supabaseAdmin
       .from("gifts")
-      .select("id, name, claimed_by ( user_id, avatar_url )")
+      .select(`id, user, name, claimed_by ( user_id, avatar_url )`)
       .eq("user", uid);
 
     if (error) {
