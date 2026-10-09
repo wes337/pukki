@@ -17,6 +17,16 @@ test("accounts, authorization, atomic claims and schema isolation", {
   process.env.POSTGRES_URL = process.env.TEST_POSTGRES_URL;
   process.env.NODE_ENV = "test";
   process.env.SENDGRID_API_KEY = "test-only-not-a-real-key";
+  const originalFetch = globalThis.fetch;
+  const welcomeMessages = [];
+  let welcomeStatus = 202;
+  t.mock.method(globalThis, "fetch", (url, options) => {
+    if (url === "https://api.sendgrid.com/v3/mail/send") {
+      welcomeMessages.push(JSON.parse(options.body));
+      return Promise.resolve(new Response(null, { status: welcomeStatus }));
+    }
+    return originalFetch(url, options);
+  });
   const { app } = await import("#app/lib/express.js");
   const { sql } = await import("#app/lib/sql.js");
   const server = app.listen(0, "127.0.0.1");
@@ -66,6 +76,14 @@ test("accounts, authorization, atomic claims and schema isolation", {
   const outsider = await signup("outsider");
   const unassigned = await signup("unassigned");
   const accounts = [owner, buyer, other, outsider, unassigned];
+  assert.equal(welcomeMessages.length, accounts.length);
+  for (const [index, message] of welcomeMessages.entries()) {
+    assert.equal(message.subject, "Welcome to Pukki!");
+    assert.equal(message.personalizations[0].to[0].email, accounts[index].email);
+    assert.equal(message.from.email, "support@pukki.gifts");
+    assert.deepEqual(message.content.map(part => part.type), ["text/plain", "text/html"]);
+    assert.equal(message.tracking_settings.click_tracking.enable, false);
+  }
   // Fixture signup deliberately exhausts the shared IP budget.
   assert.equal((await call("/auth/signup", { method: "POST", body: { email: `extra_${suffix}@example.com`, password } })).status, 429);
   await db.query("DELETE FROM pukki.auth_rate_limits WHERE key LIKE 'signup:%'");
@@ -100,6 +118,7 @@ test("accounts, authorization, atomic claims and schema isolation", {
     assert.equal((await missing.json()).error, "Not found");
   });
   await t.test("signup is case-insensitive; bad passwords fail; valid login succeeds", async () => {
+    const messagesBefore = welcomeMessages.length;
     for (const [invalidPassword, message] of [["12345", "Password must be at least 6 characters."], ["x".repeat(129), "Password is too long."]]) {
       const response = await call("/auth/signup", { method: "POST", body: { email: `length_${suffix}@example.com`, password: invalidPassword } });
       assert.equal(response.status, 400);
@@ -111,6 +130,18 @@ test("accounts, authorization, atomic claims and schema isolation", {
     const { authLimitKey } = await import("#app/lib/auth-rate-limit.js");
     const { rows } = await db.query("SELECT attempts FROM pukki.auth_rate_limits WHERE key = $1", [authLimitKey("login", "email", owner.email)]);
     assert.equal(rows[0].attempts, 2, "Successful login does not clear the shared budget");
+    assert.equal(welcomeMessages.length, messagesBefore, "Invalid signup, duplicate signup and login never resend the welcome email");
+  });
+  await t.test("welcome email failure does not block signup or the new session", async () => {
+    await db.query("DELETE FROM pukki.auth_rate_limits WHERE key LIKE 'signup:%'");
+    welcomeStatus = 503;
+    const messagesBefore = welcomeMessages.length;
+    try {
+      accounts.push(await signup("mailfailure"));
+      assert.equal(welcomeMessages.length, messagesBefore + 1);
+    } finally {
+      welcomeStatus = 202;
+    }
   });
   let family;
   await t.test("unassigned accounts cannot browse; creator joins their new family", async () => {

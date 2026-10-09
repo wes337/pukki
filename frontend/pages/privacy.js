@@ -57,7 +57,7 @@ export default function Privacy() {
           </p>
           <p>
             We use Vercel to host the website, Fly.io to run the server, and
-            DigitalOcean to store app data. SendGrid delivers password-reset emails
+            DigitalOcean to store app data. SendGrid delivers welcome and password-reset emails
             using your email address and the message content. These providers process information
             needed to deliver the service, which can include IP addresses and
             technical request logs. Fonts load from Google Fonts, so your browser

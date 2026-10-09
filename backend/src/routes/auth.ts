@@ -5,6 +5,8 @@ import { HttpError, methodNotAllowed } from "#app/lib/api.js";
 import { sql } from "#app/lib/sql.js";
 import { getSession, startSession, endSession } from "#app/modules/auth.js";
 import { hashPassword, verifyPassword } from "#app/modules/passwords.js";
+import { sendEmail } from "#app/modules/email.js";
+import { welcomeEmail } from "#app/emails/welcome.js";
 import { requestPasswordReset, resetPassword } from "./password-reset.js";
 
 // A missing account still performs the same expensive password check.
@@ -48,6 +50,14 @@ const handler: RequestHandler<Record<string, string>, unknown, Record<string, un
     if (!user || !valid) throw new HttpError(401, "Incorrect email or password.");
   }
   await startSession(req, res, user.user_id);
+  if (action === "signup") {
+    try {
+      await sendEmail(email, welcomeEmail());
+    } catch {
+      // The account and session remain valid if the email provider is unavailable.
+      console.error("Welcome email delivery failed");
+    }
+  }
   return res.status(action === "signup" ? 201 : 200).json({ ok: true });
 };
 export default handler;

@@ -88,4 +88,4 @@ Express `/v1/*` endpoints are API routes, not screens. Next.js serves the screen
 
 **Password-reset email**: run `pnpm --filter pukki-backend preview:email` and open `/email-previews/password-reset.html` locally. Source: `backend/src/emails/password-reset.ts`. Uses Pukki artwork, a reset button and plain-text fallback. The preview uses a fake token and never sends mail.
 
-**Welcome email**: the same command generates `/email-previews/welcome.html`. Source: `backend/src/emails/welcome.ts`. Shows “Welcome to Pukki!”, a short introduction and a “Let's go!” button linking to Pukki. Shares the reset email's layout and includes a plain-text fallback. Automatic delivery is not connected yet.
+**Welcome email**: the same command generates `/email-previews/welcome.html`. Source: `backend/src/emails/welcome.ts`. Shows “Welcome to Pukki!”, a short introduction and a “Let's go!” button linking to Pukki. Shares the reset email's layout and includes a plain-text fallback. Sent automatically after a new account is created; delivery failure does not block signup.
