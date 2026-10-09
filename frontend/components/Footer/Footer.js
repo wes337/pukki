@@ -1,4 +1,3 @@
-import Image from "next/image";
 import useTranslate from "../../hooks/useTranslate";
 import styles from "./Footer.module.scss";
 import Link from "next/link";
@@ -22,11 +21,10 @@ export default function Footer() {
         {translate("days-until-christmas", {
           number: <span>{daysUntilChristmas}</span>,
         })}{" "}
-        <Image
+        <img
           src="/images/icons/wreath.png"
           height={24}
           width={24}
-          quality={100}
           alt=""
         />
         {user && <div className={styles.languages}><LanguageSelector /></div>}

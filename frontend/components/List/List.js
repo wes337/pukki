@@ -1,5 +1,4 @@
 import { Fragment } from "react";
-import Image from "next/image";
 import styles from "./List.module.scss";
 
 export default function List({ items, withDivider }) {
@@ -11,7 +10,7 @@ export default function List({ items, withDivider }) {
             {item.icon && (
               <div className={styles.icon}>
                 {typeof item.icon === "string" ? (
-                  <Image src={item.icon} height={28} width={28} alt="" />
+                  <img src={item.icon} height={28} width={28} alt="" />
                 ) : (
                   item.icon
                 )}

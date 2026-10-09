@@ -1,5 +1,7 @@
 ## UI conventions
 
+Use native `<img>` elements with original image assets. Do not use `next/image`, its optimizer, or `next/legacy/image`. Preserve explicit width/height, alt text, and existing styling when adding images.
+
 Prefer client-side Next.js UI and routing. Fetch private application data in the browser from the Express backend; keep backend logic in Express. Next.js may generate the public page shell and social metadata, but do not move private data fetching into server rendering, Server Actions, or Next API routes.
 
 Use `useFamilyData` for family members and gifts, and `useGiftActions` for gift writes. The SWR cache is scoped to the signed-in account and family; never persist this private data in local storage. Show cached content immediately, fetch fresh data client-side on screen mount, and update the view in place. Deduplicate requests within two seconds. Also refresh on focus and reconnect. Do not set page loading state just to navigate. Use the candy-cane loader only while required data is genuinely unavailable.

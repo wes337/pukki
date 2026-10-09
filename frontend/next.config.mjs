@@ -12,9 +12,6 @@ export default withSerwist({
   async headers() {
     return [{ source: "/:path*", headers: [{ key: "Referrer-Policy", value: "no-referrer" }] }];
   },
-  images: {
-    qualities: [75, 100],
-  },
   i18n: {
     locales: ["en", "fi"],
     defaultLocale: "en",

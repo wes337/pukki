@@ -1,4 +1,3 @@
-import Image from "next/image";
 import useTranslate from "../../hooks/useTranslate";
 import styles from "./Loader.module.scss";
 
@@ -7,11 +6,11 @@ export default function Loader() {
 
   return (
     <div className={styles.loader}>
-      <span className={styles.spinner}><Image
+      <span className={styles.spinner}><img
         src="/images/icons/candycane.png"
         height={100}
         width={100}
-        priority
+        fetchPriority="high"
         loading="eager"
         alt=""
       /></span>

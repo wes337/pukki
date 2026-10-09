@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import styles from "./Logo.module.scss";
 
@@ -9,7 +8,7 @@ export default function Logo({ centered }) {
       style={{ margin: centered ? "auto" : 0 }}
       href="/"
     >
-      <Image
+      <img
         src="/images/icons/santa-claus.png"
         height={50}
         width={50}

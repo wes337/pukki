@@ -3,7 +3,6 @@ import FamilyCode from "./FamilyCode";
 import { useState } from "react";
 import useSWR from "swr";
 import { useRouter } from "next/router";
-import Image from "next/image";
 import { useSession } from "../../hooks/useAuth";
 import BackButton from "../BackButton/BackButton";
 import { request } from "../../actions/request";
@@ -104,9 +103,9 @@ export default function Family({ initialCode = "", joining = false }) {
       {!justCreated && <BackButton onClick={() => router.push("/users")} />}
       <div>
         <h1 className={styles.familyTitle} style={{ "--family-title-size": `${titleSize}px` }}>
-          <Image className={styles.titleMistletoe} src="/images/icons/mistletoe.png" width={40} height={40} alt="" />
+          <img className={styles.titleMistletoe} src="/images/icons/mistletoe.png" width={40} height={40} alt="" />
           <span className={styles.titleText}>{displayName}</span>
-          <Image className={styles.titleGift} src="/images/icons/gift.png" width={40} height={40} alt="" />
+          <img className={styles.titleGift} src="/images/icons/gift.png" width={40} height={40} alt="" />
         </h1>
         {joining && <p>{text.already}</p>}
       </div>
@@ -114,7 +113,7 @@ export default function Family({ initialCode = "", joining = false }) {
       <div className={styles.invite}>
         <span>{text.code}</span>
         <strong className={styles.code}>{family.code.slice(0, family.code.length / 2)} {family.code.slice(family.code.length / 2)}</strong>
-        <Image src={family.qr} width={256} height={256} alt={text.qr} unoptimized />
+        <img src={family.qr} width={256} height={256} alt={text.qr} />
       </div>
       <div className={styles.shareActions}>
         <label className={styles.linkLabel}>{text.link}<Input readOnly value={family.joinUrl} onFocus={(event) => event.target.select()} /></label>
