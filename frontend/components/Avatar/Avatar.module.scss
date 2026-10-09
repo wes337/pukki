@@ -1,0 +1,19 @@
+@use "../../styles/borders.scss" as *;
+@use "../../styles/colors.scss" as *;
+
+.avatar {
+  display: flex;
+  @include borderSmall($colorLightGray);
+  border-radius: 100%;
+  background-color: $colorLightGray;
+  overflow: hidden;
+
+  img {
+    border-radius: 100%;
+  }
+
+  .generated {
+    border-radius: 0;
+    transform: translateY(3%) scale(1.25);
+  }
+}

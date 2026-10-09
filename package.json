@@ -1,26 +1,14 @@
 {
+  "name": "pukki",
   "private": true,
+  "packageManager": "pnpm@10.33.2",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "@supabase/auth-helpers-nextjs": "^0.5.2",
-    "@supabase/auth-helpers-react": "^0.3.1",
-    "@supabase/auth-ui-react": "^0.2.6",
-    "@supabase/supabase-js": "^2.1.0",
-    "@tabler/icons": "^1.108.0",
-    "next": "13.0.0",
-    "next-pwa": "5.2.11",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "sharp": "^0.31.1"
-  },
-  "devDependencies": {
-    "eslint": "8.26.0",
-    "eslint-config-next": "13.0.0",
-    "sass": "^1.55.0"
+    "dev": "pnpm --parallel --filter pukki-frontend --filter pukki-backend run dev",
+    "dev:frontend": "pnpm --filter pukki-frontend dev",
+    "dev:backend": "pnpm --filter pukki-backend dev",
+    "build": "pnpm --filter pukki-backend build && pnpm --filter pukki-frontend build",
+    "lint": "pnpm --filter pukki-backend typecheck && pnpm --filter pukki-frontend lint",
+    "test": "pnpm --filter pukki-backend test && pnpm --filter pukki-frontend test",
+    "db:migrate": "pnpm --filter pukki-backend migrate"
   }
 }

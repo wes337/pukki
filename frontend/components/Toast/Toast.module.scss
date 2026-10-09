@@ -1,0 +1,81 @@
+@use "sass:color";
+@use "../../styles/colors.scss" as *;
+@use "../../styles/borders.scss" as *;
+
+.region {
+  position: fixed;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  left: 16px;
+  right: 16px;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-sizing: border-box;
+  min-width: min(320px, 100%);
+  max-width: 420px;
+  padding: 16px;
+  border: 1px solid $colorGreen;
+  border-radius: $borderRadiusSmall;
+  background: $colorOffWhite;
+  color: $colorText;
+  pointer-events: auto;
+  transform: translateY(0);
+  opacity: 1;
+  transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1), opacity 250ms ease-out;
+
+  @starting-style {
+    transform: translateY(calc(100% + 32px + env(safe-area-inset-bottom, 0px)));
+    opacity: 0;
+  }
+
+  > span { flex: 1; min-width: 0; overflow-wrap: anywhere; font-weight: 600; line-height: 1.5; }
+  &[data-tone="success"] {
+    --content-shadow: #{color.mix($colorGreen, $colorDarkGray, 45%)};
+    background: $colorGreen;
+    border-color: color.mix($colorGreen, $colorDarkGray, 80%);
+    color: $colorWhite;
+    text-shadow: 0 2px 0 var(--content-shadow);
+
+    button svg { filter: drop-shadow(0 2px 0 var(--content-shadow)); }
+    button:hover { background: rgba($colorDarkGray, 0.12); }
+    button:focus-visible { outline-color: $colorWhite; }
+  }
+  &[data-tone="error"] { border-color: $colorRed; }
+  &[data-leaving="true"] { transform: translateY(calc(100% + 32px + env(safe-area-inset-bottom, 0px))); opacity: 0; pointer-events: none; transition-timing-function: ease-in; }
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    // Keep the larger hit area without adding space around the 18px icon.
+    margin: -7px;
+    padding: 0;
+    border: 0;
+    border-radius: $borderRadiusSmall;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    &:hover { background: $colorLightGray; }
+    &:focus-visible { outline: 2px solid $colorGreen; outline-offset: 2px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+@media (max-width: 500px) {
+  // Match the main panel's default body gutter and 420px maximum width.
+  .region { left: 8px; right: 8px; }
+  .toast { width: 100%; }
+}

@@ -1,0 +1,53 @@
+@use "sass:color";
+@use "../../styles/colors.scss" as *;
+@use "../../styles/spacings.scss" as *;
+@use "../../styles/fonts.scss" as *;
+
+.loader {
+  --content-shadow: #{color.mix($colorLightRed, $colorDarkGray, 45%)};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $space-l;
+  gap: $space-l;
+
+  .spinner { display: flex; filter: drop-shadow(0 2px 0 var(--content-shadow)); }
+
+  img {
+    animation: wind-up-spin 4.6s infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: loading-pulse 1.8s ease-in-out infinite;
+    }
+  }
+
+  div {
+    font-size: $font-size-l;
+    font-family: $header-font;
+    color: $colorLightRed;
+    text-shadow: 0 2px 0 var(--content-shadow);
+  }
+}
+
+@keyframes wind-up-spin {
+  0% {
+    transform: rotate(0deg);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  14% {
+    transform: rotate(-90deg);
+    animation-timing-function: linear;
+  }
+  17% {
+    transform: rotate(-90deg);
+    // Constant deceleration gives the released wheel a long, natural coast.
+    animation-timing-function: cubic-bezier(0.3333, 0.6667, 0.6667, 1);
+  }
+  100% { transform: rotate(1440deg); }
+}
+
+@keyframes loading-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}

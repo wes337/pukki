@@ -1,0 +1,26 @@
+import { Router } from "express";
+import auth from "./auth.js";
+import family from "./family.js";
+import familyJoin from "./family-join.js";
+import familyInvitation from "./family-invitation.js";
+import gifts from "./gifts.js";
+import gift from "./gift.js";
+import users from "./users.js";
+import user from "./user.js";
+import userGifts from "./user-gifts.js";
+import userClaimed from "./user-claimed.js";
+import profileAvatar from "./profile-avatar.js";
+import { authRateLimiter } from "#app/middlewares/auth-rate-limit.js";
+
+export const routes = Router();
+routes.all("/auth/:action", authRateLimiter, auth);
+routes.all("/profile/avatar", profileAvatar);
+routes.all("/family", family);
+routes.all("/family/join", familyJoin);
+routes.all("/family/invitation", familyInvitation);
+routes.all("/gifts", gifts);
+routes.all("/gifts/:gid", gift);
+routes.all("/users", users);
+routes.all("/users/:uid", user);
+routes.all("/users/:uid/gifts", userGifts);
+routes.all("/users/:uid/claimed", userClaimed);

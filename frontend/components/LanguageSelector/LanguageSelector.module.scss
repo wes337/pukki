@@ -1,0 +1,20 @@
+@use "../../styles/colors.scss" as *;
+@use "../../styles/borders.scss" as *;
+@use "../../styles/spacings.scss" as *;
+
+.languages {
+  display: flex;
+  gap: $space-s;
+
+  button {
+    display: flex;
+    padding: $space-xxs;
+    border: none;
+    border-radius: $borderRadiusSmall;
+    background: transparent;
+    cursor: pointer;
+
+    &:hover { background: rgba($colorLightGreen, 0.25); }
+    &:focus-visible { @include outlineSmall($colorLightRed); }
+  }
+}

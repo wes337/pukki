@@ -1,0 +1,84 @@
+@use "sass:color";
+@use "../styles/colors.scss" as *;
+@use "../styles/borders.scss" as *;
+@use "../styles/fonts.scss" as *;
+@use "../styles/spacings.scss" as *;
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  h1 { font-family: $header-font; font-size: 28px; font-weight: 400; margin-bottom: 12px; }
+  p, small { line-height: 1.5; }
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: $font-size-s;
+    color: $colorGray;
+  }
+  input {
+    box-sizing: border-box;
+    min-width: 0;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid $colorLightGray;
+    border-radius: $borderRadiusSmall;
+    font: inherit;
+    font-size: $font-size-m;
+    color: $colorText;
+    background: $colorOffWhite;
+    &::placeholder {
+      color: rgba($colorGray, 0.45);
+      font-style: italic;
+      opacity: 1;
+    }
+  }
+  button:focus-visible { outline: 2px solid $colorText; outline-offset: 3px; }
+  input:disabled, button:disabled { opacity: 0.65; cursor: wait; }
+  button[type="submit"] {
+    letter-spacing: normal;
+    min-height: 46px;
+    &:focus-visible { @include outlineSmall($colorLightRed); }
+  }
+}
+.accountPrompt {
+  text-align: center;
+  color: $colorGray;
+  font-size: $font-size-s;
+}
+.passwordField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.passwordLabelRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.forgotPassword {
+  padding: 0;
+  border: none;
+  background: none;
+  color: color.adjust($colorGreen, $lightness: -25%);
+  font: inherit;
+  font-size: $font-size-s;
+  cursor: pointer;
+  text-decoration: none;
+  text-underline-offset: 3px;
+  &:hover, &:focus-visible { text-decoration: underline; }
+}
+.switch {
+  background: none;
+  border: none;
+  padding: 4px 0;
+  color: $colorRed;
+  font: inherit;
+  text-decoration: none;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  &:hover { text-decoration: underline; }
+  &.signIn { color: color.adjust($colorGreen, $lightness: -25%); }
+}
+.error { color: #9b2020; }

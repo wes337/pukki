@@ -1,0 +1,68 @@
+@use "../../styles/colors.scss" as *;
+@use "../../styles/borders.scss" as *;
+@use "../../styles/spacings.scss" as *;
+@use "../../styles/fonts.scss" as *;
+
+.footer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: $header-font;
+  font-weight: 400;
+  color: $colorGray;
+  gap: $space-s;
+  margin-top: $space-s;
+  margin-bottom: 48px;
+
+  span:first-of-type {
+    text-decoration: underline;
+    text-decoration-color: $colorLightGreen;
+    text-decoration-thickness: 2px;
+    text-transform: underline;
+    transform: scale(1.5) translateY(-3px);
+    font-size: $font-size-m;
+    margin-right: $space-xs;
+  }
+
+}
+
+.languages {
+  position: absolute;
+  right: 0;
+}
+
+.legal {
+  position: fixed;
+  bottom: 16px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: $colorGray;
+  z-index: -1;
+}
+
+.copyright {
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.links {
+  display: flex;
+  justify-content: center;
+  gap: $space-l;
+}
+
+.link {
+  font-size: 14px;
+  text-decoration: none;
+  color: $colorGray;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

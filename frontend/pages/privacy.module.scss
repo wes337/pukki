@@ -1,0 +1,13 @@
+@use "../styles/colors.scss" as *;
+
+.policy {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  line-height: 1.5;
+
+  section { display: flex; flex-direction: column; gap: 8px; }
+  h2 { font-size: 18px; font-weight: 600; line-height: 1.3; }
+  a { color: $colorGray; text-underline-offset: 3px; overflow-wrap: anywhere; }
+}
+.updated { font-size: 14px; color: $colorGray; }

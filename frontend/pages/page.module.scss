@@ -1,0 +1,40 @@
+@use "../styles/colors.scss" as *;
+@use "../styles/borders.scss" as *;
+@use "../styles/spacings.scss" as *;
+@use "../styles/fonts.scss" as *;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: $space-s;
+
+  hr {
+    width: 100%;
+    border: 0;
+    border-top: 1px solid $colorLightGray;
+    margin: 0;
+    padding: 0;
+  }
+
+  .item {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 1fr 1fr;
+
+    span {
+      text-align: center;
+    }
+  }
+
+  .header {
+    display: flex;
+    gap: $space-s;
+    justify-content: space-between;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  .page .item {
+    grid-template-columns: 60% 40%;
+  }
+}

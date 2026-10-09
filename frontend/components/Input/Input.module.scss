@@ -1,0 +1,40 @@
+@use "../../styles/colors.scss" as *;
+@use "../../styles/borders.scss" as *;
+
+.inputControl {
+  display: block;
+  position: relative;
+  min-width: 0;
+  > input, > textarea {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    &:focus { outline: none; }
+  }
+  &:is(:focus-within, [data-focused="true"], [data-complete="true"])::before,
+  &:is(:focus-within, [data-focused="true"], [data-complete="true"])::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: $borderRadiusSmall + 6px;
+    pointer-events: none;
+  }
+  // Keep the outer edge separate so the stripe mask doesn't clip its shadow.
+  &:is(:focus-within, [data-focused="true"], [data-complete="true"])::before {
+    border: 4px solid transparent;
+    box-shadow: 0 0 0 1px $colorLightGray, inset 0 0 0 1px $colorLightGray;
+  }
+  &:is(:focus-within, [data-focused="true"], [data-complete="true"])::after {
+    padding: 4px;
+    background:
+      linear-gradient(180deg, rgba($colorWhite, 0.2), transparent 45%, rgba($colorDarkGray, 0.04)),
+      repeating-linear-gradient(45deg, $colorLightRed 0 10px, $colorOffWhite 10px 20px);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+  }
+  @media (forced-colors: active) {
+    &:is(:focus-within, [data-focused="true"], [data-complete="true"])::before, &:is(:focus-within, [data-focused="true"], [data-complete="true"])::after { display: none; }
+    &[data-focused="true"] { outline: 2px solid Highlight; outline-offset: 2px; }
+    > input:focus, > textarea:focus { outline: 2px solid Highlight; outline-offset: 2px; }
+  }
+}

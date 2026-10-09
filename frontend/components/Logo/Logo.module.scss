@@ -1,0 +1,17 @@
+@use "sass:color";
+@use "../../styles/colors.scss" as *;
+
+.logo {
+  --logo-shadow: #{color.mix($colorLightRed, $colorDarkGray, 45%)};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+
+  h1 {
+    color: $colorLightRed;
+    text-shadow: 0 2px 0 var(--logo-shadow);
+  }
+
+  img { filter: drop-shadow(0 2px 0 var(--logo-shadow)); }
+}

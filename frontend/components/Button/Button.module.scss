@@ -1,0 +1,103 @@
+@use "sass:color";
+@use "../../styles/colors.scss" as *;
+@use "../../styles/spacings.scss" as *;
+@use "../../styles/borders.scss" as *;
+@use "../../styles/fonts.scss" as *;
+
+@mixin default-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-s;
+  background-color: transparent;
+  cursor: pointer;
+  border: none;
+  border-radius: $borderRadiusSmall;
+  padding: $space-s;
+  font-family: $body-font;
+  font-size: $font-size-m;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+
+  &:focus-visible {
+    @include outlineSmall($colorLightRed);
+  }
+}
+
+.primary {
+  @include default-button;
+
+  background-color: $colorGreen;
+  color: $colorWhite;
+
+  &:hover {
+    background-color: $colorLightGreen;
+  }
+}
+
+.secondary {
+  @include default-button;
+
+  background-color: $colorLightRed;
+  color: $colorWhite;
+
+  &:hover {
+    background-color: rgba($colorLightRed, 0.9);
+  }
+}
+
+.link {
+  @include default-button;
+
+  background-color: transparent;
+  color: $colorDarkGray;
+
+  &:hover {
+    background-color: rgba($colorLightGreen, 0.25);
+  }
+}
+
+.outline {
+  @include default-button;
+  @include borderSmall($colorGreen);
+  background-color: transparent;
+
+  color: color.adjust($colorGreen, $lightness: -0%);
+
+  &:hover {
+    background-color: rgba($colorLightGreen, 0.25);
+  }
+}
+
+.outlineRed {
+  @include default-button;
+  @include borderSmall($colorLightRed);
+  color: $colorLightRed;
+
+  &:hover {
+    background-color: rgba($colorLightRed, 0.1);
+  }
+}
+
+.primary { --content-shadow: #{color.mix($colorGreen, $colorDarkGray, 45%)}; }
+.secondary { --content-shadow: #{color.mix($colorLightRed, $colorDarkGray, 45%)}; }
+
+.primary, .secondary {
+  text-shadow: 0 2px 0 var(--content-shadow);
+  img, svg { filter: drop-shadow(0 2px 0 var(--content-shadow)); }
+}
+
+.small {
+  padding: $space-xs;
+  gap: $space-xs;
+  font-size: $font-size-s;
+}
+
+.block {
+  width: 100%;
+}
+
+.disabled {
+  cursor: default;
+  opacity: 0.5;
+}

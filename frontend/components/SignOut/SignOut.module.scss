@@ -1,0 +1,61 @@
+@use "../../styles/spacings.scss" as *;
+@use "../../styles/fonts.scss" as *;
+@use "../../styles/colors.scss" as *;
+
+.sign-out {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $space-s;
+  margin-bottom: $space-s;
+
+  h1 {
+    font-family: $header-font;
+    font-weight: 400;
+    margin: 0;
+  }
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: $space-s;
+  min-width: 0;
+  color: $colorDarkGray;
+  font-size: $font-size-m;
+
+  hr {
+    margin: 0;
+    border: 0;
+    border-top: 2px dotted $colorGreen;
+  }
+
+  span {
+    font-weight: 700;
+    color: $colorText;
+  }
+
+  button {
+    margin-top: $space-xs;
+    margin-left: auto;
+  }
+}
+
+.userDetails { min-width: 0; overflow-wrap: anywhere; }
+.compactName { display: none; }
+
+@media (max-width: 400px) {
+  .welcome { display: none; }
+  .compactName { display: block; text-align: right; }
+}
+
+.user .userAvatar {
+  flex-shrink: 0;
+  border-radius: 50%;
+  padding: 0;
+  border: 0;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  &:focus-visible { outline: 2px solid $colorGreen; outline-offset: 3px; }
+}

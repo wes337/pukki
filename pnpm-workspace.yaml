@@ -1,0 +1,8 @@
+packages:
+  - frontend
+  - backend
+onlyBuiltDependencies:
+  - esbuild
+  - sharp
+  - "@parcel/watcher"
+  - unrs-resolver

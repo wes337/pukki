@@ -1,0 +1,98 @@
+name: Deploy production
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'frontend/**'
+      - 'backend/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - '.dockerignore'
+      - '.vercelignore'
+      - 'deploy/**'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Finish each release before starting another; never interrupt a migration.
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  check:
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: pukki_test
+          POSTGRES_PASSWORD: local_test_only
+          POSTGRES_DB: pukki_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U pukki_test -d pukki_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      POSTGRES_URL: postgresql://pukki_test:local_test_only@127.0.0.1:5432/pukki_test
+      TEST_POSTGRES_URL: postgresql://pukki_test:local_test_only@127.0.0.1:5432/pukki_test
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: pnpm/action-setup@v6.0.9
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - name: Migrate disposable test database
+        run: pnpm db:migrate
+      - run: pnpm test
+      - run: pnpm build
+
+  deploy:
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      FLY_API_TOKEN: ${{ secrets.FLY_TOKEN }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Check deployment configuration
+        shell: bash
+        run: |
+          for name in FLY_API_TOKEN VERCEL_TOKEN; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Missing deployment secret: $name. See docs/DEPLOYMENT.md."
+              exit 1
+            fi
+          done
+      - uses: pnpm/action-setup@v6.0.9
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: npm install --global vercel@57.0.0
+      # Build the client before changing either production deployment.
+      # Run from the repository root; the Vercel project root is frontend.
+      - name: Link the existing Vercel project
+        run: |
+          mkdir -p .vercel
+          cp deploy/vercel-project.json .vercel/project.json
+      - run: vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+      - run: vercel build --prod --token="$VERCEL_TOKEN"
+      - uses: superfly/flyctl-actions/setup-flyctl@1.5
+      - name: Deploy backend and run schema migrations
+        run: flyctl deploy . --remote-only --config backend/fly.toml --ha=false
+      - name: Deploy frontend
+        run: vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"

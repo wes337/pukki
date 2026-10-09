@@ -1,0 +1,27 @@
+@use "../../styles/spacings.scss" as *;
+@use "../../styles/colors.scss" as *;
+
+.header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  margin-bottom: $space-s;
+
+  > :last-child:not(h4) {
+    justify-self: end;
+    margin-top: -$space-s;
+    margin-right: -$space-s;
+  }
+
+  h4 {
+    margin: auto;
+    padding: 0 $space-m;
+    border-bottom: 2px dotted $colorLightRed;
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-xs;
+    justify-content: center;
+    text-align: center;
+    letter-spacing: -0.5px;
+  }
+}

@@ -1,0 +1,12 @@
+@use "./spacings.scss" as *;
+@use "./colors.scss" as *;
+@use "./fonts.scss" as *;
+
+:export {
+  /* prettier-ignore */
+  headerFont: $header-font;
+  spaceSmall: $space-s;
+  colorGray: $colorGray;
+  colorRed: $colorRed;
+  colorGreen: $colorGreen;
+}

@@ -1,0 +1,34 @@
+@use "../../styles/colors.scss" as *;
+
+.snowy-hills,
+.snowy-hills-back {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  pointer-events: none;
+
+  // Fill the layer all the way to the ground; vertical transforms leave a gap.
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.snowy-hills {
+  height: clamp(80px, 12vh, 160px);
+  z-index: 2;
+
+  svg { transform: rotateY(180deg); }
+  .shape-fill { fill: $colorWhite; }
+}
+
+.snowy-hills-back {
+  height: clamp(140px, 22vh, 280px);
+  z-index: 0;
+
+  svg { transform: scaleX(2.5) translateX(-15%); }
+  .shape-fill { fill: rgba($colorLightBlue, 0.1); }
+}

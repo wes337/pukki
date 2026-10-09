@@ -1,0 +1,32 @@
+@use "../../styles/spacings.scss" as *;
+
+.back {
+  width: fit-content;
+  flex-shrink: 0;
+  margin-top: -$space-s;
+  margin-left: -$space-s;
+}
+
+.arrow { display: none; }
+
+@media (max-width: 400px) {
+  .back > button {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    gap: 0;
+
+    > img { display: none; }
+  }
+
+  .arrow { display: flex; }
+  .label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

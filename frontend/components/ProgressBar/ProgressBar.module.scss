@@ -1,0 +1,64 @@
+@use "sass:color";
+@use "../../styles/colors.scss" as *;
+@use "../../styles/fonts.scss" as *;
+@use "../../styles/spacings.scss" as *;
+@use "../../styles/borders.scss" as *;
+
+@mixin gradient-striped($color, $angle: 45deg) {
+  background-image: linear-gradient(
+    $angle,
+    $color 25%,
+    transparent 25%,
+    transparent 50%,
+    $color 50%,
+    $color 75%,
+    transparent 75%,
+    transparent
+  );
+}
+
+.progress {
+  @include borderSmall($colorOffWhite);
+  background-color: rgba($colorLightGray, 0.25);
+  border-radius: $borderRadiusSmall;
+  box-shadow: none;
+  font-family: $body-font;
+
+  span {
+    color: $colorWhite;
+    font-weight: 700;
+  }
+
+  .empty {
+    color: $colorGray;
+  }
+}
+
+.bar {
+  --content-shadow: #{color.mix($colorLightRed, $colorDarkGray, 45%)};
+  text-shadow: 0 2px 0 var(--content-shadow);
+  @include gradient-striped(rgba($colorRed, 1));
+  background-color: $colorLightRed;
+  border-top-left-radius: $borderRadiusSmall;
+  border-bottom-left-radius: $borderRadiusSmall;
+
+  letter-spacing: 1.5px;
+  background-size: 40px 40px;
+  animation: progress-bar-stripes 2s linear infinite;
+  box-shadow: none;
+
+  &.completed {
+    --content-shadow: #{color.mix($colorGreen, $colorDarkGray, 45%)};
+    @include gradient-striped(rgba($colorGreen, 1));
+    background-color: $colorLightGreen;
+  }
+}
+
+@keyframes progress-bar-stripes {
+  from {
+    background-position: 40px 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}

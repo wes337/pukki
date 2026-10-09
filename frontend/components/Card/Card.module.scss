@@ -1,0 +1,16 @@
+@use "../../styles/colors.scss" as *;
+@use "../../styles/borders.scss" as *;
+@use "../../styles/spacings.scss" as *;
+
+.card {
+  position: relative;
+  background-color: $colorWhite;
+  padding: $space-l;
+  @include borderSmall($colorLightGray);
+}
+
+.languages {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + $space-s);
+}
