@@ -25,7 +25,7 @@ function setCookie(res: Response, token: string, maxAge: number) {
 export async function getSession(req: Request) {
   const token = sessionToken(req);
   if (!token) return null;
-  const { rows } = await sql.query<SessionUser>(`SELECT u.user_id AS id, u.email, u.name, u.avatar_url,
+  const { rows } = await sql.query<SessionUser>(`SELECT u.user_id AS id, u.name, u.avatar_url,
     u.family_id, f.name AS family_name
     FROM pukki.sessions s JOIN pukki.users u ON u.user_id = s.user_id
     LEFT JOIN pukki.families f ON f.id = u.family_id

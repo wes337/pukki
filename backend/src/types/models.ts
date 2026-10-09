@@ -6,7 +6,6 @@ export interface UserProfile {
 
 export interface SessionUser {
   id: string;
-  email: string | null;
   name: string;
   avatar_url: string | null;
   family_id: string | null;

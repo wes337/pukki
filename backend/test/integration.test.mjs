@@ -55,7 +55,8 @@ test("accounts, authorization, atomic claims and schema isolation", {
     assert.match(header, /SameSite=Lax/);
     const cookie = header.split(";")[0];
     const session = await (await call("/auth/session", { cookie })).json();
-    assert.equal(session.user.email, email);
+    assert.deepEqual(Object.keys(session.user).sort(), ["avatar_url", "family_id", "family_name", "id", "name"]);
+    assert.equal((await db.query("SELECT email FROM pukki.users WHERE user_id = $1", [session.user.id])).rows[0].email, email);
     assert.equal(session.user.name, "");
     if (label === "owner") {
       assert.equal((await call("/family", { method: "POST", cookie, body: { name: "Before name" } })).status, 403);
@@ -66,7 +67,9 @@ test("accounts, authorization, atomic claims and schema isolation", {
     }
     const named = await call("/profile/name", { method: "PATCH", cookie, body: { name: ` ${label} ` } });
     assert.equal(named.status, 200);
-    assert.equal((await named.json()).name, label);
+    const namedProfile = await named.json();
+    assert.equal(namedProfile.name, label);
+    assert.equal("email" in namedProfile, false);
     assert.equal((await (await call("/auth/session", { cookie })).json()).user.name, label);
     return { cookie, id: session.user.id, email };
   }
@@ -221,6 +224,22 @@ test("accounts, authorization, atomic claims and schema isolation", {
   const created = await call("/gifts", { cookie: owner.cookie, method: "POST", body: giftBody });
   assert.equal(created.status, 201, await created.clone().text());
   const gift = await created.json();
+  await t.test("account emails stay out of session, profile, family and gift responses", async () => {
+    for (const path of ["/auth/session", "/users", `/users/${owner.id}`, "/family", "/gifts", `/gifts/${gift.id}`, `/users/${owner.id}/gifts`, `/users/${buyer.id}/claimed`]) {
+      const response = await call(path, { cookie: buyer.cookie });
+      assert.equal(response.status, 200, path);
+      assert.equal(response.headers.get("cache-control"), "private, no-store");
+      const body = await response.text();
+      assert.doesNotMatch(body, /"(?:email|password_hash|token_hash)"\s*:/i, path);
+      for (const account of accounts) assert.equal(body.includes(account.email), false, path);
+    }
+    const profiles = await (await call("/users", { cookie: buyer.cookie })).json();
+    for (const profile of profiles) assert.deepEqual(Object.keys(profile).sort(), ["avatar_url", "name", "user_id"]);
+    const avatars = await (await call("/profile/avatar", { cookie: buyer.cookie })).json();
+    const updated = await call("/profile/avatar", { cookie: buyer.cookie, method: "PATCH", body: { avatar_url: avatars[0].url } });
+    assert.equal(updated.status, 200);
+    assert.equal("email" in await updated.json(), false);
+  });
   await t.test("other families cannot read users, gifts, shopping lists or change claims", async () => {
     const users = await (await call("/users", { cookie: outsider.cookie })).json();
     assert.deepEqual(users.map((user) => user.user_id), [outsider.id]);
@@ -259,6 +278,8 @@ test("accounts, authorization, atomic claims and schema isolation", {
     assert.equal(ownGift.claimed_by, null);
     const claimedGift = await (await call(`/gifts/${gift.id}`, { cookie: winner.cookie })).json();
     assert.equal(claimedGift.claimed_by.user_id, winner.id);
+    assert.deepEqual(Object.keys(claimedGift.claimed_by).sort(), ["avatar_url", "name", "user_id"]);
+    assert.deepEqual(Object.keys(claimedGift.users).sort(), ["avatar_url", "name", "user_id"]);
     assert.equal((await call(`/gifts/${gift.id}`, { cookie: loser.cookie, method: "PATCH", body: { claim: false } })).status, 409);
     assert.equal((await call(`/users/${winner.id}/claimed`, { cookie: loser.cookie })).status, 403);
     assert.equal((await call(`/gifts/${gift.id}`, { cookie: winner.cookie, method: "PATCH", body: { claim: false } })).status, 200);
