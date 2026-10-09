@@ -6,15 +6,18 @@ Routes below use English. Finnish uses the same routes with `/fi` in front, such
 
 ## Screens
 
+The native app reuses these web routes. Its two additional states are **Mobile loading**, the candy-cane spinner while the initial document loads, and **Mobile connection error**, a Retry action when the document fails. Both live in `mobile/App.tsx`; see [mobile setup](MOBILE.md).
+
 | Name | Route | When it appears and what it does | Source under `frontend/` |
 | --- | --- | --- | --- |
 | Home | `/` | Shows Sign in when signed out, family setup when signed in without a family, or Family wishlists when membership exists. | `pages/index.js` |
-| Sign in | `/login`, or `/` signed out | Username and password form. Switches to Create account. | `pages/login.js` |
-| Create account | Same as Sign in, after choosing Create an account | Username, password, and matching password confirmation. Immediate signup with no email confirmation. Continues to family setup, or returns to an invitation if a code is present. | `pages/login.js` |
-| Request password reset | `/forgot-password` | Email form opened by Forgot password. Shared input and 46px button. Submission is disabled until SendGrid and the Express reset endpoint are connected. Preserves invitation codes when returning to Sign in. | `pages/forgot-password.js` |
-| Check your email | `/forgot-password?preview=sent`, development only | Preview of the generic reset-link confirmation, with Sign in and Use a different email actions. Does not send email. | `pages/forgot-password.js` |
-| New password | `/reset-password` | New password and confirmation fields. Submission is disabled until reset-token validation and password updates are connected. | `pages/reset-password.js` |
-| Password updated | `/reset-password?preview=complete`, development only | Preview of reset success and the Sign in action. Does not change passwords. | `pages/reset-password.js` |
+| Sign in | `/login`, or `/` signed out | Email and password form. Switches to Create account. | `pages/login.js` |
+| Create account | Same as Sign in, after choosing Create an account | Email, password, and matching password confirmation. Immediate signup with no email confirmation. Continues to First name before family setup or the preserved invitation. | `pages/login.js` |
+| First name | `/name` | “What's your name?” and a first-name input. Required once after signup; Continue saves the name and opens Family setup or the preserved invitation. Reloads and later sign-ins resume this step until a name is saved. Development-only preview: `/name?preview=1`. | `pages/name.js` |
+| Request password reset | `/forgot-password` | Email form opened by Forgot password. Sends a reset link through Express and SendGrid. Preserves invitation codes. | `pages/forgot-password.js` |
+| Check your email | After a reset request; `/forgot-password?preview=sent` for development preview | Generic reset-link confirmation, with Sign in and Use a different email actions. Preview does not send email. | `pages/forgot-password.js` |
+| New password | `/reset-password?token=…` | New password and confirmation fields. A successful reset signs the user in immediately and continues to family setup, wishlists, first-name onboarding, or their pending invitation. | `pages/reset-password.js` |
+| Password updated | `/reset-password?preview=complete`, development only | Preview of reset success with Continue. Real resets continue automatically; preview does not change passwords. | `pages/reset-password.js` |
 | Reset link expired | `/reset-password?preview=expired`, development only | Preview with a Request new link button. | `pages/reset-password.js` |
 | Family setup | `/family`, or `/` without membership | Two buttons: Create family or Join family. Each opens its form. | `components/Family/Family.js` |
 | Create family | `/family`, after choosing Create family | Enter a family name. Creating it makes the account its first member and opens Family invitations. Back returns to Family setup. | `components/Family/Family.js` |
@@ -51,21 +54,23 @@ Local invitation review links use `/join?preview=accept`, `signin`, `signup`, `j
 - Empty lists: Family wishlists shows an invitation prompt when alone; wishlists and Gifts I'm giving show their empty-state banners.
 - Failed loads and mutations: errors appear within the current screen. Form buttons retain their labels and are disabled during submission.
 - Shared shell: Sign out when authenticated, decorative Christmas artwork, countdown, English/Finnish buttons, and Privacy link.
-- Password recovery screens are UI-only pending SendGrid, account email storage, and Express reset endpoints. There are no separate screens for profile settings, leaving a family, removing members, or rotating invitation codes yet.
+- Password recovery signs users in automatically after a successful reset. There are no separate screens for profile settings, leaving a family, removing members, or rotating invitation codes yet.
 
 ## Main flows
 
 ```mermaid
 flowchart TD
   Home --> SignIn[Sign in / Create account]
-  SignIn --> Setup[Family setup]
+  SignIn --> Name[First name, new accounts only]
+  Name --> Setup[Family setup]
   Setup --> Create[Create family]
   Setup --> Code[Join by code]
   Create --> Invitations[Family invitations]
   Code --> Lists[Family wishlists]
   Invitations --> Lists
   Invite[QR code / invitation link] --> InviteAuth[Invitation sign in]
-  InviteAuth --> Join[Accept invitation]
+  InviteAuth --> InviteName[First name, new accounts only]
+  InviteName --> Join[Accept invitation]
   Join --> Lists
   Lists --> Wishlist[My wishlist / Member wishlist]
   Lists --> Shopping[Gifts I'm giving]
@@ -76,3 +81,9 @@ flowchart TD
 ```
 
 Express `/v1/*` endpoints are API routes, not screens. Next.js serves the screens; Express enforces access to all account and family data.
+
+## Email previews
+
+**Password-reset email**: run `pnpm --filter pukki-backend preview:email` and open `/email-previews/password-reset.html` locally. Source: `backend/src/emails/password-reset.ts`. Uses Pukki artwork, a reset button and plain-text fallback. The preview uses a fake token and never sends mail.
+
+**Welcome email**: the same command generates `/email-previews/welcome.html`. Source: `backend/src/emails/welcome.ts`. Shows “Welcome to Pukki!”, a short introduction and a “Let's go!” button linking to Pukki. Shares the reset email's layout and includes a plain-text fallback. Automatic delivery is not connected yet.

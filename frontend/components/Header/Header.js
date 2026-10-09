@@ -1,5 +1,6 @@
 import BackButton from "../BackButton/BackButton";
 import Avatar from "../Avatar/Avatar";
+import PageTitle from "../PageTitle";
 import styles from "./Header.module.scss";
 import { useRouter } from "next/router";
 
@@ -46,6 +47,7 @@ export default function Header({ title, avatar, back }) {
 
   return (
     <div className={styles.header}>
+      <PageTitle>{title}</PageTitle>
       <BackButton onClick={goBack} />
       <h4>{title}</h4>
       {avatar && <Avatar url={avatar} size={36} />}

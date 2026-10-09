@@ -6,6 +6,7 @@ config({ path: fileURLToPath(new URL("../../.env", import.meta.url)), quiet: tru
 
 const environment = z.object({
   POSTGRES_URL: z.string().url(),
+  SENDGRID_API_KEY: z.string().min(1).optional(),
 }).safeParse(process.env);
 
 if (!environment.success) {

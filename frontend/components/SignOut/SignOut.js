@@ -28,13 +28,15 @@ export default function SignOut() {
     <Logo centered={!user} />
     {user && <div className={styles.user}>
       <div className={styles.userDetails}>
-        <div className={styles.welcome}>{translate("welcome", { name: <span>{getFirstName(getUserName(user))}</span> })}</div>
-        <span className={styles.compactName}>{getFirstName(getUserName(user))}</span>
-        <hr />
+        {user.name?.trim() && <>
+          <div className={styles.welcome}>{translate("welcome", { name: <span>{getFirstName(getUserName(user))}</span> })}</div>
+          <span className={styles.compactName}>{getFirstName(getUserName(user))}</span>
+          <hr />
+        </>}
         <Button icon="tag" variant="link" size="small" onClick={signOut} disabled={busy}>{translate("sign-out")}</Button>
         {error && <p role="alert">{error}</p>}
       </div>
-      <button type="button" className={styles.userAvatar} aria-label="Choose your avatar" aria-haspopup="dialog" onClick={() => setPickingAvatar(true)}><Avatar url={user.avatar_url} size={48} /></button>
+      {user.name?.trim() && <button type="button" className={styles.userAvatar} aria-label="Choose your avatar" aria-haspopup="dialog" onClick={() => setPickingAvatar(true)}><Avatar url={user.avatar_url} size={48} /></button>}
     </div>}
     {user && pickingAvatar && <AvatarPicker onClose={() => setPickingAvatar(false)} />}
   </header>;

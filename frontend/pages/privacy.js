@@ -16,14 +16,15 @@ export default function Privacy() {
         <section>
           <h2>What we store</h2>
           <p>
-            Your username, name, selected avatar, password hash, family membership,
+            Your email address, name, selected avatar, password hash, family membership,
             family name and invitation code. We also store gift names, descriptions,
             links, and who has chosen to get each gift, plus account and family creation dates.
+            Older accounts may also have a stored username.
           </p>
           <p>
             We keep login sessions and records of sign-in and family-joining attempts
             to limit repeated attempts. Passwords are stored as salted hashes, not readable
-            passwords. Signup does not require an email address. If you email us,
+            passwords. We use your email address for sign-in and password recovery. If you email us,
             we receive your address and the information in your message.
           </p>
         </section>
@@ -56,7 +57,8 @@ export default function Privacy() {
           </p>
           <p>
             We use Vercel to host the website, Fly.io to run the server, and
-            DigitalOcean to store app data. These providers process information
+            DigitalOcean to store app data. SendGrid delivers password-reset emails
+            using your email address and the message content. These providers process information
             needed to deliver the service, which can include IP addresses and
             technical request logs. Fonts load from Google Fonts, so your browser
             also connects to Google when loading them.
@@ -77,7 +79,7 @@ export default function Privacy() {
           <p>
             To request account deletion, a copy of your data, or a correction,
             email <a href={`mailto:${contactEmail}`}>{contactEmail}</a> with your
-            username. We may need to verify that the account is yours. Do not send
+            account email address. We may need to verify that the account is yours. Do not send
             your password. Deleted data may remain in provider backups until those
             backups expire.
           </p>

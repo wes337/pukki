@@ -7,10 +7,11 @@ type ApiRequest = Request<Record<string, string>, unknown, Record<string, unknow
 type AuthenticatedHandler = (req: ApiRequest, res: Response, user: SessionUser) => Promise<unknown>;
 
 // The callback receives a verified user, without optional properties or request casts.
-export function authenticated(handler: AuthenticatedHandler, requireFamily = false): RequestHandler<Record<string, string>, unknown, Record<string, unknown>> {
+export function authenticated(handler: AuthenticatedHandler, requireFamily = false, allowUnnamed = false): RequestHandler<Record<string, string>, unknown, Record<string, unknown>> {
   return async (req, res) => {
     const session = await getSession(req);
     if (!session) throw new HttpError(401, "Please sign in");
+    if (!allowUnnamed && !session.user.name.trim()) throw new HttpError(403, "Enter your name first.");
     if (requireFamily && !session.user.family_id) throw new HttpError(403, "Create or join a family first");
     await handler(req, res, session.user);
   };

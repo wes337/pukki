@@ -23,9 +23,8 @@
   overflow-wrap: anywhere;
 
   h2 {
-    font: 400 28px/1.3 $header-font;
+    font: 400 28px/1.3 $body-font;
     color: $colorRed;
-    text-shadow: 0 2px 0 color.mix($colorRed, $colorDarkGray, 45%);
   }
   p { line-height: 1.4; }
 }

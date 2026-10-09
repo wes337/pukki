@@ -1,5 +1,11 @@
 ## UI conventions
 
+Use Amore Christmas for all decorative lettering and digits through `$header-font`, including the logo and Christmas countdown. Quicksand remains the body font.
+
+When changing logo typography or artwork, update `scripts/generate-social-cards.mjs` and regenerate both social images in `public/images/social/` so link previews match the site. The shared email layout uses the wide image too; update its image revision and regenerate both email previews with `pnpm --filter pukki-backend preview:email`.
+
+Browser page titles start with `Pukki | ` followed by the screen name. Use the shared `PageTitle` component for overrides; the app supplies route defaults and `Header` supplies the visible heading. Keep Pukki first on every screen.
+
 Use native `<img>` elements with original image assets. Do not use `next/image`, its optimizer, or `next/legacy/image`. Preserve explicit width/height, alt text, and existing styling when adding images.
 
 Prefer client-side Next.js UI and routing. Fetch private application data in the browser from the Express backend; keep backend logic in Express. Next.js may generate the public page shell and social metadata, but do not move private data fetching into server rendering, Server Actions, or Next API routes.
@@ -11,6 +17,8 @@ Display people using first names only throughout the UI, including greetings, wi
 Use "giving" for gifts someone has chosen to give, with "to" before the recipient. Avoid "getting" because it can mean receiving. Keep internal claim terminology out of user-facing copy. The list is "Gifts I'm giving"; "My wishlist" is what the user wants to receive.
 
 Shared page header titles stay centered relative to the panel, independently of the Back button and avatar. Use the shared Header component for this pattern.
+
+Use Quicksand at normal weight for functional page, form, and dialog titles, including password recovery, first-name entry, and family-entry labels. Reserve Amore Christmas for the logo and decorative titles. Headings and logo lettering have no stroke or text shadow. The reusable `text-stroke($color, $width)` mixin remains available if explicitly requested. Filled-button text and icon shadows remain part of the button style.
 
 Page-header avatars use the shared Header's -8px top and right offsets to mirror the Back button's tight corner spacing. Keep this consistent on wishlist, gift detail, and add/edit gift screens.
 

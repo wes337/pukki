@@ -1,0 +1,21 @@
+@use "../styles/colors.scss" as *;
+@use "../styles/fonts.scss" as *;
+@use "../styles/spacings.scss" as *;
+
+.onboarding {
+  padding-bottom: $space-l;
+
+  input {
+    text-align: center;
+  }
+
+  h1 {
+    margin: 0 0 $space-l;
+    color: $colorLightRed;
+    font-family: $body-font;
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 1;
+    text-align: center;
+  }
+}

@@ -4,7 +4,7 @@ export const getUserName = (user, defaultUserName = "Secret Santa") => {
       return defaultUserName;
     }
 
-    return user.name || user.username || defaultUserName;
+    return user.name || defaultUserName;
   } catch {
     return defaultUserName;
   }

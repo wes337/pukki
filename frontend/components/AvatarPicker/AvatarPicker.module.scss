@@ -27,9 +27,8 @@
   flex-shrink: 0;
 
   h2 {
-    font: 400 28px/1.4 $header-font;
+    font: 400 28px/1.4 $body-font;
     color: $colorRed;
-    text-shadow: 0 2px 0 color.mix($colorRed, $colorDarkGray, 45%);
   }
 }
 .close {

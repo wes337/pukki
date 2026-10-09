@@ -74,7 +74,9 @@ SendGrid domain authentication for `pukki.gifts` uses automated security, authen
 
 Use `Pukki <support@pukki.gifts>` as the sender when connecting reset emails. Sender identity is non-secret and belongs in code. The SendGrid return-path subdomain keeps its SPF separate from Cloudflare's root-domain email forwarding records; existing MX, SPF, DKIM, and forwarding rules stay intact.
 
-The runtime sending key has `mail.send` permission. Password-recovery screens remain UI-only until account email storage and Express reset endpoints are implemented. No email has been sent as part of this setup.
+The runtime sending key has `mail.send` permission. Password recovery uses SendGrid's mail-send API with click and open tracking disabled. `SENDGRID_API_KEY` is read only by Express. Reset links use the configured app origin, expire after 30 minutes, and are stored only as SHA-256 hashes. The public request response is generic for unknown accounts and delivery failures; delivery failures are logged without recipient or token data. Integration tests stub SendGrid and send no email.
+
+Migration `006_password_resets.sql` adds `pukki.password_resets`. Completing a reset atomically changes the password, invalidates all reset links and existing sessions for that account, and creates a new session. Express sets the normal HttpOnly session cookie after committing. The frontend replaces the reset URL and continues to the family, first-name step, or pending invitation without asking the user to sign in again.
 
 ## Migrations and health
 
@@ -85,3 +87,9 @@ Fly runs `node dist/db/migrate.js` before backend rollout. Failure blocks deploy
 Manual command from the repository root: `fly deploy . --config backend/fly.toml --remote-only --ha=false`. Fly resolves the Dockerfile relative to `backend/fly.toml`; the build context remains the repository root. Prefer Actions so checks and both deployments run together.
 
 References: [Fly Actions](https://fly.io/docs/launch/continuous-deployment-with-github-actions/), [Fly config](https://fly.io/docs/reference/configuration/), [Vercel Actions](https://vercel.com/kb/guide/how-can-i-use-github-actions-with-vercel), [Vercel Git control](https://vercel.com/docs/project-configuration/git-configuration).
+
+## Email account rollout
+
+Migration `005_email_accounts.sql` adds a unique, normalized email column in `pukki.users` and makes legacy usernames optional. Existing accounts, passwords, sessions, names and families are preserved. New accounts have no username and start with an empty name until onboarding completes. The API only accepts email sign-in; legacy accounts need a real email assigned explicitly before they can sign in again. Do not invent addresses or overwrite another account’s email. Existing display-only demo family members do not need login emails.
+
+The password-reset and welcome emails live in `backend/src/emails/password-reset.ts` and `backend/src/emails/welcome.ts`. Both use `layout.ts` for consistent HTML and plain-text versions. Run `pnpm --filter pukki-backend preview:email`, then open `/email-previews/password-reset.html` or `/email-previews/welcome.html` on the local frontend. These ignored previews send no email; the reset preview uses a fake token. The preview directory is excluded from Vercel deployments. Welcome-email delivery is not connected yet, and email-client rendering still needs a real delivery test.

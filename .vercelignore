@@ -3,6 +3,8 @@
 **/.env
 **/.env.*
 backend
+mobile
+frontend/public/email-previews
 **/node_modules
 **/.next
 **/dist

@@ -1,4 +1,11 @@
-$header-font: "Pacifico", cursive;
+// Paint the outline once behind the fill, avoiding gaps and overlapping opacity.
+@mixin text-stroke($color, $width: 3px) {
+  -webkit-text-stroke: $width $color;
+  paint-order: stroke fill;
+  text-shadow: none;
+}
+
+$header-font: "Amore Christmas", cursive;
 $body-font: "Quicksand", sans-serif;
 
 $font-size-s: 14px;

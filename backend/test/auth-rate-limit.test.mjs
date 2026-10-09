@@ -40,8 +40,8 @@ test("auth middleware budgets, normalization, blocking and store failure", async
     method, headers: { "Content-Type": "application/json" }, ...(method === "POST" ? { body: JSON.stringify(body) } : {}),
   });
   for (const [action, field, identity, ipLimit, identityLimit, windowSeconds, scope] of [
-    ["login", "username", " Wes ", 15, 10, 900, "login"],
-    ["signup", "username", " Wes ", 5, 3, 3600, "signup"],
+    ["login", "email", " WES@example.com ", 15, 10, 900, "login"],
+    ["signup", "email", " WES@example.com ", 5, 3, 3600, "signup"],
     ["forgot-password", "email", " WES@example.com ", 10, 3, 900, "request-password-reset"],
     ["request-password-reset", "email", " WES@example.com ", 10, 3, 900, "request-password-reset"],
     ["reset-password", "token", " AbCd ", 10, 5, 900, "reset-password"],
@@ -56,12 +56,12 @@ test("auth middleware budgets, normalization, blocking and store failure", async
     });
   }
   calls = [];
-  assert.equal((await call("login", { username: {} })).status, 200);
+  assert.equal((await call("login", { email: {} })).status, 200);
   assert.equal(calls.length, 1, "Malformed credentials still spend the IP budget");
-  for (const kind of ["ip", "username"]) {
+  for (const kind of ["ip", "email"]) {
     calls = [];
     blockedKind = kind;
-    const response = await call("login", { username: "wes" });
+    const response = await call("login", { email: "wes@example.com" });
     assert.equal(response.status, 429);
     assert.equal(response.headers.get("retry-after"), "42");
     assert.equal((await response.json()).error, "Too many attempts. Try again later.");

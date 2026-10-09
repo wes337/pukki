@@ -1,5 +1,6 @@
 @use "../../styles/spacings.scss" as *;
 @use "../../styles/colors.scss" as *;
+@use "../../styles/fonts.scss" as *;
 
 .header {
   display: grid;
@@ -14,6 +15,8 @@
   }
 
   h4 {
+    font-family: $body-font;
+    font-weight: 400;
     margin: auto;
     padding: 0 $space-m;
     border-bottom: 2px dotted $colorLightRed;

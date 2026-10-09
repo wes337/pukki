@@ -4,6 +4,8 @@
 
 Web app, including mobile browsers and an installable PWA. The frontend is hosted on Vercel and the backend on Fly. Production only, with GitHub Actions deploying pushes to `master`.
 
+An Expo React Native app in `mobile/` wraps the production website for iOS and Android. It reuses the web screens and handles native navigation, invitation links, loading and retry. Native signing and verified HTTPS app links require platform account setup; see [mobile setup](docs/MOBILE.md).
+
 The minimum supported viewport width is 375 CSS pixels. Use that width for mobile layout checks.
 
 ## Purpose
@@ -12,11 +14,13 @@ Families share Christmas wishlists and coordinate who buys each gift. Gift recip
 
 ## Accounts and families
 
-Accounts use a username and password without email confirmation. Each account belongs to at most one family. A user can create a family or join immediately using a short family code or a QR invitation. Families must not be able to access one another's users, wishlists or claims.
+Accounts use an email address and password without email confirmation. Signup asks for email, password and password confirmation. Passwords must be at least six characters. New accounts then complete the “What's your name?” screen before creating or joining a family. Returning accounts with a saved name skip this step. Each account belongs to at most one family. A user can create a family or join immediately using a short family code or a QR invitation. Families must not be able to access one another's users, wishlists or claims.
+
+Password reset signs the user in automatically. After changing the password, continue to their family or pending invitation, completing first-name onboarding if needed. Reset links are single-use and expire after 30 minutes. A successful reset revokes old sessions and other reset links.
 
 New family codes have six case-insensitive characters, excluding I, O, 0, and 1. Code entry uses one native text input displayed as six boxes, with autofocus, native editing and full-code paste. Entering or pasting a complete valid code automatically submits it. A rejected invalid or unknown code clears the boxes and focuses the first box, keeping the error visible. Network and service errors preserve the code for retry. The active box uses the shared candy-cane focus style. Existing eight-character invitations remain valid.
 
-Invitation links and QR codes show the family name and invitation artwork before authentication, with Create account selected by default and a Sign in option. The code is preserved through either form, then an explicit Join action accepts the invitation. They never open pre-filled code entry or join automatically. Rate-limited invitation previews reveal only the family name and ID to anyone holding the code, never members or wishlists. Existing members can open their family but cannot switch families through an invitation.
+Invitation links and QR codes show the family name and invitation artwork before authentication, with Create account selected by default and a Sign in option. The code is preserved through authentication and the first-name step, then an explicit Join action accepts the invitation. They never open pre-filled code entry or join automatically. Rate-limited invitation previews reveal only the family name and ID to anyone holding the code, never members or wishlists. Existing members can open their family but cannot switch families through an invitation.
 
 ## Implementation constraints
 
@@ -30,7 +34,7 @@ Screen names, routes, and states are listed in [the sitemap](docs/SITEMAP.md).
 
 - Use the global `ToastProvider` and `useToast()` from `frontend/components/Toast/Toast.js` for brief action feedback. Call `showToast(message)` or `showToast(message, { tone: "error" })`. Toasts slide up from the bottom, stay for four seconds, then slide away; a new toast replaces the current one. Respect reduced-motion settings and keep form validation errors inline.
 
-- Family names use large, centered decorative headings at regular weight, never bold, with a darker theme-colored text shadow offset 2px downward and no blur or spread.
+- Family names use large, centered Amore Christmas decorative headings at regular weight, never bold. Functional page, form, and dialog titles use Quicksand. Headings and logo lettering have no stroke or text shadow; filled buttons keep their existing shadow treatment.
 
 - Show the shared candy-cane `Loader` spinner for loading, saving, and submitting states. Keep button text unchanged throughout; never replace labels with "Submitting...", "Saving...", or other loading text. Disable the button while its action is in progress.
 

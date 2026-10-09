@@ -32,6 +32,7 @@ export default function Footer() {
       <div className={styles.legal}>
         <nav className={styles.links} aria-label="About and privacy">
           <Link className={styles.link} href="/about">About</Link>
+          <span className={styles.separator} aria-hidden="true">|</span>
           <Link className={styles.link} href="/privacy">Privacy</Link>
         </nav>
         <small className={styles.copyright}>&copy; 2026 WesWare</small>

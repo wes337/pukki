@@ -41,7 +41,6 @@
     text-wrap: balance;
     overflow-wrap: anywhere;
     color: $colorLightRed;
-    text-shadow: 0 2px 0 color.mix($colorLightRed, $colorDarkGray, 45%);
   }
 
   > button { flex-shrink: 0; padding-inline: $space-m; }

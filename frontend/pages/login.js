@@ -1,4 +1,5 @@
 import Input from "../components/Input/Input";
+import PageTitle from "../components/PageTitle";
 import { useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { request } from "../actions/request";
@@ -8,12 +9,10 @@ import { useInvitation } from "../hooks/useInvitation";
 import familyStyles from "../components/Family/Family.module.scss";
 import styles from "./login.module.scss";
 const copy = {
-  en: { login: "Sign in", signup: "Create account", username: "Username", password: "Password",
+  en: { login: "Sign in", signup: "Create account", password: "Password",
     noAccount: "No account?", create: "Create an account", existing: "Already have an account?" },
-  fi: { login: "Kirjaudu sisään", signup: "Luo tili", username: "Käyttäjätunnus", password: "Salasana",
-    hint: "3–32 kirjainta (a–z), numeroa tai alaviivaa. Kirjainkoolla ei ole väliä.",
-    passwordHint: "Käytä 12–128 merkkiä.", create: "Uusi täällä? Luo tili", existing: "Onko sinulla jo tili? Kirjaudu sisään",
-    intro: "Kirjoita toivelistasi ja valitse lahjoja läheisillesi." },
+  fi: { login: "Kirjaudu sisään", signup: "Luo tili", password: "Salasana",
+    create: "Uusi täällä? Luo tili", existing: "Onko sinulla jo tili? Kirjaudu sisään" },
 };
 export default function Login({ initialSignup = false, preview = false }) {
   const router = useRouter();
@@ -46,7 +45,7 @@ export default function Login({ initialSignup = false, preview = false }) {
         return;
       }
       await request(`/auth/${signup ? "signup" : "login"}`, {
-        method: "POST", body: { username: data.get("username"), password: data.get("password") },
+        method: "POST", body: { email: data.get("email"), password: data.get("password") },
       });
       const code = typeof query.code === "string" ? query.code.slice(0, 32) : "";
       const destination = code ? `/join?code=${encodeURIComponent(code)}` : "/users";
@@ -64,14 +63,15 @@ export default function Login({ initialSignup = false, preview = false }) {
     <button type="button" className={styles.switch} onClick={() => router.push("/login")}>Back to sign in</button>
   </div>;
   return <form className={styles.form} onSubmit={submit} aria-busy={busy}>
+    <PageTitle>{signup ? "Create account" : "Sign in"}</PageTitle>
     {hasInvitation && invitation && <section className={`${familyStyles.family} ${familyStyles.acceptInvitation}`} aria-labelledby="invited-family">
       <InvitationHeading name={invitation.name} />
       <p>{invitation.name} have invited you to join their family on Pukki. Sign in or create an account to share wishlists and choose gifts together.</p>
     </section>}
-    <label htmlFor="username">{text.username}
-      <Input id="username" name="username" autoComplete="username" autoCapitalize="none" spellCheck={false}
-        placeholder={locale === "fi" ? undefined : "Enter your username"}
-        required minLength={3} maxLength={32} pattern="[A-Za-z0-9_]{3,32}" disabled={busy} />
+    <label htmlFor="email">Email
+      <Input id="email" name="email" type="email" autoComplete={signup ? "email" : "username"} autoCapitalize="none" spellCheck={false}
+        placeholder="Enter your email"
+        required maxLength={254} disabled={busy} />
     </label>
     <div className={styles.passwordField}>
       <div className={styles.passwordLabelRow}>
@@ -82,7 +82,7 @@ export default function Login({ initialSignup = false, preview = false }) {
       <Input id="password" name="password" type="password" autoComplete={signup ? "new-password" : "current-password"}
         placeholder={locale === "fi" ? undefined : "Enter your password"}
         onChange={() => setPasswordMismatch(false)}
-        required minLength={12} maxLength={128} disabled={busy} />
+        required minLength={6} maxLength={128} disabled={busy} />
     </div>
     {signup && <label htmlFor="confirmPassword">Confirm password
       <Input ref={confirmPasswordRef} id="confirmPassword" name="confirmPassword" type="password" autoComplete="new-password"

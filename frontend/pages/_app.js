@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 
 import { AuthProvider } from "../hooks/useAuth";
 import ClientAccess from "../components/ClientAccess";
+import PageTitle from "../components/PageTitle";
 import DataProvider from "../components/DataProvider";
 import { ToastProvider } from "../components/Toast/Toast";
 import { siteOrigin, siteDescription } from "../config";
@@ -16,6 +17,26 @@ import {
   ChristmasTree,
 } from "../components";
 import "../styles/index.scss";
+
+const pageTitles = {
+  "/": "Family wishlists",
+  "/login": "Sign in",
+  "/name": "What's your name?",
+  "/join": "Family invitation",
+  "/family": "Your family",
+  "/users": "Family wishlists",
+  "/users/[uid]": "Wishlist",
+  "/users/[uid]/gift": "Add a gift",
+  "/users/[uid]/[gid]": "Gift details",
+  "/users/[uid]/[gid]/edit": "Edit gift",
+  "/gifts": "Gifts I'm giving",
+  "/forgot-password": "Reset password",
+  "/reset-password": "New password",
+  "/about": "About",
+  "/privacy": "Privacy Policy",
+  "/delete": "Delete Data",
+  "/_error": "Something went wrong",
+};
 
 export default function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -31,8 +52,8 @@ export default function MyApp({ Component, pageProps }) {
 
   return (
     <ToastProvider>
+      <PageTitle>{pageTitles[router.pathname]}</PageTitle>
       <Head>
-        <title>Pukki</title>
         <meta name="description" content={siteDescription} key="description" />
         <meta property="og:site_name" content="Pukki" key="og-site-name" />
         <meta property="og:type" content="website" key="og-type" />

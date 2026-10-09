@@ -1,6 +1,9 @@
 import Head from "next/head";
+import { useState } from "react";
 import { useRouter } from "next/router";
-import { Button, Header } from "../components";
+import { Button, Header, Loader } from "../components";
+import { request } from "../actions/request";
+import { accountDestination } from "../utils/account-navigation.mjs";
 import Input from "../components/Input/Input";
 import formStyles from "./login.module.scss";
 import styles from "./recovery.module.scss";
@@ -12,27 +15,54 @@ export default function ResetPassword() {
   const preview = process.env.NODE_ENV === "development" ? router.query.preview : null;
   const complete = preview === "complete";
   const expired = preview === "expired";
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+
+  async function submit(event) {
+    event.preventDefault();
+    if (busy) return;
+    const data = new FormData(event.currentTarget);
+    if (data.get("password") !== data.get("confirmPassword")) {
+      setError("Passwords don't match.");
+      return;
+    }
+    setError("");
+    setBusy(true);
+    try {
+      await request("/auth/reset-password", { method: "POST", body: { token: router.query.token, password: data.get("password") } });
+      // The reset response sets a fresh HttpOnly session cookie. Replace this token-bearing URL.
+      const session = await request("/auth/session");
+      if (!session?.user) throw new Error("Please sign in to continue.");
+      const destination = accountDestination("/login", session.user, invitation.code);
+      window.location.replace(`${router.locale === "fi" ? "/fi" : ""}${destination}`);
+    } catch (error) {
+      setError(error.message);
+      setBusy(false);
+    }
+  }
+
+  if (busy) return <Loader />;
 
   return <section className={styles.recovery}>
-    <Head><title>New password | Pukki</title><meta name="robots" content="noindex" /></Head>
+    <Head><meta name="robots" content="noindex" /><meta name="referrer" content="no-referrer" /></Head>
     <Header title={complete ? "Password updated" : expired ? "Link expired" : "New password"} back={login} />
     {complete || expired ? <div className={`${formStyles.form} ${styles.confirmation}`}>
       {expired && <p role="alert">Request a new link to reset your password.</p>}
       <Button icon={complete ? "tag" : "greeting-card"} block
-        onClick={() => router.push(complete ? login : { pathname: "/forgot-password", query: invitation })}>
-        {complete ? "Sign in" : "Request new link"}
+        onClick={() => router.push(complete ? { pathname: "/users", query: invitation } : { pathname: "/forgot-password", query: invitation })}>
+        {complete ? "Continue" : "Request new link"}
       </Button>
-    </div> : <form className={formStyles.form} onSubmit={(event) => event.preventDefault()}>
+    </div> : <form className={`${formStyles.form} ${styles.requestForm}`} onSubmit={submit}>
       <label htmlFor="newPassword">New password
         <Input id="newPassword" name="password" type="password" autoComplete="new-password"
-          placeholder="Enter a new password" minLength={12} maxLength={128} required autoFocus />
+          placeholder="Enter a new password" minLength={6} maxLength={128} required autoFocus />
       </label>
       <label htmlFor="confirmNewPassword">Confirm password
         <Input id="confirmNewPassword" name="confirmPassword" type="password" autoComplete="new-password"
           placeholder="Enter your password again" maxLength={128} required />
       </label>
-      {/* Enable once the Express endpoint validates and consumes reset tokens. */}
-      <Button type="submit" icon="tag" block disabled>Reset password</Button>
+      {error && <p role="alert" className={formStyles.error}>{error}</p>}
+      <Button type="submit" icon="tag" block disabled={busy || typeof router.query.token !== "string"}>Reset password</Button>
     </form>}
   </section>;
 }

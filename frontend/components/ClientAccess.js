@@ -2,17 +2,19 @@ import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { useAuth } from "../hooks/useAuth";
 import { Button, Loader } from "./index";
+import { accountDestination, publicAccountPages } from "../utils/account-navigation.mjs";
 
 // This guard controls navigation. Express verifies authorization on every data request.
 export default function ClientAccess({ children }) {
   const router = useRouter();
   const { session, loading, error, retry } = useAuth();
-  const publicPage = ["/about", "/privacy", "/delete", "/forgot-password", "/reset-password", "/404", "/_error"].includes(router.pathname);
-  const needsFamily = router.pathname.startsWith("/users") || router.pathname === "/gifts";
-  const needsAccount = needsFamily || router.pathname === "/family";
-  const destination = !loading && !error && needsAccount
-    ? !session ? "/login" : needsFamily && !session.user.family_id ? "/family" : null
-    : null;
+  const publicPage = publicAccountPages.includes(router.pathname);
+  const preview = process.env.NODE_ENV === "development" && (
+    (router.pathname === "/name" && router.query.preview === "1") ||
+    (router.pathname === "/join" && ["accept", "signin", "signup", "joined", "other-family", "invalid"].includes(router.query.preview))
+  );
+  const destination = !loading && !error
+    ? accountDestination(router.pathname, session?.user, router.query.code, preview) : null;
   useEffect(() => {
     if (destination) void router.replace(destination);
   }, [destination, router]);

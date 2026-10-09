@@ -1,6 +1,7 @@
 packages:
   - frontend
   - backend
+  - mobile
 onlyBuiltDependencies:
   - esbuild
   - sharp

@@ -7,7 +7,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  h1 { font-family: $header-font; font-size: 28px; font-weight: 400; margin-bottom: 12px; }
+  h1 { font-family: $body-font; font-size: 28px; font-weight: 400; margin-bottom: 12px; }
   p, small { line-height: 1.5; }
   label {
     display: flex;
@@ -81,4 +81,11 @@
   &:hover { text-decoration: underline; }
   &.signIn { color: color.adjust($colorGreen, $lightness: -25%); }
 }
-.error { color: #9b2020; }
+.error {
+  color: $colorRed;
+  border: 1px solid $colorRed;
+  border-radius: $borderRadiusSmall;
+  padding: 8px 12px;
+  text-align: center;
+  margin: 0;
+}

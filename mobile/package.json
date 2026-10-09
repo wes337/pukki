@@ -1,0 +1,33 @@
+{
+  "name": "pukki-mobile",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.ts",
+  "scripts": {
+    "dev": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test test/*.test.ts",
+    "export": "expo export --platform all",
+    "doctor": "expo install --check"
+  },
+  "dependencies": {
+    "expo": "~57.0.27",
+    "expo-font": "~57.0.4",
+    "expo-linking": "~57.0.12",
+    "expo-splash-screen": "~57.0.9",
+    "expo-status-bar": "~57.0.1",
+    "react": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-webview": "13.16.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "@types/react": "~19.2.2",
+    "react-dom": "19.2.3",
+    "tsx": "^4.23.15",
+    "typescript": "~6.0.3"
+  }
+}

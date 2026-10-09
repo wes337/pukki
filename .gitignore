@@ -39,3 +39,18 @@ frontend/public/swe-worker-*.js*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Expo development state and generated native projects
+.expo/
+frontend/public/email-previews/
+mobile/android/
+mobile/ios/
+*.jks
+*.keystore
+*.p12
+*.mobileprovision
+
+# Local font downloads; runtime font files are committed under frontend/public/fonts.
+/amore_christmas.zip
+/last_christmas.zip
+/foremost.zip

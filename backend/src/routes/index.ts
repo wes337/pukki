@@ -10,11 +10,13 @@ import user from "./user.js";
 import userGifts from "./user-gifts.js";
 import userClaimed from "./user-claimed.js";
 import profileAvatar from "./profile-avatar.js";
+import profileName from "./profile-name.js";
 import { authRateLimiter } from "#app/middlewares/auth-rate-limit.js";
 
 export const routes = Router();
 routes.all("/auth/:action", authRateLimiter, auth);
 routes.all("/profile/avatar", profileAvatar);
+routes.all("/profile/name", profileName);
 routes.all("/family", family);
 routes.all("/family/join", familyJoin);
 routes.all("/family/invitation", familyInvitation);

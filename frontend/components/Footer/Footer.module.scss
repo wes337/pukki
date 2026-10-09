@@ -1,3 +1,4 @@
+@use "sass:color";
 @use "../../styles/colors.scss" as *;
 @use "../../styles/borders.scss" as *;
 @use "../../styles/spacings.scss" as *;
@@ -53,8 +54,15 @@
 
 .links {
   display: flex;
+  align-items: center;
   justify-content: center;
-  gap: $space-l;
+  gap: 4px;
+}
+
+.separator {
+  // Match the rear hill's translucent blue over the page background.
+  color: color.mix($colorLightBlue, $colorOffWhite, 10%);
+  font-size: 14px;
 }
 
 .link {

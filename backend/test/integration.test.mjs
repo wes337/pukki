@@ -16,6 +16,7 @@ test("accounts, authorization, atomic claims and schema isolation", {
   // Override before loading app modules, so this suite can never use backend/.env's database.
   process.env.POSTGRES_URL = process.env.TEST_POSTGRES_URL;
   process.env.NODE_ENV = "test";
+  process.env.SENDGRID_API_KEY = "test-only-not-a-real-key";
   const { app } = await import("#app/lib/express.js");
   const { sql } = await import("#app/lib/sql.js");
   const server = app.listen(0, "127.0.0.1");
@@ -28,7 +29,7 @@ test("accounts, authorization, atomic claims and schema isolation", {
   const db = new Pool({ connectionString: process.env.TEST_POSTGRES_URL });
   await db.query("DELETE FROM pukki.auth_rate_limits");
   const suffix = randomUUID().replaceAll("-", "").slice(0, 10);
-  const password = "a long test password";
+  const password = "six123";
   async function call(path, { cookie, body, method = "GET", requestOrigin = origin } = {}) {
     return fetch(`${apiUrl}${path}`, {
       method, headers: { "Content-Type": "application/json", Origin: requestOrigin, ...(cookie ? { Cookie: cookie } : {}) },
@@ -36,16 +37,28 @@ test("accounts, authorization, atomic claims and schema isolation", {
     });
   }
   async function signup(label) {
-    const username = `${label}_${suffix}`;
-    const result = await call("/auth/signup", { method: "POST", body: { username, password } });
+    const email = `${label}_${suffix}@example.com`;
+    const result = await call("/auth/signup", { method: "POST", body: { email: ` ${email.toUpperCase()} `, password } });
     assert.equal(result.status, 201, await result.text());
     const header = result.headers.get("set-cookie");
     assert.match(header, /HttpOnly/);
     assert.match(header, /SameSite=Lax/);
     const cookie = header.split(";")[0];
     const session = await (await call("/auth/session", { cookie })).json();
-    assert.equal(session.user.username, username);
-    return { cookie, id: session.user.id, username };
+    assert.equal(session.user.email, email);
+    assert.equal(session.user.name, "");
+    if (label === "owner") {
+      assert.equal((await call("/family", { method: "POST", cookie, body: { name: "Before name" } })).status, 403);
+      assert.equal((await call("/family/join", { method: "POST", cookie, body: { code: "ABC234" } })).status, 403);
+      for (const invalid of ["   ", "x".repeat(81)]) {
+        assert.equal((await call("/profile/name", { method: "PATCH", cookie, body: { name: invalid } })).status, 400);
+      }
+    }
+    const named = await call("/profile/name", { method: "PATCH", cookie, body: { name: ` ${label} ` } });
+    assert.equal(named.status, 200);
+    assert.equal((await named.json()).name, label);
+    assert.equal((await (await call("/auth/session", { cookie })).json()).user.name, label);
+    return { cookie, id: session.user.id, email };
   }
   const owner = await signup("owner");
   const buyer = await signup("buyer");
@@ -54,7 +67,7 @@ test("accounts, authorization, atomic claims and schema isolation", {
   const unassigned = await signup("unassigned");
   const accounts = [owner, buyer, other, outsider, unassigned];
   // Fixture signup deliberately exhausts the shared IP budget.
-  assert.equal((await call("/auth/signup", { method: "POST", body: { username: `extra_${suffix}`, password } })).status, 429);
+  assert.equal((await call("/auth/signup", { method: "POST", body: { email: `extra_${suffix}@example.com`, password } })).status, 429);
   await db.query("DELETE FROM pukki.auth_rate_limits WHERE key LIKE 'signup:%'");
   t.after(async () => {
     const ids = accounts.map((account) => account.id);
@@ -62,12 +75,12 @@ test("accounts, authorization, atomic claims and schema isolation", {
     await db.query("UPDATE pukki.users SET family_id = NULL WHERE user_id = ANY($1::uuid[])", [ids]);
     await db.query("DELETE FROM pukki.families WHERE created_by = ANY($1::uuid[])", [ids]);
     await db.query("DELETE FROM pukki.users WHERE user_id = ANY($1::uuid[])", [ids]);
-    await db.query("DELETE FROM pukki.login_attempts WHERE username = ANY($1::text[])", [accounts.map((account) => account.username)]);
     await db.end();
   });
   await t.test("anonymous and cross-origin requests are rejected", async () => {
     assert.equal((await call("/gifts")).status, 401);
-    assert.equal((await call("/auth/login", { method: "POST", requestOrigin: "https://elsewhere.invalid", body: { username: owner.username, password } })).status, 403);
+    assert.equal((await call("/profile/name", { method: "PATCH", body: { name: "Someone" } })).status, 401);
+    assert.equal((await call("/auth/login", { method: "POST", requestOrigin: "https://elsewhere.invalid", body: { email: owner.email, password } })).status, 403);
   });
   await t.test("Express supports credentialed preflights and rejects malformed writes", async () => {
     const preflight = await fetch(`${apiUrl}/gifts`, { method: "OPTIONS", headers: {
@@ -87,11 +100,16 @@ test("accounts, authorization, atomic claims and schema isolation", {
     assert.equal((await missing.json()).error, "Not found");
   });
   await t.test("signup is case-insensitive; bad passwords fail; valid login succeeds", async () => {
-    assert.equal((await call("/auth/signup", { method: "POST", body: { username: owner.username.toUpperCase(), password } })).status, 409);
-    assert.equal((await call("/auth/login", { method: "POST", body: { username: owner.username, password: "incorrect password" } })).status, 401);
-    assert.equal((await call("/auth/login", { method: "POST", body: { username: owner.username.toUpperCase(), password } })).status, 200);
+    for (const [invalidPassword, message] of [["12345", "Password must be at least 6 characters."], ["x".repeat(129), "Password is too long."]]) {
+      const response = await call("/auth/signup", { method: "POST", body: { email: `length_${suffix}@example.com`, password: invalidPassword } });
+      assert.equal(response.status, 400);
+      assert.equal((await response.json()).error, message);
+    }
+    assert.equal((await call("/auth/signup", { method: "POST", body: { email: owner.email.toUpperCase(), password } })).status, 409);
+    assert.equal((await call("/auth/login", { method: "POST", body: { email: owner.email, password: "incorrect password" } })).status, 401);
+    assert.equal((await call("/auth/login", { method: "POST", body: { email: owner.email.toUpperCase(), password } })).status, 200);
     const { authLimitKey } = await import("#app/lib/auth-rate-limit.js");
-    const { rows } = await db.query("SELECT attempts FROM pukki.auth_rate_limits WHERE key = $1", [authLimitKey("login", "username", owner.username)]);
+    const { rows } = await db.query("SELECT attempts FROM pukki.auth_rate_limits WHERE key = $1", [authLimitKey("login", "email", owner.email)]);
     assert.equal(rows[0].attempts, 2, "Successful login does not clear the shared budget");
   });
   let family;
@@ -217,28 +235,28 @@ test("accounts, authorization, atomic claims and schema isolation", {
   });
   await t.test("login attempts are limited", async () => {
     for (let i = 0; i < 10; i++) {
-      assert.equal((await call("/auth/login", { method: "POST", body: { username: other.username, password: "incorrect password" } })).status, 401);
+      assert.equal((await call("/auth/login", { method: "POST", body: { email: other.email, password: "incorrect password" } })).status, 401);
     }
-    assert.equal((await call("/auth/login", { method: "POST", body: { username: other.username, password } })).status, 429);
+    assert.equal((await call("/auth/login", { method: "POST", body: { email: other.email, password } })).status, 429);
   });
-  await t.test("IP budgets limit rotating usernames before validation", async () => {
+  await t.test("IP budgets limit rotating emails before validation", async () => {
     await db.query("DELETE FROM pukki.auth_rate_limits WHERE key LIKE 'login:%'");
     for (let i = 0; i < 15; i++) {
-      assert.equal((await call("/auth/login", { method: "POST", body: { username: `rotating_${i}` } })).status, 400);
+      assert.equal((await call("/auth/login", { method: "POST", body: { email: `rotating_${i}@example.com` } })).status, 400);
     }
-    const response = await call("/auth/login", { method: "POST", body: { username: owner.username, password } });
+    const response = await call("/auth/login", { method: "POST", body: { email: owner.email, password } });
     assert.equal(response.status, 429);
     assert.ok(Number(response.headers.get("retry-after")) > 0);
   });
-  await t.test("recovery routes are limited before their handlers are connected", async () => {
+  await t.test("recovery request aliases share the same rate limit", async () => {
     for (let i = 0; i < 3; i++) {
-      assert.equal((await call("/auth/request-password-reset", { method: "POST", body: { email: " Test@example.com " } })).status, 404);
+      assert.equal((await call("/auth/request-password-reset", { method: "POST", body: { email: " Test@example.com " } })).status, 200);
     }
     assert.equal((await call("/auth/forgot-password", { method: "POST", body: { email: "test@example.com" } })).status, 429);
   });
   await t.test("shared counters enforce concurrent limits and expire without extending a blocked window", async () => {
     const { consumeAuthLimit, authLimitKey } = await import("#app/lib/auth-rate-limit.js");
-    const key = authLimitKey("test", "username", suffix);
+    const key = authLimitKey("test", "email", suffix);
     const results = await Promise.all(Array.from({ length: 20 }, () => consumeAuthLimit(key, 5, 900)));
     assert.equal(results.filter((result) => result.allowed).length, 5);
     await db.query("UPDATE pukki.auth_rate_limits SET expires_at = now() + interval '40 seconds' WHERE key = $1", [key]);
@@ -259,7 +277,7 @@ test("accounts, authorization, atomic claims and schema isolation", {
     assert.deepEqual(rows.map((row) => [row.table_schema, row.table_name]), [
       ["pukki", "auth_rate_limits"],
       ["pukki", "families"], ["pukki", "family_join_attempts"],
-      ["pukki", "gifts"], ["pukki", "login_attempts"], ["pukki", "migrations"], ["pukki", "sessions"], ["pukki", "users"],
+      ["pukki", "gifts"], ["pukki", "login_attempts"], ["pukki", "migrations"], ["pukki", "password_resets"], ["pukki", "sessions"], ["pukki", "users"],
     ]);
   });
 });

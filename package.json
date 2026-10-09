@@ -6,9 +6,11 @@
     "dev": "pnpm --parallel --filter pukki-frontend --filter pukki-backend run dev",
     "dev:frontend": "pnpm --filter pukki-frontend dev",
     "dev:backend": "pnpm --filter pukki-backend dev",
+    "dev:mobile": "pnpm --filter pukki-mobile dev",
+    "build:mobile": "pnpm --filter pukki-mobile export",
     "build": "pnpm --filter pukki-backend build && pnpm --filter pukki-frontend build",
-    "lint": "pnpm --filter pukki-backend typecheck && pnpm --filter pukki-frontend lint",
-    "test": "pnpm --filter pukki-backend test && pnpm --filter pukki-frontend test",
+    "lint": "pnpm --filter pukki-backend typecheck && pnpm --filter pukki-frontend lint && pnpm --filter pukki-mobile typecheck",
+    "test": "pnpm --filter pukki-backend test && pnpm --filter pukki-frontend test && pnpm --filter pukki-mobile test",
     "db:migrate": "pnpm --filter pukki-backend migrate"
   }
 }

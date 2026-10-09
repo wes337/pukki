@@ -1,6 +1,7 @@
 import { createHash, randomBytes } from "node:crypto";
 import { parseCookie, stringifySetCookie } from "cookie";
 import type { Request, Response } from "express";
+import type { PoolClient } from "pg";
 import { sql } from "#app/lib/sql.js";
 import { production, cookieSameSite } from "#app/constants/config.js";
 import type { SessionUser } from "#app/types/models.js";
@@ -24,7 +25,7 @@ function setCookie(res: Response, token: string, maxAge: number) {
 export async function getSession(req: Request) {
   const token = sessionToken(req);
   if (!token) return null;
-  const { rows } = await sql.query<SessionUser>(`SELECT u.user_id AS id, u.username, u.name, u.avatar_url,
+  const { rows } = await sql.query<SessionUser>(`SELECT u.user_id AS id, u.email, u.name, u.avatar_url,
     u.family_id, f.name AS family_name
     FROM pukki.sessions s JOIN pukki.users u ON u.user_id = s.user_id
     LEFT JOIN pukki.families f ON f.id = u.family_id
@@ -35,9 +36,19 @@ export async function getSession(req: Request) {
 export async function startSession(req: Request, res: Response, userId: string) {
   await endSession(req, res);
   await sql.query("DELETE FROM pukki.sessions WHERE expires_at <= now()");
+  const token = await createSession(userId);
+  setSessionCookie(res, token);
+}
+
+// A reset can create its session inside the same transaction as the password change.
+export async function createSession(userId: string, client: Pick<PoolClient, "query"> = sql) {
   const token = randomBytes(32).toString("hex");
-  await sql.query(`INSERT INTO pukki.sessions (token_hash, user_id, expires_at)
+  await client.query(`INSERT INTO pukki.sessions (token_hash, user_id, expires_at)
     VALUES ($1, $2, now() + interval '14 days')`, [digest(token), userId]);
+  return token;
+}
+
+export function setSessionCookie(res: Response, token: string) {
   setCookie(res, token, 60 * 60 * 24 * 14);
 }
 

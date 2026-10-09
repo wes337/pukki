@@ -4,7 +4,7 @@ import styles from "./Logo.module.scss";
 export default function Logo({ centered }) {
   return (
     <Link
-      className={styles.logo}
+      className={`${styles.logo} ${centered ? styles.centered : ""}`}
       style={{ margin: centered ? "auto" : 0 }}
       href="/"
     >

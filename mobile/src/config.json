@@ -1,0 +1,12 @@
+{
+  "siteOrigin": "https://pukki.gifts",
+  "appScheme": "pukki",
+  "colors": {
+    "background": "#f3f0f3",
+    "text": "#433f43",
+    "red": "#ee6161",
+    "redBorder": "#e94444",
+    "redShadow": "#ad4141",
+    "white": "#ffffff"
+  }
+}

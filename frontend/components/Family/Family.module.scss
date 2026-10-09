@@ -16,9 +16,8 @@
     font-size: min(clamp(48px, 12vw, 64px), var(--family-title-size, 64px));
     text-wrap: balance;
     font-weight: 400;
-    line-height: 1;
+    line-height: 0.85;
     text-align: center;
-    text-shadow: 0 2px 0 color.mix($colorLightRed, $colorDarkGray, 45%);
   }
   .titleMistletoe, .titleGift {
     position: absolute;
@@ -41,6 +40,7 @@
     background: $colorOffWhite;
     font: inherit;
   }
+  input[id="family-name"] { text-align: center; }
   button:focus-visible, a:focus-visible { outline: 2px solid $colorDarkGray; outline-offset: 3px; }
   button:disabled, input:disabled { opacity: 0.65; cursor: wait; }
 }
@@ -118,7 +118,7 @@
 }
 .familyName {
   text-align: center;
-  font-family: $header-font;
+  font-family: $body-font;
   font-size: 32px;
   font-weight: 400;
   color: $colorLightRed;
