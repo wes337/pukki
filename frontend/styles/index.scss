@@ -30,11 +30,18 @@ p {
 .main {
   position: relative;
   max-width: 420px;
-  margin: 96px auto;
+  margin: 96px auto 16px;
   z-index: 3;
 
+  > main {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100svh - 120px);
+  }
+
   @media only screen and (max-width: 500px) {
-    margin: auto;
+    margin: 0 auto 16px;
+    > main { min-height: calc(100svh - 24px); }
   }
 }
 

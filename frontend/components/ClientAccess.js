@@ -11,6 +11,7 @@ export default function ClientAccess({ children }) {
   const publicPage = publicAccountPages.includes(router.pathname);
   const preview = process.env.NODE_ENV === "development" && (
     (router.pathname === "/name" && router.query.preview === "1") ||
+    (router.pathname === "/users/[uid]/[gid]" && router.query.preview === "1") ||
     (router.pathname === "/join" && ["accept", "signin", "signup", "joined", "other-family", "invalid"].includes(router.query.preview))
   );
   const destination = !loading && !error

@@ -10,6 +10,16 @@ export const getWebUrl = (value) => {
   }
 };
 
+// Shorten the visible label without changing the link's destination.
+export const formatWebUrl = (value) => {
+  const href = getWebUrl(value);
+  if (!href) return value;
+  const url = new URL(href);
+  const host = url.host.replace(/^www\./i, "");
+  const path = url.pathname.replace(/\/+$/, "");
+  return `${host}${path}${url.search}${url.hash}`;
+};
+
 export const formGenitiveCase = (name, locale = "en") => {
   try {
     if (locale === "en") {

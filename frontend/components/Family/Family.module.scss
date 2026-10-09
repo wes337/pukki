@@ -11,6 +11,7 @@
   h1 { font-family: $header-font; font-size: 28px; overflow-wrap: anywhere; margin-bottom: 12px; }
   h1.familyTitle {
     position: relative;
+    font-family: $header-font;
     margin-bottom: 0;
     color: $colorLightRed;
     font-size: min(clamp(48px, 12vw, 64px), var(--family-title-size, 64px));

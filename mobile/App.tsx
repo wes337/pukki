@@ -17,7 +17,7 @@ export default function App() {
   const [webviewKey, setWebviewKey] = useState(0);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
-  const [fontsLoaded] = useFonts({ AmoreChristmas: require("../frontend/public/fonts/AmoreChristmas.otf") });
+  const [fontsLoaded] = useFonts({ Quicksand: require("./assets/fonts/Quicksand-Regular.ttf") });
 
   useEffect(() => {
     let active = true;
@@ -124,8 +124,8 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background },
   overlay: { position: "absolute", top: 0, bottom: 0, left: 0, right: 0, backgroundColor: colors.background, alignItems: "center", justifyContent: "center", padding: 24 },
   error: { alignItems: "center", gap: 16, maxWidth: 340, width: "100%" },
-  title: { color: colors.red, fontSize: 30, textAlign: "center", textShadowColor: colors.redShadow, textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 0 },
-  headingFont: { fontFamily: "AmoreChristmas" },
+  title: { color: colors.red, fontSize: 30, fontWeight: "400", textAlign: "center" },
+  headingFont: { fontFamily: "Quicksand" },
   message: { color: colors.text, fontSize: 16, textAlign: "center" },
   retry: { backgroundColor: colors.red, borderColor: colors.redBorder, borderWidth: 1, borderRadius: 6, minHeight: 46, alignSelf: "stretch", justifyContent: "center", alignItems: "center" },
   retryText: { color: colors.white, fontSize: 18, fontWeight: "700", textShadowColor: colors.redShadow, textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 0 },

@@ -15,7 +15,7 @@ Scan the terminal's QR code with Expo Go on a phone on the same network. Use an 
 
 `pnpm --filter pukki-mobile android` builds locally with an installed Android SDK. `pnpm --filter pukki-mobile ios` requires macOS and Xcode. Expo Go can preview the UI, but testing the custom URL scheme and HTTPS app links requires an installed native build.
 
-The app uses the existing Santa icon, Amore Christmas font, theme colors and candy-cane loader. Native error recovery shows a Retry button. The WebView uses its persistent cookie store; credentials are not copied into native storage. Android Back and iOS back gestures navigate the web history. External product links open in the phone's browser; email links open the mail app. Only the exact HTTPS Pukki origin stays embedded.
+The app uses the existing Santa icon, theme colors and candy-cane loader. Native error recovery uses bundled Quicksand lettering without a heading shadow and shows a Retry button. The WebView uses its persistent cookie store; credentials are not copied into native storage. Android Back and iOS back gestures navigate the web history. External product links open in the phone's browser; email links open the mail app. Only the exact HTTPS Pukki origin stays embedded.
 
 Settings live in `mobile/src/config.json` and `mobile/app.config.ts`. No mobile secrets are required. React and React Native follow Expo's compatible versions independently of Next.js. The matching `react-dom` dev dependency satisfies Expo tooling's peer dependency without taking the frontend's different React version.
 

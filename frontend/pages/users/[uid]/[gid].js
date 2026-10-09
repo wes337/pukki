@@ -4,7 +4,7 @@ import { useSession } from "../../../hooks/useAuth";
 import { useFamilyData, useGiftActions } from "../../../hooks/useFamilyData";
 import useTranslate from "../../../hooks/useTranslate";
 import { getFirstName } from "../../../utils/users";
-import { getWebUrl } from "../../../utils/string";
+import { getWebUrl, formatWebUrl } from "../../../utils/string";
 import { Banner, Button, Header, Icon, Loader } from "../../../components";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import styles from "./gift.module.scss";
@@ -15,16 +15,26 @@ export default function Gift() {
   const [actionError, setActionError] = useState("");
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(null);
+  const [previewClaimed, setPreviewClaimed] = useState(true);
   const session = useSession();
   const router = useRouter();
   const translate = useTranslate();
   const { locale, query } = router;
   const { uid, gid } = query;
-  const gift = gifts?.find((item) => item.id === gid && item.user === uid) ?? confirmDelete;
-  const user = users?.find((member) => member.user_id === uid);
-  const isMe = uid === session.user.id;
+  const preview = process.env.NODE_ENV === "development" && query.preview === "1";
+  const viewerId = preview ? "preview-giver" : session?.user.id;
+  const gift = preview ? {
+    id: "preview-gift", user: "preview-recipient", name: "A cosy winter reading set",
+    url: "Any grocery store",
+    description: "A soft wool blanket, a ceramic mug, and a good mystery novel for snowy evenings. I love forest green and warm cream colours. A second-hand book would be lovely too!",
+    claimed_by: previewClaimed ? { user_id: viewerId, name: "Alex" } : null,
+  } : gifts?.find((item) => item.id === gid && item.user === uid) ?? confirmDelete;
+  const user = preview ? { name: "Taylor", avatar_url: "/images/avatars/winter-glasses.png" }
+    : users?.find((member) => member.user_id === uid);
+  const isMe = !preview && uid === viewerId;
 
   const claimAndUpdateGift = (userId) => {
+    if (preview) { setPreviewClaimed(Boolean(userId)); return; }
     if (busy) return;
     setBusy(true);
     setActionError("");
@@ -64,8 +74,8 @@ export default function Gift() {
   const renderGiftButtons = () => {
     if (gift.claimed_by) {
       const claimedByMe =
-        gift.claimed_by.user_id === session.user.id ||
-        gift.claimed_by === session.user.id;
+        gift.claimed_by.user_id === viewerId ||
+        gift.claimed_by === viewerId;
 
       return (
         <div className={styles.claimed}>
@@ -113,7 +123,7 @@ export default function Gift() {
         icon="gift-bag"
         block
         disabled={busy}
-        onClick={() => claimAndUpdateGift(session.user.id)}
+        onClick={() => claimAndUpdateGift(viewerId)}
       >
         {translate("i'll-buy-it")}
       </Button>
@@ -128,9 +138,9 @@ export default function Gift() {
     return renderGiftButtons();
   };
 
-  if (error) return <p role="alert">{error}</p>;
+  if (!preview && error) return <p role="alert">{error}</p>;
 
-  if (loading) return <Loader />;
+  if (!preview && loading) return <Loader />;
 
   if (!gift || !user) {
     return (
@@ -161,7 +171,7 @@ export default function Gift() {
               })
         }
         avatar={isMe ? undefined : user.avatar_url}
-        back={query.from === "shopping" && "/gifts"}
+        back={preview ? "/about" : query.from === "shopping" && "/gifts"}
       />
       <div className={styles.body}>
         <h5 className={styles.giftName}>
@@ -177,7 +187,7 @@ export default function Gift() {
             <span>{translate("where-can-you-buy-it")}</span>
             {purchaseUrl ? (
               <a className={styles.purchaseLink} href={purchaseUrl} target="_blank" rel="noopener noreferrer">
-                {gift.url}
+                {formatWebUrl(purchaseUrl)}
               </a>
             ) : (
               gift.url

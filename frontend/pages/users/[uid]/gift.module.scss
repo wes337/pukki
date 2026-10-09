@@ -166,10 +166,17 @@
 .giftName { line-height: 1; }
 
 .purchaseLink {
-  color: inherit;
+  color: $colorGreen;
+  font-family: $body-font;
+  font-size: $font-size-l;
+  letter-spacing: normal;
   overflow-wrap: anywhere;
-  text-decoration: underline;
-  text-underline-offset: 4px;
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: $colorRed;
+  text-decoration-thickness: 4px;
+  text-underline-offset: 6px;
+  text-decoration-skip-ink: none;
 
   &:focus-visible { outline: 2px solid $colorGreen; outline-offset: 4px; }
 }

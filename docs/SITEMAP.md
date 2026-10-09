@@ -47,6 +47,8 @@ The native app reuses these web routes. Its two additional states are **Mobile l
 
 Local invitation review links use `/join?preview=accept`, `signin`, `signup`, `joined`, `other-family`, or `invalid`. These development-only previews use the example family The Johnsons. Submitting preview forms only switches preview screens; it never creates an account or changes membership. Sign-in and signup previews hide the current session in the UI without signing out.
 
+Local gift review: `/users/preview/preview-gift?preview=1` shows Taylor's gift with a title, shop URL, description, avatar and giving status. This development-only preview works without signing in. Claim and release actions change only the preview state, never database records.
+
 - Session loading: a loader appears before account-dependent screens render. A failed session request shows an error and Try again.
 - Data loading: family members and gifts share an in-memory SWR cache scoped to the signed-in account and family. Wishlist, gift detail, editing, and shopping views reuse it. Screens show cached content immediately, then fetch fresh data client-side and update in place. Requests within two seconds are deduplicated. Focus and reconnect also refresh in the background; successful gift writes update the shared snapshot immediately. Invitation data and likely page bundles are prefetched. The candy-cane loader appears when required data is missing, not on every navigation.
 - Signed out: opening `/family`, `/users`, any nested user route, or `/gifts` redirects to Sign in.
