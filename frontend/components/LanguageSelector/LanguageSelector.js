@@ -1,8 +1,10 @@
 import { useRouter } from "next/router";
+import useTranslate from "../../hooks/useTranslate";
 import Icon from "../Icon/Icon";
 import styles from "./LanguageSelector.module.scss";
 
 export default function LanguageSelector() {
+  const translate = useTranslate();
   const router = useRouter();
   const changeLocale = (locale) => {
     if (router.locale !== locale) {
@@ -10,7 +12,7 @@ export default function LanguageSelector() {
     }
   };
 
-  return <div className={styles.languages} role="group" aria-label="Language">
+  return <div className={styles.languages} role="group" aria-label={translate("Language")}>
     <button type="button" aria-label="English" aria-pressed={router.locale === "en"} onClick={() => changeLocale("en")}>
       <Icon name="english" size={24} />
     </button>

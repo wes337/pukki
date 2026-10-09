@@ -1,5 +1,7 @@
+import useTranslate from "../hooks/useTranslate";
 import Head from "next/head";
 
 export default function PageTitle({ children }) {
-  return <Head><title>{children ? `Pukki | ${children}` : "Pukki"}</title></Head>;
+  const translate = useTranslate();
+  return <Head><title>{children ? `Pukki | ${translate(children)}` : "Pukki"}</title></Head>;
 }

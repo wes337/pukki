@@ -30,10 +30,10 @@ export default function Footer() {
         {user && <div className={styles.languages}><LanguageSelector /></div>}
       </footer>
       <div className={styles.legal}>
-        <nav className={styles.links} aria-label="About and privacy">
-          <Link className={styles.link} href="/about">About</Link>
+        <nav className={styles.links} aria-label={translate("About and privacy")}>
+          <Link className={styles.link} href="/about">{translate("About")}</Link>
           <span className={styles.separator} aria-hidden="true">|</span>
-          <Link className={styles.link} href="/privacy">Privacy</Link>
+          <Link className={styles.link} href="/privacy">{translate("Privacy")}</Link>
         </nav>
         <small className={styles.copyright}>&copy; 2026 WesWare</small>
       </div>

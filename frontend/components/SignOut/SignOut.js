@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { useState } from "react";
 import { useUser } from "../../hooks/useAuth";
 import { request } from "../../actions/request";
@@ -10,6 +11,7 @@ import AvatarPicker from "../AvatarPicker/AvatarPicker";
 import styles from "./SignOut.module.scss";
 export default function SignOut() {
   const user = useUser();
+  const { locale } = useRouter();
   const translate = useTranslate();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -20,8 +22,7 @@ export default function SignOut() {
     try {
       await request("/auth/logout", { method: "POST" });
       // Reload to replace the cached session after an account or membership change.
-      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-      window.location.assign("/login");
+      window.location.assign(locale === "fi" ? "/fi/login" : "/login");
     } catch (error) { setError(error.message); setBusy(false); }
   };
   return <header className={styles["sign-out"]}>
@@ -34,9 +35,9 @@ export default function SignOut() {
           <hr />
         </>}
         <Button icon="tag" variant="link" size="small" onClick={signOut} disabled={busy}>{translate("sign-out")}</Button>
-        {error && <p role="alert">{error}</p>}
+        {error && <p role="alert">{translate(error)}</p>}
       </div>
-      {user.name?.trim() && <button type="button" className={styles.userAvatar} aria-label="Choose your avatar" aria-haspopup="dialog" onClick={() => setPickingAvatar(true)}><Avatar url={user.avatar_url} size={48} /></button>}
+      {user.name?.trim() && <button type="button" className={styles.userAvatar} aria-label={translate("Choose your avatar")} aria-haspopup="dialog" onClick={() => setPickingAvatar(true)}><Avatar url={user.avatar_url} size={48} /></button>}
     </div>}
     {user && pickingAvatar && <AvatarPicker onClose={() => setPickingAvatar(false)} />}
   </header>;

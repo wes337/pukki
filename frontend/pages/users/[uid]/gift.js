@@ -95,7 +95,7 @@ export default function Gift({ gift }) {
           />
         </label>
       </div>
-      {error && <p role="alert">{error}</p>}
+      {error && <p role="alert">{translate(error)}</p>}
       <div className={styles.footer}>
         <Button icon="gift" block onClick={addOrUpdateGift} disabled={!name || saving}>
           {translate(gift ? "update-your-wishlist" : "add-to-your-wishlist")}

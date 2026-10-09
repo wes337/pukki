@@ -1,21 +1,44 @@
 import { formAllativeCase, formGenitiveCase } from "../utils/string";
+import finnish from "./fi.mjs";
 
 const i18n = {
+  ...Object.fromEntries(Object.entries(finnish).map(([en, fi]) => [en, { en, fi }])),
+  "invitation-signup": {
+    en: ({ name }) => `${name} have invited you to join their family on Pukki. Sign in or create an account to share wishlists and choose gifts together.`,
+    fi: ({ name }) => `Perhe ${name} kutsuu sinut mukaan Pukkiin. Kirjaudu sisään tai luo tili, niin voitte jakaa toivelistoja ja valita lahjoja yhdessä.`,
+  },
+  "about-name-origin": {
+    en: <>Our name comes from <span lang="fi">Joulupukki</span>, the Finnish name for Santa Claus.
+      It literally means &ldquo;Christmas goat&rdquo;, a nod to old Finnish Christmas traditions.</>,
+    fi: <>Nimemme tulee Joulupukista. Sana pukki viittaa vanhoihin suomalaisiin jouluperinteisiin.</>,
+  },
+  "delete-account-instructions": {
+    en: ({ email }) => <>Email {email} with your account email address to request account deletion. Do not include your password.</>,
+    fi: ({ email }) => <>Pyydä tilisi poistamista lähettämällä viesti osoitteeseen {email}. Kerro tilisi sähköpostiosoite. Älä lähetä salasanaasi.</>,
+  },
+  "privacy-contact": {
+    en: ({ email }) => <>Pukki is a family wishlist app by WesWare. For privacy questions or data requests, email {email}.</>,
+    fi: ({ email }) => <>Pukki on WesWaren toivelistasovellus perheille. Tietosuojaa koskevat kysymykset ja tietopyynnöt voit lähettää osoitteeseen {email}.</>,
+  },
+  "privacy-data-requests": {
+    en: ({ email }) => <>To request account deletion, a copy of your data, or a correction, email {email} with your account email address. We may need to verify that the account is yours. Do not send your password. Deleted data may remain in provider backups until those backups expire.</>,
+    fi: ({ email }) => <>Voit pyytää tilisi poistamista, kopiota tiedoistasi tai tietojen korjaamista lähettämällä viestin osoitteeseen {email}. Kerro tilisi sähköpostiosoite. Saatamme joutua varmistamaan, että tili kuuluu sinulle. Älä lähetä salasanaasi. Poistetut tiedot voivat säilyä palveluntarjoajien varmuuskopioissa niiden säilytysajan loppuun asti.</>,
+  },
   ["add-gift"]: {
     en: "Add gift",
     fi: "Lisää lahjatoive",
   },
   ["add-a-gift-to-your-wishlist"]: {
     en: "Add a gift to your wishlist",
-    fi: "Lisää lahja toivelistallesi",
+    fi: "Lisää lahjatoive",
   },
   ["change-a-gift-on-your-wishlist"]: {
     en: "Change a gift on your wishlist",
-    fi: "Muuta lahjaa toivelistallasi",
+    fi: "Muokkaa lahjatoivetta",
   },
   ["what-do-you-want"]: {
     en: "What do you want?",
-    fi: "Mitä haluat?",
+    fi: "Mitä toivot?",
   },
   ["name-of-the-gift"]: {
     en: "Name of the gift",
@@ -35,7 +58,7 @@ const i18n = {
   },
   ["include-details"]: {
     en: "Include details such as size, colour, or anything specific about the gift you want",
-    fi: "Sisällytä tiedot, kuten koko, väri tai jotain erityistä haluamastasi lahjasta",
+    fi: "Kerro esimerkiksi koko, väri tai muut lahjatoiveen tarkemmat tiedot",
   },
   ["no-gifts"]: {
     en: "No gifts!",
@@ -43,7 +66,7 @@ const i18n = {
   },
   ["you-haven't-claimed-any-gifts-yet"]: {
     en: "You haven't chosen any gifts to give yet",
-    fi: "Et ole vielä lunastanut lahjoja",
+    fi: "Et ole vielä valinnut annettavia lahjoja",
   },
   ["my-wishlist"]: {
     en: "My wishlist",
@@ -51,7 +74,7 @@ const i18n = {
   },
   ["gifts-i'm-buying"]: {
     en: "Gifts I'm giving",
-    fi: "Lahjat, jotka ostan",
+    fi: "Antamani lahjat",
   },
   ["sign-in-with"]: {
     en: "Sign in with",
@@ -87,11 +110,11 @@ const i18n = {
   },
   ["you-are-buying"]: {
     en: "You're giving",
-    fi: "Ostat",
+    fi: "Annat lahjaksi",
   },
   ["user-is-buying"]: {
     en: ({ name }) => `${name} is giving`,
-    fi: ({ name }) => `${name} ostaa`,
+    fi: ({ name }) => `${name} antaa lahjaksi`,
   },
   ["for"]: {
     en: "to",
@@ -99,11 +122,11 @@ const i18n = {
   },
   ["nevermind-im-not-buying-this"]: {
     en: "Never mind, I'm not giving this",
-    fi: "Ei hätää, en osta tätä",
+    fi: "En annakaan tätä lahjaksi",
   },
   ["i'll-buy-it"]: {
     en: "I'll give this",
-    fi: "Ostan tämän!",
+    fi: "Annan tämän lahjaksi",
   },
   ["back"]: {
     en: "Back",
@@ -111,7 +134,7 @@ const i18n = {
   },
   ["you-want"]: {
     en: "You want...",
-    fi: "Haluat...",
+    fi: "Toivot...",
   },
   ["link-to-gift-or-name-of-shop"]: {
     en: "Link to the gift online, or name of the shop",
@@ -123,7 +146,7 @@ const i18n = {
   },
   ["where-can-you-buy-it"]: {
     en: "Where to find it",
-    fi: "Mistä sen voi ostaa?",
+    fi: "Mistä sen löytää?",
   },
   ["click-here"]: {
     en: "Click here!",

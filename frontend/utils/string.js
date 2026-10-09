@@ -31,7 +31,7 @@ export const formGenitiveCase = (name, locale = "en") => {
         return `${name.slice(0, -1)}ksen`;
       }
 
-      if (name.endsWith("s")) {
+      if (!/[aeiouyäöå]$/i.test(name)) {
         return `${name}in`;
       }
 
@@ -55,7 +55,7 @@ export const formAllativeCase = (name, locale = "en") => {
         return `${name.slice(0, -1)}kselle`;
       }
 
-      if (name.endsWith("s")) {
+      if (!/[aeiouyäöå]$/i.test(name)) {
         return `${name}ille`;
       }
 

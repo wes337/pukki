@@ -52,7 +52,7 @@ export default function Users() {
     );
   };
 
-  if (error) return <p role="alert">{error}</p>;
+  if (error) return <p role="alert">{translate(error)}</p>;
 
   if (loading) {
     return <Loader />;
@@ -64,7 +64,7 @@ export default function Users() {
       <div className={userStyles.familyHeader}>
         <h1>{session.user.family_name}</h1>
         {usersWithGiftPercentages.length > 0 && <Button variant="outlineRed" icon="fireplace" onClick={() => router.push("/family")}>
-          {router.locale === "fi" ? "Kutsu perheesi" : "Invite"}
+          {translate("Invite")}
         </Button>}
       </div>
       <div className={`${styles.header} ${userStyles.wishlistActions}`}>
@@ -92,7 +92,7 @@ export default function Users() {
       <hr />
       {usersWithGiftPercentages.length === 0 && <div className={userStyles.emptyFamily}>
         <Button variant="outlineRed" icon="fireplace" iconSize={36} block onClick={() => router.push("/family")}>
-          {router.locale === "fi" ? "Kutsu perheesi" : "Invite"}
+          {translate("Invite")}
         </Button>
       </div>}
       {usersWithGiftPercentages.length > 0 && <div className={userStyles.memberList}><List

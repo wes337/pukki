@@ -1,3 +1,4 @@
+import useTranslate from "../hooks/useTranslate";
 import { useEffect } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -39,6 +40,7 @@ const pageTitles = {
 };
 
 export default function MyApp({ Component, pageProps }) {
+  const translate = useTranslate();
   const router = useRouter();
   useEffect(() => {
     const iOS =
@@ -54,11 +56,11 @@ export default function MyApp({ Component, pageProps }) {
     <ToastProvider>
       <PageTitle>{pageTitles[router.pathname]}</PageTitle>
       <Head>
-        <meta name="description" content={siteDescription} key="description" />
+        <meta name="description" content={translate(siteDescription)} key="description" />
         <meta property="og:site_name" content="Pukki" key="og-site-name" />
         <meta property="og:type" content="website" key="og-type" />
         <meta property="og:title" content="Pukki" key="og-title" />
-        <meta property="og:description" content={siteDescription} key="og-description" />
+        <meta property="og:description" content={translate(siteDescription)} key="og-description" />
         {/* Static invitation HTML has no query string; let clients retain the shared URL and its code. */}
         {router.pathname !== "/join" && <meta property="og:url" content={`${siteOrigin}${router.asPath.split(/[?#]/)[0]}`} key="og-url" />}
         <meta property="og:image" content={`${siteOrigin}/images/social/pukki-wide.png`} key="og-image-wide" />
@@ -73,7 +75,7 @@ export default function MyApp({ Component, pageProps }) {
         <meta property="og:image:alt" content="Pukki's Santa logo above red lettering and snowy hills." key="og-image-square-alt" />
         <meta name="twitter:card" content="summary_large_image" key="twitter-card" />
         <meta name="twitter:title" content="Pukki" key="twitter-title" />
-        <meta name="twitter:description" content={siteDescription} key="twitter-description" />
+        <meta name="twitter:description" content={translate(siteDescription)} key="twitter-description" />
         <meta name="twitter:image" content={`${siteOrigin}/images/social/pukki-wide.png`} key="twitter-image" />
         <meta name="twitter:image:alt" content="Pukki's Santa logo and red lettering above snowy hills." key="twitter-image-alt" />
       </Head>

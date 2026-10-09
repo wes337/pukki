@@ -1,3 +1,4 @@
+import useTranslate from "../../hooks/useTranslate";
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { FiX } from "react-icons/fi";
 import styles from "./Toast.module.scss";
@@ -5,6 +6,7 @@ import styles from "./Toast.module.scss";
 const ToastContext = createContext(null);
 
 function ToastMessage({ toast, dismiss }) {
+  const translate = useTranslate();
   const [closing, setClosing] = useState(false);
   const leaving = closing || Boolean(toast.next);
 
@@ -21,7 +23,7 @@ function ToastMessage({ toast, dismiss }) {
 
   return <div className={styles.toast} data-tone={toast.tone} data-leaving={leaving}>
     <span>{toast.message}</span>
-    <button type="button" aria-label="Dismiss notification" onClick={() => setClosing(true)}>
+    <button type="button" aria-label={translate("Dismiss notification")} onClick={() => setClosing(true)}>
       <FiX aria-hidden="true" size={18} />
     </button>
   </div>;

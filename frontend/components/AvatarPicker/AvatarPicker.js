@@ -1,3 +1,4 @@
+import useTranslate from "../../hooks/useTranslate";
 import { useEffect, useRef, useState } from "react";
 import { FiCheck, FiX } from "react-icons/fi";
 import { useSWRConfig } from "swr";
@@ -11,6 +12,7 @@ import { useToast } from "../Toast/Toast";
 import styles from "./AvatarPicker.module.scss";
 
 export default function AvatarPicker({ onClose }) {
+  const translate = useTranslate();
   const dialog = useRef(null);
   const saving = useRef(false);
   const user = useUser();
@@ -54,7 +56,7 @@ export default function AvatarPicker({ onClose }) {
       updateUser(updated);
       // Refresh member avatars without discarding the currently displayed lists.
       void mutate(familyDataKey).catch(() => {});
-      showToast("Avatar updated.");
+      showToast(translate("Avatar updated."));
       onClose();
     } catch {
       setError("Couldn't save avatar. Try again.");
@@ -68,19 +70,19 @@ export default function AvatarPicker({ onClose }) {
     onClick={(event) => { if (event.target === event.currentTarget && !saving.current) onClose(); }}>
     <div className={styles.panel}>
       <header className={styles.header}>
-        <h2 id="avatar-picker-title">Choose your avatar</h2>
-        <button type="button" className={styles.close} aria-label="Close avatar picker" disabled={busy} onClick={onClose}>
+        <h2 id="avatar-picker-title">{translate("Choose your avatar")}</h2>
+        <button type="button" className={styles.close} aria-label={translate("Close avatar picker")} disabled={busy} onClick={onClose}>
           <FiX size={24} aria-hidden="true" />
         </button>
       </header>
       <div className={styles.content} aria-busy={busy}>
-        {error && <p className={styles.error} role="alert">{error}</p>}
+        {error && <p className={styles.error} role="alert">{translate(error)}</p>}
         {!avatars && (error
-          ? <Button onClick={() => { setError(""); setAttempt((value) => value + 1); }}>Try again</Button>
+          ? <Button onClick={() => { setError(""); setAttempt((value) => value + 1); }}>{translate("Try again")}</Button>
           : <Loader />)}
-        {avatars && <div className={styles.grid} aria-label="Avatars">
+        {avatars && <div className={styles.grid} aria-label={translate("Avatars")}>
           {avatars.map(({ url, name }) => <button key={url} type="button" className={styles.choice}
-            aria-label={name} aria-pressed={url === user.avatar_url} disabled={busy} onClick={() => selectAvatar(url)}>
+            aria-label={translate(name)} aria-pressed={url === user.avatar_url} disabled={busy} onClick={() => selectAvatar(url)}>
             <Avatar url={url} size={80} />
             {url === user.avatar_url && <span className={styles.check}><FiCheck size={16} strokeWidth={3} aria-hidden="true" /></span>}
           </button>)}

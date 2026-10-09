@@ -1,3 +1,4 @@
+import useTranslate from "../hooks/useTranslate";
 import Input from "../components/Input/Input";
 import PageTitle from "../components/PageTitle";
 import { useRef, useState } from "react";
@@ -8,16 +9,10 @@ import InvitationHeading from "../components/Family/InvitationHeading";
 import { useInvitation } from "../hooks/useInvitation";
 import familyStyles from "../components/Family/Family.module.scss";
 import styles from "./login.module.scss";
-const copy = {
-  en: { login: "Sign in", signup: "Create account", password: "Password",
-    noAccount: "No account?", create: "Create an account", existing: "Already have an account?" },
-  fi: { login: "Kirjaudu sisään", signup: "Luo tili", password: "Salasana",
-    create: "Uusi täällä? Luo tili", existing: "Onko sinulla jo tili? Kirjaudu sisään" },
-};
 export default function Login({ initialSignup = false, preview = false }) {
+  const translate = useTranslate();
   const router = useRouter();
   const { locale, query } = router;
-  const text = copy[locale] || copy.en;
   const inviteCode = typeof query.code === "string" ? query.code.slice(0, 32) : "";
   const hasInvitation = Boolean(inviteCode || preview || router.pathname === "/join");
   const { data: invitation, error: invitationError, mutate: retryInvitation } = useInvitation(inviteCode, preview);
@@ -56,48 +51,48 @@ export default function Login({ initialSignup = false, preview = false }) {
   };
   if (hasInvitation && inviteCode && !invitation && !invitationError) return <Loader />;
   if (hasInvitation && ((!inviteCode && !preview) || invitationError)) return <div className={styles.form}>
-    <p role="alert" className={familyStyles.error}>{!inviteCode || [400, 404].includes(invitationError?.status)
+    <p role="alert" className={familyStyles.error}>{translate(!inviteCode || [400, 404].includes(invitationError?.status)
       ? "This invitation is invalid or no longer available."
-      : invitationError.status === 429 ? "Too many attempts. Try again later." : "Couldn't load the invitation."}</p>
-    {invitationError && ![400, 404].includes(invitationError.status) && <Button onClick={() => retryInvitation()}>Try again</Button>}
-    <button type="button" className={styles.switch} onClick={() => router.push("/login")}>Back to sign in</button>
+      : invitationError.status === 429 ? "Too many attempts. Try again later." : "Couldn't load the invitation.")}</p>
+    {invitationError && ![400, 404].includes(invitationError.status) && <Button onClick={() => retryInvitation()}>{translate("Try again")}</Button>}
+    <button type="button" className={styles.switch} onClick={() => router.push("/login")}>{translate("Back to sign in")}</button>
   </div>;
   return <form className={styles.form} onSubmit={submit} aria-busy={busy}>
     <PageTitle>{signup ? "Create account" : "Sign in"}</PageTitle>
     {hasInvitation && invitation && <section className={`${familyStyles.family} ${familyStyles.acceptInvitation}`} aria-labelledby="invited-family">
       <InvitationHeading name={invitation.name} />
-      <p>{invitation.name} have invited you to join their family on Pukki. Sign in or create an account to share wishlists and choose gifts together.</p>
+      <p>{translate("invitation-signup", { name: invitation.name })}</p>
     </section>}
-    <label htmlFor="email">Email
+    <label htmlFor="email">{translate("Email")}
       <Input id="email" name="email" type="email" autoComplete={signup ? "email" : "username"} autoCapitalize="none" spellCheck={false}
-        placeholder="Enter your email"
+        placeholder={translate("Enter your email")}
         required maxLength={254} disabled={busy} />
     </label>
     <div className={styles.passwordField}>
       <div className={styles.passwordLabelRow}>
-        <label htmlFor="password">{text.password}</label>
+        <label htmlFor="password">{translate("Password")}</label>
         {!signup && <button type="button" className={styles.forgotPassword} disabled={busy}
-          onClick={() => router.push({ pathname: "/forgot-password", query: typeof query.code === "string" ? { code: query.code } : {} })}>Forgot password?</button>}
+          onClick={() => router.push({ pathname: "/forgot-password", query: typeof query.code === "string" ? { code: query.code } : {} })}>{translate("Forgot password?")}</button>}
       </div>
       <Input id="password" name="password" type="password" autoComplete={signup ? "new-password" : "current-password"}
-        placeholder={locale === "fi" ? undefined : "Enter your password"}
+        placeholder={translate("Enter your password")}
         onChange={() => setPasswordMismatch(false)}
         required minLength={6} maxLength={128} disabled={busy} />
     </div>
-    {signup && <label htmlFor="confirmPassword">Confirm password
+    {signup && <label htmlFor="confirmPassword">{translate("Confirm password")}
       <Input ref={confirmPasswordRef} id="confirmPassword" name="confirmPassword" type="password" autoComplete="new-password"
-        placeholder="Enter your password again" required maxLength={128} disabled={busy}
+        placeholder={translate("Enter your password again")} required maxLength={128} disabled={busy}
         aria-invalid={passwordMismatch || undefined}
         aria-describedby={passwordMismatch ? "confirm-password-error" : undefined}
         onChange={() => setPasswordMismatch(false)} />
-      {passwordMismatch && <span id="confirm-password-error" role="alert" className={styles.error}>Passwords don&apos;t match.</span>}
+      {passwordMismatch && <span id="confirm-password-error" role="alert" className={styles.error}>{translate("Passwords don't match.")}</span>}
     </label>}
-    {error && <p role="alert" className={styles.error}>{error}</p>}
-    <Button type="submit" variant={signup ? "secondary" : "primary"} icon={signup ? "greeting-card" : "tag"} block disabled={busy}>{signup ? text.signup : text.login}</Button>
+    {error && <p role="alert" className={styles.error}>{translate(error)}</p>}
+    <Button type="submit" variant={signup ? "secondary" : "primary"} icon={signup ? "greeting-card" : "tag"} block disabled={busy}>{signup ? translate("Create account") : translate("Sign in")}</Button>
     <div className={styles.accountPrompt}>
-      {locale !== "fi" && <span>{signup ? text.existing : text.noAccount} </span>}
+      <span>{signup ? translate("Already have an account?") : translate("No account?")} </span>
       <button className={`${styles.switch}${signup ? ` ${styles.signIn}` : ""}`} type="button" disabled={busy}
-        onClick={() => { setSignup(!signup); setError(""); setPasswordMismatch(false); }}>{signup ? (locale === "fi" ? text.existing : text.login) : text.create}</button>
+        onClick={() => { setSignup(!signup); setError(""); setPasswordMismatch(false); }}>{signup ? translate("Sign in") : translate("Create an account")}</button>
     </div>
   </form>;
 }

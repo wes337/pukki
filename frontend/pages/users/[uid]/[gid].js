@@ -138,7 +138,7 @@ export default function Gift() {
     return renderGiftButtons();
   };
 
-  if (!preview && error) return <p role="alert">{error}</p>;
+  if (!preview && error) return <p role="alert">{translate(error)}</p>;
 
   if (!preview && loading) return <Loader />;
 
@@ -201,12 +201,12 @@ export default function Gift() {
           </blockquote>
         )}
       </div>
-      {actionError && <p role="alert">{actionError}</p>}
+      {actionError && <p role="alert">{translate(actionError)}</p>}
       <div className={styles.footer}>{renderFooterButtons()}</div>
       {confirmDelete && <ConfirmDialog
         title="Delete this gift?"
         description={gift.name}
-        confirmLabel="Delete"
+        confirmLabel={translate("Delete")}
         onCancel={() => setConfirmDelete(null)}
         onConfirm={async () => {
           await deleteGift(gid);

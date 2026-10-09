@@ -1,3 +1,4 @@
+import useTranslate from "../../hooks/useTranslate";
 import BackButton from "../BackButton/BackButton";
 import Avatar from "../Avatar/Avatar";
 import PageTitle from "../PageTitle";
@@ -5,6 +6,7 @@ import styles from "./Header.module.scss";
 import { useRouter } from "next/router";
 
 export default function Header({ title, avatar, back }) {
+  const translate = useTranslate();
   const router = useRouter();
 
   const goBack = () => {
@@ -49,7 +51,7 @@ export default function Header({ title, avatar, back }) {
     <div className={styles.header}>
       <PageTitle>{title}</PageTitle>
       <BackButton onClick={goBack} />
-      <h4>{title}</h4>
+      <h4>{translate(title)}</h4>
       {avatar && <Avatar url={avatar} size={36} />}
     </div>
   );

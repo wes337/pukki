@@ -1,3 +1,4 @@
+import useTranslate from "../hooks/useTranslate";
 import Head from "next/head";
 import { useState } from "react";
 import { useRouter } from "next/router";
@@ -9,6 +10,7 @@ import formStyles from "./login.module.scss";
 import styles from "./recovery.module.scss";
 
 export default function ResetPassword() {
+  const translate = useTranslate();
   const router = useRouter();
   const invitation = typeof router.query.code === "string" ? { code: router.query.code } : {};
   const login = { pathname: "/login", query: invitation };
@@ -47,22 +49,22 @@ export default function ResetPassword() {
     <Head><meta name="robots" content="noindex" /><meta name="referrer" content="no-referrer" /></Head>
     <Header title={complete ? "Password updated" : expired ? "Link expired" : "New password"} back={login} />
     {complete || expired ? <div className={`${formStyles.form} ${styles.confirmation}`}>
-      {expired && <p role="alert">Request a new link to reset your password.</p>}
+      {expired && <p role="alert">{translate("Request a new link to reset your password.")}</p>}
       <Button icon={complete ? "tag" : "greeting-card"} block
         onClick={() => router.push(complete ? { pathname: "/users", query: invitation } : { pathname: "/forgot-password", query: invitation })}>
-        {complete ? "Continue" : "Request new link"}
+        {translate(complete ? "Continue" : "Request new link")}
       </Button>
     </div> : <form className={`${formStyles.form} ${styles.requestForm}`} onSubmit={submit}>
-      <label htmlFor="newPassword">New password
+      <label htmlFor="newPassword">{translate("New password")}
         <Input id="newPassword" name="password" type="password" autoComplete="new-password"
-          placeholder="Enter a new password" minLength={6} maxLength={128} required autoFocus />
+          placeholder={translate("Enter a new password")} minLength={6} maxLength={128} required autoFocus />
       </label>
-      <label htmlFor="confirmNewPassword">Confirm password
+      <label htmlFor="confirmNewPassword">{translate("Confirm password")}
         <Input id="confirmNewPassword" name="confirmPassword" type="password" autoComplete="new-password"
-          placeholder="Enter your password again" maxLength={128} required />
+          placeholder={translate("Enter your password again")} maxLength={128} required />
       </label>
-      {error && <p role="alert" className={formStyles.error}>{error}</p>}
-      <Button type="submit" icon="tag" block disabled={busy || typeof router.query.token !== "string"}>Reset password</Button>
+      {error && <p role="alert" className={formStyles.error}>{translate(error)}</p>}
+      <Button type="submit" icon="tag" block disabled={busy || typeof router.query.token !== "string"}>{translate("Reset password")}</Button>
     </form>}
   </section>;
 }

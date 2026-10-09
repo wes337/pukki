@@ -1,9 +1,11 @@
+import useTranslate from "../../hooks/useTranslate";
 import { useEffect, useId, useRef, useState } from "react";
 import Button from "../Button/Button";
 import Loader from "../Loader/Loader";
 import styles from "./ConfirmDialog.module.scss";
 
 export default function ConfirmDialog({ title, description, confirmLabel, onConfirm, onCancel }) {
+  const translate = useTranslate();
   const dialog = useRef(null);
   const submitting = useRef(false);
   const titleId = useId();
@@ -43,12 +45,12 @@ export default function ConfirmDialog({ title, description, confirmLabel, onConf
     onCancel={(event) => { event.preventDefault(); if (!submitting.current) onCancel(); }}
     onClick={(event) => { if (event.target === event.currentTarget && !submitting.current) onCancel(); }}>
     <div className={styles.content}>
-      <h2 id={titleId}>{title}</h2>
+      <h2 id={titleId}>{translate(title)}</h2>
       {description && <p id={descriptionId}>{description}</p>}
       {busy && <div role="status"><Loader /></div>}
-      {error && <p className={styles.error} role="alert">{error}</p>}
+      {error && <p className={styles.error} role="alert">{translate(error)}</p>}
       <div className={styles.actions}>
-        <Button variant="outline" block disabled={busy} onClick={onCancel}>Cancel</Button>
+        <Button variant="outline" block disabled={busy} onClick={onCancel}>{translate("Cancel")}</Button>
         <Button variant="secondary" block disabled={busy} onClick={confirm}>{confirmLabel}</Button>
       </div>
     </div>

@@ -1,3 +1,4 @@
+import useTranslate from "../hooks/useTranslate";
 import Head from "next/head";
 import { useState } from "react";
 import { useRouter } from "next/router";
@@ -9,6 +10,7 @@ import formStyles from "./login.module.scss";
 import styles from "./name.module.scss";
 
 export default function Name() {
+  const translate = useTranslate();
   const router = useRouter();
   const { updateUser } = useAuth();
   const [name, setName] = useState("");
@@ -33,12 +35,12 @@ export default function Name() {
   if (busy) return <Loader />;
   return <section className={styles.onboarding}>
     <Head><meta name="robots" content="noindex" /></Head>
-    <h1 id="name-heading">What&apos;s your name?</h1>
+    <h1 id="name-heading">{translate("What's your name?")}</h1>
     <form className={formStyles.form} onSubmit={submit}>
       <Input name="name" aria-labelledby="name-heading" autoComplete="given-name" autoFocus required maxLength={80}
-        placeholder="First name" value={name} onChange={(event) => setName(event.target.value)} />
-      {error && <p role="alert" className={formStyles.error}>{error}</p>}
-      <Button type="submit" icon="santa-hat" block disabled={busy || preview}>Continue</Button>
+        placeholder={translate("First name")} value={name} onChange={(event) => setName(event.target.value)} />
+      {error && <p role="alert" className={formStyles.error}>{translate(error)}</p>}
+      <Button type="submit" icon="santa-hat" block disabled={busy || preview}>{translate("Continue")}</Button>
     </form>
   </section>;
 }

@@ -1,3 +1,4 @@
+import useTranslate from "../hooks/useTranslate";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { useAuth } from "../hooks/useAuth";
@@ -6,6 +7,7 @@ import { accountDestination, publicAccountPages } from "../utils/account-navigat
 
 // This guard controls navigation. Express verifies authorization on every data request.
 export default function ClientAccess({ children }) {
+  const translate = useTranslate();
   const router = useRouter();
   const { session, loading, error, retry } = useAuth();
   const publicPage = publicAccountPages.includes(router.pathname);
@@ -21,6 +23,6 @@ export default function ClientAccess({ children }) {
   }, [destination, router]);
   if (publicPage) return children;
   if (loading || !router.isReady || destination) return <Loader />;
-  if (error) return <div><p role="alert">{error}</p><Button onClick={retry}>{router.locale === "fi" ? "Yritä uudelleen" : "Try again"}</Button></div>;
+  if (error) return <div><p role="alert">{translate(error)}</p><Button onClick={retry}>{router.locale === "fi" ? "Yritä uudelleen" : "Try again"}</Button></div>;
   return children;
 }

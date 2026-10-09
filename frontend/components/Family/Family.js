@@ -1,3 +1,4 @@
+import useTranslate from "../../hooks/useTranslate";
 import Input from "../Input/Input";
 import FamilyCode from "./FamilyCode";
 import { useState } from "react";
@@ -26,19 +27,20 @@ const copy = {
   },
   fi: {
     title: "Joulu alkaa perheestä", intro: "Luo paikka perheesi toivelistoille tai liity saamallasi koodilla.",
-    create: "Luo perhe", familyName: "Perheen nimi", example: "Esim. Virtaset", nameHint: "Valitse nimi, jonka kaikki tunnistavat.",
-    join: "Liity perheeseen", code: "Perhekoodi", codeHint: "Syötä 8 merkin koodi. Välilyönnit ja viivat sallitaan.",
+    create: "Luo perhe", familyName: "Perheesi", example: "Esim. Virtaset", nameHint: "Valitse nimi, jonka kaikki tunnistavat.",
+    join: "Liity perheeseen", code: "Perhekoodi",
     haveCode: "Onko sinulla perhekoodi?", noCode: "Tai luo oma perhe", invited: "Sinut on kutsuttu",
     joinIntro: "Liity perheeseen, jaa toivelistasi ja katso muiden toiveet.",
     share: "Kutsu perheesi", shareHint: "Jaa koodi tai pyydä toista skannaamaan QR-koodi puhelimen kameralla.",
     access: "Koodilla voi liittyä heti. Jaa se vain ihmisille, jotka haluat mukaan perheeseesi.",
     copyCode: "Kopioi koodi", copyLink: "Kopioi kutsulinkki", codeCopied: "Perhekoodi kopioitu.", linkCopied: "Kutsulinkki kopioitu.",
-    copyError: "Kopiointi ei onnistunut. Valitse ja kopioi alla oleva koodi tai linkki.", back: "Perheen toivelistat", already: "Kuulut jo perheeseen. Yksi tili voi kuulua yhteen perheeseen.",
+    copyError: "Kopiointi ei onnistunut. Valitse ja kopioi alla oleva koodi tai linkki.", back: "Menoksi!", already: "Kuulut jo perheeseen. Yksi tili voi kuulua yhteen perheeseen.",
     empty: "Kutsu joku mukaan. Hänen toivelistansa näkyy täällä liittymisen jälkeen.", qr: "Liity perheeseen skannaamalla", link: "Kutsulinkki",
   },
 };
 
 export default function Family({ initialCode = "", joining = false }) {
+  const translate = useTranslate();
   const codeLength = initialCode.replace(/[\s-]/g, "").length === 8 ? 8 : 6;
   const session = useSession();
   const showToast = useToast();
@@ -93,7 +95,7 @@ export default function Family({ initialCode = "", joining = false }) {
   };
 
   if (familyId) {
-    if (familyError && (!family || [401, 403].includes(familyError.status))) return <p role="alert">{familyError.message}</p>;
+    if (familyError && (!family || [401, 403].includes(familyError.status))) return <p role="alert">{translate(familyError.message)}</p>;
     if (!family) return <Loader />;
     const displayName = family.name;
     // Scale names longer than 14 characters down to 32px, then allow wrapping.
@@ -128,7 +130,7 @@ export default function Family({ initialCode = "", joining = false }) {
     </section>;
   }
 
-  if (mode === "choose") return <section className={styles.choices} aria-label="Family setup">
+  if (mode === "choose") return <section className={styles.choices} aria-label={translate("Family setup")}>
     <Button icon="create-family" iconSize={56} block onClick={() => setMode("create")}>{text.create}</Button>
     <Button icon="join-family" iconSize={56} variant="secondary" block onClick={() => setMode("join")}>{text.join}</Button>
   </section>;
@@ -145,7 +147,7 @@ export default function Family({ initialCode = "", joining = false }) {
       </label> : <FamilyCode key={codeAttempt} value={code} onChange={updateCode} label={text.code} disabled={busy}
         length={codeLength} />}
       <Button type="submit" icon={mode === "create" ? "create-family" : "join-family"} iconSize={32} block disabled={busy}>{mode === "create" ? text.create : text.join}</Button>
-      {error && <p role="alert" className={styles.error}>{error}</p>}
+      {error && <p role="alert" className={styles.error}>{translate(error)}</p>}
     </form>
     <button type="button" className={styles.switch} disabled={busy}
       onClick={() => { setMode(mode === "create" ? "join" : "create"); setCode(""); setError(""); }}>

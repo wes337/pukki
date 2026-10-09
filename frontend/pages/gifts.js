@@ -15,7 +15,7 @@ export default function Gifts() {
 
   const gifts = familyGifts?.filter((gift) => gift.claimed_by?.user_id === user.id) ?? [];
 
-  if (error) return <p role="alert">{error}</p>;
+  if (error) return <p role="alert">{translate(error)}</p>;
 
   if (loading) {
     return <Loader />;

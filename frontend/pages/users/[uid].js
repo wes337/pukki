@@ -23,12 +23,12 @@ export default function User() {
 
   const canAddGifts = isMe;
 
-  if (error) return <p role="alert">{error}</p>;
+  if (error) return <p role="alert">{translate(error)}</p>;
 
   if (loading) {
     return <Loader />;
   }
-  if (!user) return <p role="alert">User not found.</p>;
+  if (!user) return <p role="alert">{translate("User not found.")}</p>;
 
   return (
     <>
