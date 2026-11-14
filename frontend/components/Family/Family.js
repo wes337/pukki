@@ -4,7 +4,7 @@ import FamilyCode from "./FamilyCode";
 import { useState } from "react";
 import useSWR from "swr";
 import { useRouter } from "next/router";
-import { useSession } from "../../hooks/useAuth";
+import { useAuth } from "../../hooks/useAuth";
 import BackButton from "../BackButton/BackButton";
 import { request } from "../../actions/request";
 import Button from "../Button/Button";
@@ -42,7 +42,7 @@ const copy = {
 export default function Family({ initialCode = "", joining = false }) {
   const translate = useTranslate();
   const codeLength = initialCode.replace(/[\s-]/g, "").length === 8 ? 8 : 6;
-  const session = useSession();
+  const { session, refresh } = useAuth();
   const showToast = useToast();
   const router = useRouter();
   const { locale } = router;
@@ -65,9 +65,8 @@ export default function Family({ initialCode = "", joining = false }) {
         method: "POST", body: mode === "create" ? { name } : { code: enteredCode.slice(0, codeLength) },
       });
       const destination = mode === "create" ? "/family?created=1" : "/users";
-      // Reload to replace the cached session after an account or membership change.
-      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-      window.location.assign(`${locale === "fi" ? "/fi" : ""}${destination}`);
+      await refresh();
+      await router.replace(destination);
     } catch (error) {
       const invalidCode = mode === "join" && (error.status === 400 || error.status === 404);
       setError(invalidCode ? "Invalid family code."

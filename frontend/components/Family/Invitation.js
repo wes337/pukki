@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/router";
 import InvitationHeading from "./InvitationHeading";
 import { useInvitation } from "../../hooks/useInvitation";
-import { useSession } from "../../hooks/useAuth";
+import { useAuth } from "../../hooks/useAuth";
 import { request } from "../../actions/request";
 import Button from "../Button/Button";
 import Loader from "../Loader/Loader";
@@ -12,7 +12,7 @@ import styles from "./Family.module.scss";
 export default function Invitation({ code, preview }) {
   const translate = useTranslate();
   const router = useRouter();
-  const session = useSession();
+  const { session, refresh } = useAuth();
   const [busy, setBusy] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const submitting = useRef(false);
@@ -34,9 +34,8 @@ export default function Invitation({ code, preview }) {
     setSubmitError("");
     try {
       await request("/family/join", { method: "POST", body: { code } });
-      // Refresh the session and discard the pre-membership data cache.
-      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-      window.location.assign(`${router.locale === "fi" ? "/fi" : ""}/users`);
+      await refresh();
+      await router.replace("/users");
     } catch (error) {
       setSubmitError(error.status === 409 ? "You already belong to a family."
         : [400, 404].includes(error.status) ? "This invitation is no longer available."

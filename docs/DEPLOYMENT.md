@@ -17,10 +17,11 @@ Only secrets belong in environment variables. Non-secret settings are checked in
 
 | Location | Secrets |
 | --- | --- |
-| Root `.env` | `VERCEL_TOKEN`, `FLY_TOKEN`, `DIGITALOCEAN_TOKEN`, `CLOUDFLARE_API_TOKEN`, `SENDGRID_MANAGEMENT_API_KEY` for local deployment/admin work |
+| Root `.env` | `VERCEL_TOKEN`, `FLY_TOKEN`, `DIGITALOCEAN_TOKEN`, `CLOUDFLARE_API_TOKEN`, `SENDGRID_MANAGEMENT_API_KEY`, `API_PROXY_SECRET` for local deployment/admin work |
 | `backend/.env` | Runtime `POSTGRES_URL`, `SENDGRID_API_KEY` |
 | GitHub Actions | `VERCEL_TOKEN`, `FLY_TOKEN` |
-| Fly | Runtime `POSTGRES_URL`, `SENDGRID_API_KEY` |
+| Fly | Runtime `POSTGRES_URL`, `SENDGRID_API_KEY`, `API_PROXY_SECRET` |
+| Vercel production | `API_PROXY_SECRET`, matching Fly |
 
 Actions maps `FLY_TOKEN` to the Fly CLI's required `FLY_API_TOKEN` variable. The DigitalOcean token is not used by the app. GitHub and Vercel do not need the production database credential. Env files are ignored by Git and excluded from Docker builds.
 
@@ -32,6 +33,7 @@ The SendGrid management key stays local; only the sending key is deployed to Fly
 2. Fly's `POSTGRES_URL` secret uses the existing managed database credential. The image includes its CA certificate for verified TLS. Do not create or reset a database.
 3. The existing `wesley-moses-projects/pukki` Vercel project uses Root Directory `frontend`, Node.js 22 in its project settings, and access to files outside that root for the workspace lockfile. `.vercelignore` excludes backend files and local env files from CLI uploads.
 4. Actions needs the two GitHub secrets. `frontend/vercel.json` disables automatic Git deployments and previews; Actions owns push releases.
+5. Vercel production and Fly need the same random `API_PROXY_SECRET` of at least 32 characters before deploying the API proxy. Keep it server-only; never use a `NEXT_PUBLIC_` variable. Local development calls Express directly and does not require it.
 
 The first production deployment of the current monorepo completed on October 9, 2026. Fly's schema-scoped migration release and health check passed, and Vercel published the frontend. GitHub Actions deployment credentials are configured for the push workflow.
 
@@ -45,7 +47,11 @@ Both apps deploy together. If Vercel fails after Fly succeeds, the previous fron
 
 ## Domains and cookies
 
-The frontend is `https://pukki.gifts` on Vercel and the API is `https://api.pukki.gifts/v1` on Fly. Production sessions use host-only, HttpOnly, Secure cookies with `SameSite=Lax`. The API allows the exact frontend origin with credentials; cookies do not need a parent-domain scope.
+The frontend is `https://pukki.gifts` on Vercel. Production browser requests use `/v1`, and `frontend/proxy.js` forwards them to `https://api.pukki.gifts/v1` on Fly. The proxy passes a server-only secret and Vercel's verified visitor IP; Express ignores forwarded visitor IPs without that secret. API responses remain private and uncached. Express still owns all authentication, authorization, and database work.
+
+Sessions stay valid until explicit sign-out or password reset. Host-only, HttpOnly, Secure cookies use `SameSite=Lax`, last up to 400 days, and renew on `/auth/session` checks. Ordinary data responses do not rewrite cookies. The client serializes cookie-changing auth requests across tabs with Web Locks, with a per-tab queue for browsers without that API. Sign-in, password reset, and family changes refresh auth state and use client-side navigation.
+
+An active legacy API-domain session moves through a 60-second HttpOnly `pukki_session_bridge` cookie on `pukki.gifts`, scoped to `/v1`. The same-origin session check replaces it with a host-only cookie and deletes the bridge. The legacy cookie stays available if adoption is interrupted. A host-only, non-secret `pukki_session_migrated` cookie suppresses further legacy adoption after sign-in, migration, sign-out, or reset, so an old account cannot return after explicit sign-out. Expired or revoked sessions are never restored.
 
 Cloudflare DNS records are DNS-only so Vercel and Fly terminate HTTPS directly:
 
@@ -53,10 +59,11 @@ Cloudflare DNS records are DNS-only so Vercel and Fly terminate HTTPS directly:
 | --- | --- | --- |
 | `pukki.gifts` | A | `216.150.1.1` |
 | `pukki.gifts` | A | `216.150.16.1` |
+| `www.pukki.gifts` | CNAME | `d2f5e7f1d4699534.vercel-dns-017.com` |
 | `api.pukki.gifts` | A | `66.241.125.137` |
 | `api.pukki.gifts` | AAAA | `2a09:8280:1::1ad:e8b8:0` |
 
-The domain is attached to Vercel project `pukki`, and Fly has an active Let's Encrypt certificate for `api.pukki.gifts`. The old `pukki.vercel.app` domain redirects to `pukki.gifts`. Cloudflare uses nameservers `brady.ns.cloudflare.com` and `teresa.ns.cloudflare.com`; the zone became active on October 9, 2026.
+The domain is attached to Vercel project `pukki`, and Fly has an active Let's Encrypt certificate for `api.pukki.gifts`. Both `www.pukki.gifts` and the old `pukki.vercel.app` domain redirect to `pukki.gifts` with HTTP 308, preserving the path and query string. Vercel manages HTTPS certificates for the frontend domains. Cloudflare uses nameservers `brady.ns.cloudflare.com` and `teresa.ns.cloudflare.com`; the zone became active on October 9, 2026.
 
 Cloudflare Email Routing is enabled and ready with the exact rule `support@pukki.gifts` → the verified destination `wesmoses@gmail.com`, plus MX, SPF, and DKIM records. The existing `info@wes.software` forwarding remains unchanged. `frontend/config.js` supplies the support address for Privacy and account-deletion pages. Provider configuration is verified; no test email has been sent.
 

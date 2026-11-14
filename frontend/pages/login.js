@@ -4,6 +4,8 @@ import PageTitle from "../components/PageTitle";
 import { useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { request } from "../actions/request";
+import { useAuth } from "../hooks/useAuth";
+import { accountDestination } from "../utils/account-navigation.mjs";
 import { Button, Loader } from "../components";
 import InvitationHeading from "../components/Family/InvitationHeading";
 import { useInvitation } from "../hooks/useInvitation";
@@ -12,7 +14,8 @@ import styles from "./login.module.scss";
 export default function Login({ initialSignup = false, preview = false }) {
   const translate = useTranslate();
   const router = useRouter();
-  const { locale, query } = router;
+  const { refresh } = useAuth();
+  const { query } = router;
   const inviteCode = typeof query.code === "string" ? query.code.slice(0, 32) : "";
   const hasInvitation = Boolean(inviteCode || preview || router.pathname === "/join");
   const { data: invitation, error: invitationError, mutate: retryInvitation } = useInvitation(inviteCode, preview);
@@ -42,11 +45,9 @@ export default function Login({ initialSignup = false, preview = false }) {
       await request(`/auth/${signup ? "signup" : "login"}`, {
         method: "POST", body: { email: data.get("email"), password: data.get("password") },
       });
-      const code = typeof query.code === "string" ? query.code.slice(0, 32) : "";
-      const destination = code ? `/join?code=${encodeURIComponent(code)}` : "/users";
-      // Reload to replace the cached session after an account or membership change.
-      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-      window.location.assign(`${locale === "fi" ? "/fi" : ""}${destination}`);
+      const session = await refresh();
+      if (!session?.user) throw new Error("Please sign in to continue.");
+      await router.replace(accountDestination("/login", session.user, inviteCode));
     } catch (error) { setError(error.message); setBusy(false); }
   };
   if (hasInvitation && inviteCode && !invitation && !invitationError) return <Loader />;

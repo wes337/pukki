@@ -9,6 +9,7 @@ import { createSession, setSessionCookie } from "#app/modules/auth.js";
 import { hashPassword } from "#app/modules/passwords.js";
 import { sendEmail } from "#app/modules/email.js";
 import { passwordResetEmail } from "#app/emails/password-reset.js";
+import { isApiProxyRequest } from "#app/lib/api-proxy.js";
 
 const digest = (token: string) => createHash("sha256").update(token).digest("hex");
 const invalidLink = () => new HttpError(400, "This reset link is invalid or expired.");
@@ -68,6 +69,6 @@ export const resetPassword: RequestHandler = async (req, res) => {
   } finally {
     client.release();
   }
-  setSessionCookie(res, sessionToken);
+  setSessionCookie(res, sessionToken, isApiProxyRequest(req));
   res.json({ ok: true });
 };

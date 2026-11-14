@@ -26,3 +26,15 @@ test("public recovery pages and development previews stay accessible", () => {
   assert.equal(accountDestination("/privacy", null), null);
   assert.equal(accountDestination("/name", null, null, true), null);
 });
+
+test("completed authentication goes directly to the next onboarding step", () => {
+  for (const [user, code, expected] of [
+    [{ name: "", family_id: null }, "", "/name"],
+    [{ name: "", family_id: null }, "ABC234", "/name?code=ABC234"],
+    [{ name: "Alex", family_id: null }, "", "/family"],
+    [{ name: "Alex", family_id: "family" }, "", "/users"],
+    [{ name: "Alex", family_id: "family" }, "ABC234", "/join?code=ABC234"],
+  ]) {
+    assert.equal(accountDestination("/login", user, code), expected);
+  }
+});

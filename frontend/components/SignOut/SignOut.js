@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { useUser } from "../../hooks/useAuth";
+import { useAuth, useUser } from "../../hooks/useAuth";
 import { request } from "../../actions/request";
 import { getFirstName, getUserName } from "../../utils/users";
 import useTranslate from "../../hooks/useTranslate";
@@ -11,19 +11,28 @@ import AvatarPicker from "../AvatarPicker/AvatarPicker";
 import styles from "./SignOut.module.scss";
 export default function SignOut() {
   const user = useUser();
-  const { locale } = useRouter();
+  return <AccountHeader key={user?.id ?? "guest"} user={user} />;
+}
+
+function AccountHeader({ user }) {
+  const { replaceSession } = useAuth();
+  const router = useRouter();
   const translate = useTranslate();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [pickingAvatar, setPickingAvatar] = useState(false);
   const signOut = async () => {
+    if (busy) return;
     setBusy(true);
     setError("");
     try {
       await request("/auth/logout", { method: "POST" });
-      // Reload to replace the cached session after an account or membership change.
-      window.location.assign(locale === "fi" ? "/fi/login" : "/login");
-    } catch (error) { setError(error.message); setBusy(false); }
+      setError("");
+      setPickingAvatar(false);
+      replaceSession(null);
+      await router.replace("/login");
+    } catch (error) { setError(error.message); }
+    finally { setBusy(false); }
   };
   return <header className={styles["sign-out"]}>
     <Logo centered={!user} />
