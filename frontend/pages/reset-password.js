@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { Button, Header, Loader } from "../components";
 import { request } from "../actions/request";
+import { useAuth } from "../hooks/useAuth";
 import { accountDestination } from "../utils/account-navigation.mjs";
 import Input from "../components/Input/Input";
 import formStyles from "./login.module.scss";
@@ -12,6 +13,7 @@ import styles from "./recovery.module.scss";
 export default function ResetPassword() {
   const translate = useTranslate();
   const router = useRouter();
+  const { refresh } = useAuth();
   const invitation = typeof router.query.code === "string" ? { code: router.query.code } : {};
   const login = { pathname: "/login", query: invitation };
   const preview = process.env.NODE_ENV === "development" ? router.query.preview : null;
@@ -33,10 +35,10 @@ export default function ResetPassword() {
     try {
       await request("/auth/reset-password", { method: "POST", body: { token: router.query.token, password: data.get("password") } });
       // The reset response sets a fresh HttpOnly session cookie. Replace this token-bearing URL.
-      const session = await request("/auth/session");
+      const session = await refresh();
       if (!session?.user) throw new Error("Please sign in to continue.");
       const destination = accountDestination("/login", session.user, invitation.code);
-      window.location.replace(`${router.locale === "fi" ? "/fi" : ""}${destination}`);
+      await router.replace(destination);
     } catch (error) {
       setError(error.message);
       setBusy(false);

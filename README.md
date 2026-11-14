@@ -8,7 +8,7 @@ A Christmas gift wishlist for small groups of family and friends. Made to help o
 
 ## More info
 
-A pnpm monorepo with a Next.js frontend in `frontend/` and a TypeScript Express API in `backend/`, backed by Postgres. All data requests go from the browser to Express under `/v1`. The frontend has no API handlers or database credentials. Accounts use an email address and password, with immediate signup and no email confirmation. This version starts fresh; it does not import the old Supabase accounts or wishlists.
+A pnpm monorepo with a Next.js frontend in `frontend/` and a TypeScript Express API in `backend/`, backed by Postgres. Production browser requests use `pukki.gifts/v1`; Next's routing proxy forwards them to Express on Fly. The frontend has no API handlers or database credentials. Accounts use an email address and password, with immediate signup and no email confirmation. This version starts fresh; it does not import the old Supabase accounts or wishlists.
 
 ## Local setup
 
@@ -23,7 +23,7 @@ Use `pnpm dev:frontend` or `pnpm dev:backend` to run either separately. Express 
 
 See [the sitemap](docs/SITEMAP.md) for stable screen names, routes, variants, and navigation flows.
 
-The backend requires `POSTGRES_URL`, plus `SENDGRID_API_KEY` for password recovery. Redis and token/cookie secrets are not needed. Sessions are opaque random tokens stored as hashes in Postgres, with HTTP-only cookies and a 14-day expiry. Signing out revokes the session. Passwords use salted scrypt hashes. Email addresses are case-insensitive, and passwords must contain 6–128 characters. Password-reset links expire after 30 minutes; a successful reset revokes previous sessions and signs the user in automatically.
+The backend requires `POSTGRES_URL`, plus `SENDGRID_API_KEY` for password recovery. Production Vercel and Fly share `API_PROXY_SECRET` to authenticate forwarded client IPs. Sessions are opaque random tokens stored as hashes in Postgres and stay valid until sign-out or password reset. The host-only, HTTP-only browser cookie lasts up to 400 days and renews on session checks. Browser cookie removal can still require sign-in again. Signing out revokes that device's session; password reset revokes all previous sessions and signs the user in automatically. Passwords use salted scrypt hashes. Email addresses are case-insensitive, and passwords must contain 6–128 characters. Password-reset links expire after 30 minutes.
 
 ## Shared database
 
@@ -58,7 +58,7 @@ Email addresses are trimmed and lowercased; tokens stay case-sensitive. Counter 
 
 The recovery middleware covers `/v1/auth/request-password-reset`, its `/v1/auth/forgot-password` alias, and `/v1/auth/reset-password`. Reset requests return the same response for known and unknown email addresses. Integration tests stub SendGrid without sending email.
 
-The backend uses Fly's `Fly-Client-IP` header only when running as the `pukki` Fly app, and groups IPv6 clients by /56. Local requests use the socket address and ignore forwarded headers. Keep `api.pukki.gifts` DNS-only in Cloudflare; enabling its proxy requires updating trusted client-IP resolution first.
+The backend accepts Vercel's forwarded visitor IP only when the routing proxy supplies the shared `API_PROXY_SECRET`. Direct requests use Fly's `Fly-Client-IP` header only when running as the `pukki` Fly app. IPv6 clients are grouped by /56; untrusted forwarded headers are ignored. Keep `api.pukki.gifts` DNS-only in Cloudflare.
 
 ## Deployment
 
@@ -67,8 +67,6 @@ Production uses Vercel for the frontend and Fly for the Express backend. There i
 See [deployment setup](docs/DEPLOYMENT.md) for the hosting settings, GitHub secrets and checked-in configuration, production domains, and failure behavior. The existing Vercel project must use `frontend` as its Root Directory and Node.js 22. Its automatic Git builds are disabled by `frontend/vercel.json`, so the workflow controls deployments and no previews are created.
 
 The frontend uses Next.js 16, React 19, and Serwist for PWA assets. Development and builds use Webpack for the service-worker integration. API responses are not cached. ESLint 9 and frontend TypeScript 6 remain on the newest versions supported by the current Next lint plugins; backend TypeScript uses version 7. Node types match the deployed Node 22 runtime.
-
-The full dependency audit currently reports one unpatched development-only `braces` advisory through Next's ESLint plugin. It is not part of the production runtime. Recheck it when updating `eslint-config-next`.
 
 This app is also a PWA, and can be saved for use as a standalone application.
 

@@ -10,7 +10,7 @@ export default function Privacy() {
     <div className={styles.page}>
       <Header title="Privacy Policy" />
       <div className={privacyStyles.policy}>
-        <p className={privacyStyles.updated}>{translate("Updated 9 October 2026")}</p>
+        <p className={privacyStyles.updated}>{translate("Updated 14 November 2026")}</p>
         <p>{translate("privacy-contact", { email: <a href={`mailto:${contactEmail}`}>{contactEmail}</a> })}</p>
         <section>
           <h2>{translate("What we store")}</h2>
@@ -28,13 +28,13 @@ export default function Privacy() {
         </section>
         <section>
           <h2>{translate("Cookies and service providers")}</h2>
-          <p>{translate("Pukki uses a session cookie to keep you signed in for up to 14 days. Signing out ends that session. We do not use advertising cookies or analytics trackers in the app.")}</p>
+          <p>{translate("Pukki uses a session cookie to keep you signed in until you sign out or reset your password. Your browser may require you to sign in again if it expires or removes that cookie. We do not use advertising cookies or analytics trackers in the app.")}</p>
           <p>{translate("We use Vercel to host the website, Fly.io to run the server, and DigitalOcean to store app data. SendGrid delivers welcome and password-reset emails using your email address and the message content. These providers process information needed to deliver the service, which can include IP addresses and technical request logs. Fonts load from Google Fonts, so your browser also connects to Google when loading them.")}</p>
           <p>{translate("Links to shops and other websites open services with their own privacy policies.")}</p>
         </section>
         <section>
           <h2>{translate("Keeping and deleting data")}</h2>
-          <p>{translate("Account, family, and wishlist information stays in the app until it is deleted; inactive accounts are not automatically removed. You can edit or delete your own gifts at any time. Sessions expire after 14 days, and expired session and login-attempt records are cleared during later sign-in activity.")}</p>
+          <p>{translate("Account, family, and wishlist information stays in the app until it is deleted; inactive accounts are not automatically removed. Signing out ends that device's session. Resetting your password ends all existing sessions. Expired sign-in-attempt records are cleared during later sign-in activity.")}</p>
           <p>{translate("privacy-data-requests", { email: <a href={`mailto:${contactEmail}`}>{contactEmail}</a> })}</p>
           <p>{translate("Depending on the law where you live, you may also have rights to restrict or object to processing, receive a portable copy of your data, and complain to your local data protection authority.")}</p>
         </section>

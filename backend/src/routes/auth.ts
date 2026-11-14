@@ -3,7 +3,8 @@ import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { HttpError, methodNotAllowed } from "#app/lib/api.js";
 import { sql } from "#app/lib/sql.js";
-import { getSession, startSession, endSession } from "#app/modules/auth.js";
+import { getSession, startSession, endSession, migrateSession } from "#app/modules/auth.js";
+import { isApiProxyRequest } from "#app/lib/api-proxy.js";
 import { hashPassword, verifyPassword } from "#app/modules/passwords.js";
 import { sendEmail } from "#app/modules/email.js";
 import { welcomeEmail } from "#app/emails/welcome.js";
@@ -18,9 +19,13 @@ const handler: RequestHandler<Record<string, string>, unknown, Record<string, un
   if (action === "reset-password") return resetPassword(req, res, next);
   if (action === "session") {
     if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
-    return res.json(await getSession(req));
+    return res.json(await getSession(req, res));
   }
   if (req.method !== "POST") return methodNotAllowed(res, ["POST"]);
+  if (action === "migrate-session") {
+    if (isApiProxyRequest(req)) throw new HttpError(400, "Session migration must use the legacy API host");
+    return res.json({ ok: await migrateSession(req, res) });
+  }
   if (action === "logout") {
     await endSession(req, res);
     return res.json({ ok: true });
@@ -49,7 +54,7 @@ const handler: RequestHandler<Record<string, string>, unknown, Record<string, un
     const valid = await verifyPassword(password, user?.password_hash || dummyHash);
     if (!user || !valid) throw new HttpError(401, "Incorrect email or password.");
   }
-  await startSession(req, res, user.user_id);
+  await startSession(req, res, user.user_id, user.password_hash);
   if (action === "signup") {
     try {
       await sendEmail(email, welcomeEmail());

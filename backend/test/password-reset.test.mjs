@@ -40,6 +40,8 @@ test("password reset signs in immediately and consumes links atomically", { skip
   const login = await call("login", { email, password: "old123" });
   assert.equal(login.status, 200);
   const oldCookie = login.headers.get("set-cookie").split(";")[0];
+  const secondLogin = await call("login", { email, password: "old123" });
+  const otherDeviceCookie = secondLogin.headers.get("set-cookie").split(";")[0];
   const sent = await call("request-password-reset", { email: email.toUpperCase(), code: "ABC234" });
   assert.equal(sent.status, 200);
   assert.deepEqual(await sent.json(), { ok: true });
@@ -68,6 +70,9 @@ test("password reset signs in immediately and consumes links atomically", { skip
   assert.notEqual(newCookie, oldCookie);
   assert.equal((await (await call("session", undefined, newCookie)).json()).user.id, userId);
   assert.equal(await (await call("session", undefined, oldCookie)).json(), null);
+  assert.equal(await (await call("session", undefined, otherDeviceCookie)).json(), null, "Password reset revokes persistent sessions on every device");
+  const newTokenHash = digest(newCookie.split("=")[1]);
+  assert.equal((await sql.query("SELECT expires_at::text AS expiry FROM pukki.sessions WHERE token_hash = $1", [newTokenHash])).rows[0].expiry, "infinity");
   assert.equal((await call("reset-password", { token, password: "bad123" })).status, 400);
   assert.equal((await call("reset-password", { token: sibling, password: "bad123" })).status, 400);
   assert.equal((await call("login", { email, password: "old123" })).status, 401);

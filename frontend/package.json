@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@serwist/next": "^9.5.13",
-    "next": "^16.4.0",
+    "next": "^16.4.6",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-icons": "^5.7.0",
@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "eslint": "^9.39.5",
-    "eslint-config-next": "^16.4.0",
+    "eslint-config-next": "^16.4.6",
     "sass": "^1.105.1",
     "serwist": "^9.5.13",
     "typescript": "^6.0.3"

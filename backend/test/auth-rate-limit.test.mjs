@@ -4,6 +4,7 @@ import express from "express";
 
 // Unit tests never connect to the configured application database.
 process.env.POSTGRES_URL = "postgres://unused:unused@127.0.0.1:1/unused";
+process.env.API_PROXY_SECRET = "test-only-proxy-secret-not-for-production";
 const { createAuthRateLimiter } = await import("#app/middlewares/auth-rate-limit.js");
 const { clientIpKey, authLimitKey } = await import("#app/lib/auth-rate-limit.js");
 
@@ -20,6 +21,25 @@ test("client IP keys ignore untrusted headers and group IPv6 addresses", () => {
   assert.equal(ip("::ffff:192.0.2.7"), ip("192.0.2.7"));
   assert.equal(ip("2001:db8:1234:5600::1"), ip("2001:db8:1234:56ff::2"));
   assert.notEqual(ip("2001:db8:1234:5600::1"), ip("2001:db8:1234:5700::1"));
+});
+
+test("only authenticated proxy requests can supply the visitor IP", () => {
+  const request = {
+    headers: { "fly-client-ip": "203.0.113.7", "x-pukki-client-ip": "192.0.2.9" },
+    socket: { remoteAddress: "127.0.0.1" },
+  };
+  assert.equal(clientIpKey(request, true), "203.0.113.7", "A forwarded IP alone is untrusted");
+  request.headers["x-pukki-proxy-secret"] = "wrong-proxy-secret";
+  assert.equal(clientIpKey(request, true), "203.0.113.7");
+  request.headers["x-pukki-proxy-secret"] = process.env.API_PROXY_SECRET;
+  assert.equal(clientIpKey(request, true), "192.0.2.9");
+  assert.equal(clientIpKey(request, false), "127.0.0.1", "Local callers cannot impersonate the production proxy");
+  request.headers["x-pukki-client-ip"] = "192.0.2.9, 203.0.113.8";
+  assert.equal(clientIpKey(request, true), "203.0.113.7", "An IP list cannot select an arbitrary visitor");
+  request.headers["x-pukki-client-ip"] = "2001:db8:1234:5600::1";
+  assert.equal(clientIpKey(request, true), "2001:db8:1234:5600::/56");
+  request.headers["x-pukki-proxy-secret"] = [process.env.API_PROXY_SECRET];
+  assert.equal(clientIpKey(request, true), "203.0.113.7", "Duplicate proxy headers are untrusted");
 });
 
 test("auth middleware budgets, normalization, blocking and store failure", async (t) => {

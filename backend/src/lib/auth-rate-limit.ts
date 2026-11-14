@@ -3,13 +3,19 @@ import { isIP } from "node:net";
 import type { IncomingMessage } from "node:http";
 import { ipKeyGenerator } from "express-rate-limit";
 import { sql } from "#app/lib/sql.js";
+import { isApiProxyRequest } from "#app/lib/api-proxy.js";
 
 export function authLimitKey(scope: string, kind: string, value: string): string {
   return `${scope}:${kind}:${createHash("sha256").update(value).digest("hex")}`;
 }
 
 export function clientIpKey(request: IncomingMessage, onFly = process.env.FLY_APP_NAME === "pukki"): string {
-  // api.pukki.gifts is DNS-only. Fly supplies the client IP; local callers cannot spoof it.
+  // Only our authenticated Vercel proxy may supply the visitor behind its connection to Fly.
+  const proxied = request.headers["x-pukki-client-ip"];
+  if (onFly && isApiProxyRequest(request) && typeof proxied === "string" && isIP(proxied.trim())) {
+    return ipKeyGenerator(proxied.trim());
+  }
+  // Legacy clients still call the DNS-only API directly. Fly supplies their client IP.
   // https://docs.fly.io/networking/request-headers
   const forwarded = request.headers["fly-client-ip"];
   const ip = onFly && typeof forwarded === "string" && isIP(forwarded.trim())
