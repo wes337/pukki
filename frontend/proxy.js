@@ -22,5 +22,6 @@ export function proxy(request) {
 }
 
 export const config = {
-  matcher: [{ source: "/v1/:path*", locale: false }],
+  // Vercel adds the site's locale before matching middleware, even for the API path.
+  matcher: "/v1/:path*",
 };

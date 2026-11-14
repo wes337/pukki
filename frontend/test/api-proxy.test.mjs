@@ -1,9 +1,12 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import "next/dist/server/node-environment-baseline.js";
 import { NextRequest } from "next/server.js";
-import { proxy } from "../proxy.js";
+import nextTesting from "next/experimental/testing/server.js";
+import { proxy, config } from "../proxy.js";
 
 const secret = "test-only-proxy-secret-not-for-production";
+const nextConfig = { i18n: { locales: ["en", "fi"], defaultLocale: "en" } };
 
 function configureProxy(t, values) {
   const previous = Object.fromEntries(Object.keys(values).map((key) => [key, process.env[key]]));
@@ -33,6 +36,19 @@ test("API proxy preserves requests and replaces spoofed proxy identity", (t) => 
   assert.equal(response.headers.get("x-middleware-request-cookie"), "pukki_session=test-token");
   assert.equal(response.headers.get("x-middleware-request-origin"), "https://pukki.gifts");
   assert.equal(response.headers.get("x-pukki-proxy-secret"), null, "The secret is a request override, not a response header");
+});
+
+test("API proxy matches Vercel's localized routing and forwards unlocalized API paths", (t) => {
+  configureProxy(t, { VERCEL: "1", API_PROXY_SECRET: secret });
+  for (const locale of nextConfig.i18n.locales) {
+    const url = `https://pukki.gifts/${locale}/v1/auth/session?example=1`;
+    assert.equal(nextTesting.unstable_doesMiddlewareMatch({ config, nextConfig, url }), true);
+    const response = proxy(new NextRequest(url, {
+      nextConfig, headers: { "x-vercel-forwarded-for": "203.0.113.5" },
+    }));
+    assert.equal(response.headers.get("x-middleware-rewrite"), "https://api.pukki.gifts/v1/auth/session?example=1");
+  }
+  assert.equal(nextTesting.unstable_doesMiddlewareMatch({ config, nextConfig, url: "https://pukki.gifts/en/login" }), false);
 });
 
 test("API proxy fails closed without server identity or a trustworthy visitor IP", async (t) => {
