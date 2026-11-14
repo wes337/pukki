@@ -94,5 +94,10 @@ jobs:
       - uses: superfly/flyctl-actions/setup-flyctl@1.5
       - name: Deploy backend and run schema migrations
         run: flyctl deploy . --remote-only --config backend/fly.toml --ha=false
-      - name: Deploy frontend
-        run: vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
+      - name: Deploy and verify frontend before publishing
+        run: |
+          deployment_url=$(vercel deploy --prebuilt --prod --skip-domain --token="$VERCEL_TOKEN")
+          node deploy/check-production.mjs "$deployment_url"
+          vercel promote "$deployment_url" --token="$VERCEL_TOKEN"
+      - name: Verify production API routing
+        run: node deploy/check-production.mjs

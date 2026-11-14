@@ -41,7 +41,7 @@ The first production deployment of the current monorepo completed on October 9, 
 
 The workflow runs on `master` pushes affecting apps, dependencies, or deployment config. Documentation-only pushes do not deploy. Manual runs must use `master`.
 
-Checks use disposable Postgres. After lint, type checks, tests and builds pass, Actions builds the production frontend, deploys Fly with schema migrations, then publishes Vercel. Releases run serially without canceling in-progress migrations. There is no staging promotion or approval gate.
+Checks use disposable Postgres. After lint, type checks, tests and builds pass, Actions builds the production frontend and deploys Fly with schema migrations. It uploads the production frontend without assigning domains, verifies API forwarding on that deployment's URL, then promotes it and repeats the check on `pukki.gifts`. A failed forwarding check leaves the previous frontend serving traffic. This uses the production environment throughout; no preview or separate staging environment is created. Releases run serially without canceling in-progress migrations and have no approval gate.
 
 Both apps deploy together. If Vercel fails after Fly succeeds, the previous frontend stays live. Keep API/database changes compatible with the previous frontend and rerun after fixing the failure.
 
